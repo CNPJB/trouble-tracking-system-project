@@ -8,7 +8,7 @@ COPY . .
 RUN npx prisma generate 
 EXPOSE 3000
 # ใช้ nodemon เพื่อทำ auto-restart เวลาแก้โค้ด
-CMD ["npx", "nodemon", "index.js"] 
+CMD ["npx", "nodemon", "src/index.js"]
 
 # --- Stage 2: Production ---
 FROM node:22.19-alpine AS production
@@ -18,4 +18,4 @@ RUN npm install --only=production
 COPY . .
 RUN npx prisma generate
 EXPOSE 3000
-CMD ["node", "index.js"]
+CMD ["node", "src/index.js"]
