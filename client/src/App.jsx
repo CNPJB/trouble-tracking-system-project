@@ -1,121 +1,145 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import './App.css'
 
+// ตั้งค่า Base URL สำหรับ Axios (ชี้ไปที่ Port 3000 ของ Server)
+const api = axios.create({
+  baseURL: 'http://localhost:3000/api'
+});
+
 function App() {
-  const [count, setCount] = useState(0)
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // State สำหรับฟอร์มเพิ่ม User
+  const [formData, setFormData] = useState({
+    email: '',
+    fullName: '',
+    role: 'user' // ค่าเริ่มต้นเป็น user
+  });
+
+  // ฟังก์ชันดึงข้อมูล (READ)
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get('/users');
+      setUsers(response.data);
+      setError(null);
+    } catch (err) {
+      console.error("Error fetching users:", err);
+      setError("ไม่สามารถดึงข้อมูลได้ โปรดตรวจสอบว่า Server รันอยู่หรือไม่");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ดึงข้อมูลครั้งแรกเมื่อ Component โหลด
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  // ฟังก์ชันจัดการเมื่อพิมพ์ฟอร์ม
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
+
+  // ฟังก์ชันกด Submit เพื่อสร้าง User (CREATE)
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await api.post('/users', formData);
+      alert('สร้างผู้ใช้งานสำเร็จ!');
+      setFormData({ email: '', fullName: '', role: 'user' }); // ล้างค่าฟอร์ม
+      fetchUsers(); // รีเฟรชตารางใหม่
+    } catch (err) {
+      console.error("Error creating user:", err);
+      alert('เกิดข้อผิดพลาดในการสร้างผู้ใช้งาน');
+    }
+  };
+
+  // ฟังก์ชันลบ User (DELETE)
+  const handleDelete = async (id) => {
+    if (window.confirm('คุณแน่ใจหรือไม่ที่จะลบผู้ใช้งานนี้?')) {
+      try {
+        await api.delete(`/users/${id}`);
+        fetchUsers(); // รีเฟรชตารางใหม่
+      } catch (err) {
+        console.error("Error deleting user:", err);
+        alert('เกิดข้อผิดพลาดในการลบผู้ใช้งาน');
+      }
+    }
+  };
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="container">
+      <h1>ระบบจัดการผู้ใช้งาน (ทดสอบ API)</h1>
 
-      <div className="ticks"></div>
+      {/* ฟอร์มเพิ่มผู้ใช้งาน */}
+      <div className="form-card">
+        <h2>เพิ่มผู้ใช้งานใหม่</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>อีเมล:</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>ชื่อ-นามสกุล:</label>
+            <input
+              type="text"
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>สิทธิ์การใช้งาน:</label>
+            <select name="role" value={formData.role} onChange={handleInputChange}>
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <button type="submit" disabled={loading}>
+            {loading ? 'กำลังบันทึก...' : 'บันทึกข้อมูล'}
+          </button>
+        </form>
+      </div>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
+      {/* รายการผู้ใช้งาน */}
+      <div className="list-card">
+        <h2>รายชื่อผู้ใช้งานทั้งหมด ({users.length})</h2>
+        {users.length === 0 ? (
+          <p className="empty-text">ยังไม่มีข้อมูลผู้ใช้งาน</p>
+        ) : (
+          <ul className="user-list">
+            {users.map((user) => (
+              <li key={user.userId} className="user-item">
+                <div className="user-info">
+                  <strong>{user.fullName}</strong>
+                  <span>{user.email}</span>
+                </div>
+                  <span className={`badge ${user.role}`}>{user.role}</span>
+                  <button className="dltbutton" onClick={() => handleDelete(user.userId)}>
+                    ลบ
+                  </button>
+              </li>
+            ))}
           </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default App

@@ -1,0 +1,76 @@
+services:
+  db:
+    image: postgres:17.6-alpine
+    container_name: tts_db_pg
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  server:
+    build:
+      context: ./server
+      target: development
+    container_name: tts_server
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+      - "5555:5555" # สำหรับ Prisma Studio
+    volumes:
+      - ./server:/app
+      - /app/node_modules # ป้องกันไม่ให้ node_modules ในเครื่องไปทับใน container
+    depends_on:
+      - db
+
+  client:
+    build:
+      context: ./client
+      target: development
+    container_name: tts_client
+    env_file:
+      - .env
+    ports:
+      - "5173:5173"
+    # develop:
+    #   watch:
+    #     - action: sync
+    #       path: ./src
+    #       target: /app/src
+    #       ignore:
+    #         - node_modules/
+    #     - action: rebuild
+    #       path: ./package.json
+    #       target: /app/package.json
+    #     - action: rebuild
+    #       path: ./vite.config.js
+    #       target: /app/vite.config.js
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    depends_on:
+      - server
+
+  # prisma-studio:
+  #   build:
+  #     context: ./server
+  #     target: development
+  #   container_name: tts_prisma_studio
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - "5555:5555"
+  #   volumes:
+  #     - ./server:/app
+  #     - /app/node_modules
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #     server:
+  #       condition: service_healthy
+
+volumes:
+  pgdata:

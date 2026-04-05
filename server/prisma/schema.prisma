@@ -10,3 +10,232 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+// --- Enums ---
+enum TicketStatus {
+  pending
+  in_progress
+  resolved
+  rejected
+  duplicate
+
+  @@map("ticket_status")
+}
+
+enum LocationStatus {
+  active
+  inactive
+
+  @@map("location_status")
+}
+
+enum CategoryStatus {
+  enable
+  disable
+
+  @@map("category_status")
+}
+
+enum EquipmentStatus {
+  active
+  awaiting_sale
+  sent_for_repair
+  broken
+
+  @@map("equipment_status")
+}
+
+enum UserRole {
+  admin
+  user
+
+  @@map("user_role")
+}
+
+// --- Models ---
+
+// ตารางผู้ใช้ที่สร้าง ticket จะมี role เป็น user และผู้ใช้ที่จัดการ ticket จะมี role เป็น admin
+model User {
+  userId    Int       @id @default(autoincrement()) @map("user_id")
+  email     String?   @unique @db.VarChar(100)
+  fullName  String?   @map("full_name") @db.VarChar(100)
+  googleId  String?   @map("google_id") @db.VarChar(255)
+  avatarUrl String?   @map("avatar_url") @db.Text
+  role      UserRole? @default(user)
+  createdAt DateTime? @map("created_at") @db.Timestamp()
+  updatedAt DateTime? @map("updated_at") @db.Timestamp()
+
+  // Relations
+  ticketsCreated Ticket[] @relation("UserTickets")
+  ticketsManaged Ticket[] @relation("AdminTickets")
+  upvotes        Upvote[]
+
+  @@map("users")
+}
+
+// ตารางสถานที่เกิดปัญหา
+model Location {
+  locationId     Int            @id @default(autoincrement()) @map("location_id")
+  locationName   String         @map("location_name") @db.VarChar(100)
+  locationStatus LocationStatus @default(active) @map("location_status")
+  createdAt      DateTime?      @map("created_at") @db.Timestamp()
+  updatedAt      DateTime?      @map("updated_at") @db.Timestamp()
+
+  // Relations
+  floors         Floor[]
+  tickets        Ticket[]
+
+  @@map("locations")
+}
+
+// ตารางชั้นของอาคารที่เกิดปัญหา
+model Floor {
+  floorId     Int            @id @default(autoincrement()) @map("floor_id")
+  floorLevel  String         @map("floor_level") @db.VarChar(10)
+  locationId  Int            @map("location_id")
+  floorStatus LocationStatus @default(active) @map("floor_status")
+  createdAt   DateTime?      @map("created_at") @db.Timestamp()
+  updatedAt   DateTime?      @map("updated_at") @db.Timestamp()
+
+  // Relations
+  location    Location       @relation(fields: [locationId], references: [locationId])
+  rooms       Room[]
+  tickets     Ticket[]
+
+  @@map("floors")
+}
+
+// ตารางห้องที่เกิดปัญหา
+model Room {
+  roomId     Int            @id @default(autoincrement()) @map("room_id")
+  roomName   String         @map("room_name") @db.VarChar(50)
+  floorId    Int            @map("floor_id")
+  roomStatus LocationStatus @default(active) @map("room_status")
+  createdAt  DateTime?      @map("created_at") @db.Timestamp()
+  updatedAt  DateTime?      @map("updated_at") @db.Timestamp()
+
+  // Relations
+  floor      Floor          @relation(fields: [floorId], references: [floorId])
+  equipments Equipment[]
+  tickets    Ticket[]
+
+  @@map("rooms")
+}
+
+// ตารางประเภทของครุภัณฑ์
+model EquipmentCategory {
+  equipmentCtgId     Int            @id @default(autoincrement()) @map("equipment_ctg_id")
+  equipmentCtgName   String         @unique @map("equipment_ctg_name") @db.VarChar(100)
+  equipmentCtgStatus CategoryStatus @default(enable) @map("equipment_ctg_status")
+  createdAt          DateTime?      @map("created_at") @db.Timestamp()
+  updatedAt          DateTime?      @map("updated_at") @db.Timestamp()
+
+  // Relations
+  equipments         Equipment[]
+
+  @@map("equipment_categories")
+}
+
+// ตารางครุภัณฑ์ที่เกิดปัญหา
+model Equipment {
+  equipmentId       Int             @id @default(autoincrement()) @map("equipment_id")
+  equipmentCode     String?         @map("equipment_code") @db.VarChar(30)
+  equipmentName     String          @map("equipment_name") @db.VarChar(100)
+  equipmentImageUrl String?         @map("equipment_image_url") @db.Text
+  equipmentStatus   EquipmentStatus @default(active) @map("equipment_status")
+  equipmentCtgId    Int             @map("equipment_ctg_id")
+  roomId            Int             @map("room_id")
+  createdAt         DateTime?       @map("created_at") @db.Timestamp()
+  updatedAt         DateTime?       @map("updated_at") @db.Timestamp()
+
+  // Relations
+  category          EquipmentCategory @relation(fields: [equipmentCtgId], references: [equipmentCtgId])
+  room              Room              @relation(fields: [roomId], references: [roomId])
+  tickets           Ticket[]
+
+  @@map("equipments")
+}
+
+// ตารางรูปภาพของ ticket
+model TicketImage {
+  imageId   Int       @id @default(autoincrement()) @map("image_id")
+  ticketId  Int       @map("ticket_id")
+  imageUrl  String    @map("image_url") @db.Text
+  imageType String?   @map("image_type") @db.VarChar(20)
+  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamp()
+
+  // Relations
+  ticket    Ticket    @relation(fields: [ticketId], references: [ticketId])
+
+  @@map("ticket_images")
+}
+
+// ตารางประเภทของ ticket
+model TicketCategory {
+  ticketCtgId     Int            @id @default(autoincrement()) @map("ticket_ctg_id")
+  ticketCtgName   String         @unique @map("ticket_ctg_name") @db.VarChar(100)
+  ticketCtgStatus CategoryStatus @default(enable) @map("ticket_ctg_status")
+  createdAt       DateTime?      @map("created_at") @db.Timestamp()
+  updatedAt       DateTime?      @map("updated_at") @db.Timestamp()
+
+  // Relations
+  tickets         Ticket[]
+
+  @@map("ticket_categories")
+}
+
+// ตาราง ticket ที่บันทึกปัญหา
+model Ticket {
+  ticketId            Int           @id @default(autoincrement()) @map("ticket_id")
+  userId              Int           @map("user_id")
+  ticketCtgId         Int           @map("ticket_ctg_id")
+  locationId          Int           @map("location_id")
+  floorId             Int?          @map("floor_id")
+  roomId              Int?          @map("room_id")
+  equipmentId         Int?          @map("equipment_id")
+  title               String        @db.VarChar(100)
+  description         String        @db.Text
+  ticketStatus        TicketStatus? @default(pending) @map("ticket_status")
+  parentTicketId      Int?          @map("parent_ticket_id")
+  adminId             Int?          @map("admin_id")
+  adminNote           String?       @map("admin_note") @db.Text
+  rating              Int?
+  comment             String?       @db.Text
+  createdAt           DateTime      @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt           DateTime?     @map("updated_at") @db.Timestamp()
+  timestampInprogress DateTime?     @default(now()) @map("timestamp_inprogress") @db.Timestamp()
+  timestampFinished   DateTime?     @default(now()) @map("timestamp_finished") @db.Timestamp()
+
+  // Relations
+  user         User            @relation("UserTickets", fields: [userId], references: [userId])
+  category     TicketCategory  @relation(fields: [ticketCtgId], references: [ticketCtgId])
+  location     Location        @relation(fields: [locationId], references: [locationId])
+  floor        Floor?          @relation(fields: [floorId], references: [floorId])
+  room         Room?           @relation(fields: [roomId], references: [roomId])
+  equipment    Equipment?      @relation(fields: [equipmentId], references: [equipmentId])
+  
+  parentTicket Ticket?         @relation("SubTickets", fields: [parentTicketId], references: [ticketId])
+  subTickets   Ticket[]        @relation("SubTickets")
+  
+  admin        User?           @relation("AdminTickets", fields: [adminId], references: [userId])
+  
+  images       TicketImage[]
+  upvotes      Upvote[]
+
+  @@map("tickets")
+}
+
+// ตาราง upvote สำหรับให้ผู้ใช้โหวตปัญหาที่พบเห็นว่ามีความสำคัญหรือไม่ โดยผู้ใช้หนึ่งคนสามารถโหวตได้เพียงครั้งเดียวต่อหนึ่ง ticket
+model Upvote {
+  upvoteId  Int       @id @default(autoincrement()) @map("upvote_id")
+  ticketId  Int       @map("ticket_id")
+  userId    Int       @map("user_id")
+  createdAt DateTime? @map("created_at") @db.Timestamp()
+
+  // Relations
+  ticket    Ticket    @relation(fields: [ticketId], references: [ticketId])
+  user      User      @relation(fields: [userId], references: [userId])
+
+  @@unique([ticketId, userId])
+  @@map("upvotes")
+}
