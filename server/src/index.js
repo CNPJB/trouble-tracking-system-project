@@ -20,7 +20,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.send('Hello from server!!');
+  res.send('Hello from server testest!!');
 });
 
 app.post('/api/users', async (req, res) => {
