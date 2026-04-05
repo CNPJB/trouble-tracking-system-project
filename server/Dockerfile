@@ -5,10 +5,10 @@ COPY package*.json ./
 RUN npm install
 COPY . .
 # Generate Prisma Client ก่อนรัน Server
-RUN npx prisma generate 
+# RUN npx prisma generate 
 EXPOSE 3000
-# ใช้ nodemon เพื่อทำ auto-restart เวลาแก้โค้ด
-CMD ["npx", "nodemon", "src/index.js"]
+# ใช้ nodemon เพื่อทำ auto-restart เวลาแก้โค้ด ในโหมด development
+CMD ["sh", "-c", "npm run db:dev && npm run dev"]
 
 # --- Stage 2: Production ---
 FROM node:22.19-alpine AS production
@@ -18,4 +18,5 @@ RUN npm install --only=production
 COPY . .
 RUN npx prisma generate
 EXPOSE 3000
-CMD ["node", "src/index.js"]
+# ใน production เราไม่ใช้ nodemon เพราะไม่ต้องการ auto-restart และต้องการให้แอปทำงานแบบปกติ
+CMD ["sh", "-c", "npm run db:prod && npm run prod"]
