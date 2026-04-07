@@ -1,23 +1,15 @@
 import express from 'express';
 import cors from 'cors';
-import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
+import prisma from './config/prismaControllers.js';
+import ticketRoutes from './routes/ticketRoutes.js';  
 
 const app = express();
 const port = process.env.PORT || 3000;
-const pool = new Pool({ 
-  connectionString: process.env.DATABASE_URL 
-});
-const adapter = new PrismaPg(
-  pool
-);
-const prisma = new PrismaClient({ 
-  adapter,
-});
 
 app.use(cors());
 app.use(express.json());
+
+app.use('/api/addTickets', ticketRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello from server testest!!');

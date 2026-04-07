@@ -1,111 +1,79 @@
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
-
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
+body {
+  background-color: var(--tbs-green-light);
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
+:root {
+  /* =========================================
+     1. สีหลักของธีม (Primary Theme Colors)
+     =========================================
+     (จากแถบเมนูด้านบนและโลโก้ "TBS" สีเขียว) */
+  --tbs-green: #37A70B;         /* สีเขียวหลัก */
+  --tbs-green-light: #F7FFF3;   /* สีเขียวอ่อนกว่า (สำหรับ Hover) */
+  --tbs-green-dark: #27ae60;    /* สีเขียวเข้ม (สำหรับ Text) */
+  --tbs-green-accent: #27ae60;  /* สีเขียวที่เน้นหนักขึ้น */
 
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
+  /* =========================================
+     2. สีของ Navbar (Navbar Color)
+     =========================================
+     (จาก Navbar พื้นหลังสีขาวที่มีแถบเขียว) */
+  --navbar-accent-band: var(--tbs-green); /* แถบสีเขียวสดใส */
+  --logo-color: var(--tbs-green); /* สีโลโก้ "TBS" */
+  --nav-link-color: var(--text-color-main); /* สีลิงก์เมนูทั่วไป */
+  --nav-link-hover: var(--tbs-green-dark);  /* สีลิงก์เมื่อ Hover */
 
-body {
-  margin: 0;
-}
+  /* =========================================
+     3. สีของปุ่ม (Button Colors)
+     =========================================
+     (จากกลุ่มปุ่มในหน้าออกแบบ) */
+  --button-green-bg: var(--tbs-green);
+  --button-green-text: #fff;
+  --button-green-hover: var(--tbs-green-light);
 
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-}
+  --button-orange-bg: #f39c12;    /* ปุ่มสีส้ม */
+  --button-orange-text: #fff;
+  --button-orange-hover: #e67e22;
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
+  --button-blue-bg: #3498db;      /* ปุ่มสีฟ้า */
+  --button-blue-text: #fff;
+  --button-blue-hover: #2980b9;
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
-}
+  --button-red-bg: #e74c3c;       /* ปุ่มสีแดง */
+  --button-red-text: #fff;
+  --button-red-hover: #c0392b;
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
+  --button-disabled-bg: #ddd;    /* ปุ่มที่ปิดการใช้งาน */
+  --button-disabled-text: #888;
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+  /* =========================================
+     4. สีสถานะของ "งาน" (Job/Status Color)
+     =========================================
+     (จากแถบสีด้านซ้ายของงานในหน้าออกแบบ) */
+  --status-yellow: #f1c40f;      /* แถบสีเหลือง */
+  --status-gray: #ddd;           /* แถบสีเทา (เช่น ปิดงานแล้ว) */
+  --status-orange: #e67e22;      /* แถบสีส้ม */
+  --status-red: #c0392b;         /* แถบสีแดง */
+  
+  /* =========================================
+     5. สีของข้อความและพื้นหลัง (Text & Background)
+     ========================================= */
+  --background-color-main: #f4f4f4; /* พื้นหลังหน้าเว็บทั่วไป */
+  --background-color-white: #fff;    /* พื้นหลังกล่องเนื้อหา, การ์ด */
+  
+  --text-color-main: #333;           /* สีข้อความหลัก */
+  --text-color-muted: #777;          /* สีข้อความรอง (เช่น วันที่) */
+  --text-color-light: #fff;          /* สีข้อความบนพื้นหลังสีเขียว/ปุ่ม */
+  --link-color: #3498db;              /* สีลิงก์ทั่วไป */
+
+  /* =========================================
+     6. แบบอักษรและขนาด (Typography - เผื่อไว้)
+     ========================================= */
+  --text-size-base: 16px;
+  --text-size-large: 20px;
 }
