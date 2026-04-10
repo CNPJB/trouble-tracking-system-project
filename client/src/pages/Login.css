@@ -1,0 +1,71 @@
+/* client/src/pages/Login.css */
+
+/* จัดพื้นหลังให้เต็มจอและอยู่ตรงกลาง */
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* สร้างกล่องการ์ดสีขาว */
+.login-card {
+  background-color: #ffffff;
+  padding: 40px 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* ตกแต่งตัวอักษร */
+.login-title {
+  color: #2c3e50;
+  font-size: 28px;
+  margin-bottom: 10px;
+  margin-top: 0;
+}
+
+.login-subtitle {
+  color: #7f8c8d;
+  font-size: 15px;
+  margin-bottom: 30px;
+  line-height: 1.5;
+}
+
+/* จัดปุ่ม Google ให้อยู่กึ่งกลาง */
+.google-btn-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* โลโก้มหาวิทยาลัย (ถ้ามี) */
+.login-logo {
+  width: auto;
+  height: 50px;
+  margin-bottom: 20px;
+
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #aaa;
+  margin: 15px 0;
+}
+
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #eee;
+}
+
+.divider span {
+  padding: 0 10px;
+  font-size: 14px;
+}

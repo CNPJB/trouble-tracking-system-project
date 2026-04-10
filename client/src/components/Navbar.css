@@ -1,179 +1,118 @@
-/* =========================================
-   1. โหมดหน้าจอคอมพิวเตอร์ (Desktop)
-   ========================================= */
-.Navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 40px;
-  background-color: var(--navbar-accent-band); /* น้ำเงินเข้ม */
+/* client/src/components/Navbar.css */
+
+/* ตัว Navbar หลัก */
+.navbar {
+  background-color: #019f20; /* สีเข้มดูเป็นทางการ */
   color: white;
-  position: relative; /* 🌟 สำคัญมาก: ล็อกตำแหน่งให้เมนูมือถือตกลงมาตรงขอบพอดี */
-}
-
-/* โลโก้ */
-.logo img {
-  width: 120px;
-}
-
-/* กล่องครอบเมนูและปุ่ม Login (ต้องมีเพื่อจัดระเบียบ) */
-.nav-menu {
-  flex: 1; 
+  height: 70px;
+  width: 100%;
+  position: fixed; /* ตรึงไว้บนสุดเสมอ */
+  top: 0;
+  left: 0;
+  z-index: 1000; /* ให้อยู่เหนือ Layer อื่นๆ */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
-  justify-content: flex-end; 
-  gap: 30px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* รายการเมนู */
-.nav-links {
-  list-style: none;
+/* กล่องครอบเนื้อหาด้านใน (เพื่อไม่ให้ชิดขอบจอเกินไป) */
+.navbar-container {
   display: flex;
-  gap: 60px;
-  margin: 0;
-  padding: 0;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%)
+  justify-content: space-between; /* จัดซ้าย-ขวาแยกกัน */
+  align-items: center;
+  width: 100%;
+  max-width: 1200px; /* จำกัดความกว้างบนจอใหญ่ */
+  margin: 0 auto; /* จัดกึ่งกลางก้อนเนื้อหา */
+  padding: 0 20px;
+  position: relative;
 }
 
-.nav-links li a {  
-  text-decoration: none;
-  color: var(--text-color-main);
+/* ส่วนโลโก้ซ้าย */
+.navbar-logo {
+  font-size: 22px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.navbar-menu {
+  display: flex;
+  gap: 30px; /* เว้นระยะห่างระหว่างเมนู */
+}
+
+/* ส่วนข้อมูลผู้ใช้ขวา */
+.navbar-user-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* กล่องข้อความชื่อ+เมล */
+.user-info {
+  display: flex;
+  flex-direction: column; /* จัดชื่อบน เมลล่าง */
+  text-align: right;
+}
+
+.user-name {
+  font-weight: 600;
   font-size: 16px;
-  transition: all 0.2s ease;
+  margin-bottom: 5px;
 }
 
-.nav-links li a:hover {
-  color: var(--text-color-light);
-  background-color: rgb(132, 185, 96);
-  border-radius: 20px;
-  padding: 10px 15px;
+.user-email {
+  font-size: 12px;
+  color: white;
 }
 
-/* ปุ่ม Login */
-.btnLogin {
-  padding: 8px 18px;
-  border: none;
-  border-radius: 6px;
-  background-color: var(--tbs-green-light);
-  color: var(--text-color-main);
-  font-size: var(--text-size-base);
+/* รูปโปรไฟล์วงกลม */
+.navbar-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%; /* วงกลมเป๊ะ */
+  border: 2px solid white;
+  object-fit: cover; /* ป้องกันรูปเบี้ยว */
+}
+
+/* ปุ่มออกจากระบบบน Navbar */
+.navbar-logout-btn {
+  background-color: transparent;
+  color: white;
+  border: 1px solid #e74c3c;
+  padding: 8px 15px;
+  border-radius: 5px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  text-decoration: none;
-}
-
-.btnLogin:hover {
-  background-color: var(--text-color-main);
-  color: var(--text-color-light);
-}
-
-/* ซ่อน Hamburger ตอนอยู่บนหน้าจอคอม */
-.hamburger {
-  display: none;
-  cursor: pointer;
-  flex-direction: column;
-  gap: 5px;
-}
-
-/* หน้าตาของขีด 3 ขีด */
-.hamburger .bar {
-  width: 25px;
-  height: 3px;
-  background-color: black; 
+  font-size: 14px;
   transition: all 0.3s ease;
-  border-radius: 3px;
 }
 
-
-/* =========================================
-   2. โหมดหน้าจอแท็บเล็ต / จอเล็ก (Max-width: 820px)
-   ========================================= */
-@media (max-width: 820px) {
-  .Navbar {
-    padding: 10px 15px;
-  }
-
-  /* ปรับโลโก้ให้เล็กลงแทนการซ่อน (ถ้าซ่อน หน้าเว็บจะเบี้ยวไปชิดซ้าย) */
-  .logo img {
-    width: 90px;
-  }
-  .nav-links {
-    gap: 15px;
-  }
-
-  .btnLogin {
-    padding: 6px 10px;
-  }
+.navbar-logout-btn:hover {
+  background-color: #e74c3c;
+  transform: translateY(-1px);
 }
 
+/* --- ส่วนลูกเล่นเมนู NavLink --- */
 
-/* =========================================
-   3. โหมดหน้าจอมือถือ (Max-width: 420px)
-   ========================================= */
-@media (max-width: 430px) {
-  /* 1. แสดงปุ่มเบอร์เกอร์ */
-  .hamburger {
-    display: flex;
-  }
+/* 1. สไตล์เริ่มต้นของเมนู (ตอนยังไม่ได้กด) */
+.nav-menu-item {
+  color: #d0d7dc; /* สีเทาอ่อน */
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 8px 0; /* เว้นที่ว่างแนวตั้งนิดนึง */
+  border-bottom: 3px solid transparent; /* เตรียมเส้นใต้ล่องหนเอาไว้ */
+  transition: all 0.3s ease; /* ให้มันค่อยๆ เปลี่ยนสีแบบนุ่มนวล */
+}
 
-  /* 2. เปลี่ยน nav-menu ให้เป็นแถบเลื่อนลงมาด้านล่าง */
-  .nav-menu {
-    position: absolute;
-    top: 100%; /* เปลี่ยนเป็น 100% เพื่อให้เริ่มต่อจากขอบล่างของ Navbar  */
-    left: -100%; 
-    display: flex; /* ต้องมี เพื่อให้มันเรียงตัวได้ */
-    flex-direction: column;
-    background-color: black;
-    width: 100%;
-    text-align: center;
-    transition: left 0.3s ease; 
-    padding: 30px 0;
-    gap: 20px;
-    z-index: 100;
-  }
+/* 2. สไตล์ตอนเอาเมาส์ไปวาง (Hover) */
+.nav-menu-item:hover {
+  color: #ffffff; /* สว่างขึ้น */
+}
 
-  /* เมื่อ State isOpen เป็น true คลาส active จะถูกเพิ่มเข้ามา เลื่อนเมนูมาที่หน้าจอ */
-  .nav-menu.active {
-    left: 0;
-  }
-
-  /* 3. ปรับทิศทางของลิงก์ให้เรียงแนวตั้ง และปรับสีให้เข้ากับพื้นหลังดำ */
-  .nav-links {
-    flex-direction: column;
-    width: 100%;
-    gap: 25px;
-    position: relative;
-    left: auto;
-    transform: none;
-  }
-
-  .nav-links li a {
-    color: white; /* ตัวอักษรสีขาวเพื่อให้เห็นชัดบนพื้นดำ */
-    font-size: 18px;
-  }
-
-  /* 4. ให้ปุ่ม Login กว้างขึ้นบนมือถือเพื่อกดง่าย */
-  .btnLogin {
-    width: 80%;
-    text-align: center;
-    padding: 12px 0; /* เพิ่มขนาดปุ่มให้กดง่ายขึ้น */
-  }
-
-  /* =========================================
-     Animation เปลี่ยนขีด 3 ขีด เป็นรูปกากบาท (X)
-     ========================================= */
-  .hamburger.active .bar {
-    background-color: black; /* สีของกากบาท */
-  }
-  .hamburger.active .bar:nth-child(1) {
-    transform: translateY(8px) rotate(45deg);
-  }
-  .hamburger.active .bar:nth-child(2) {
-    opacity: 0;
-  }
-  .hamburger.active .bar:nth-child(3) {
-    transform: translateY(-8px) rotate(-45deg);
-  }
+/* 3. 🟢 สไตล์ตอนเมนูนั้นถูกเลือก (Active) 
+   React Router จะแอบเติมคำว่า .active ให้เองเมื่อ URL ตรงกับ href ของเมนู! */
+.nav-menu-item.active {
+  color: #ffffff;
+  font-weight: bold;
+  border-bottom: 3px solid #ffffff; /* โชว์เส้นใต้สีฟ้าสดใส */
 }

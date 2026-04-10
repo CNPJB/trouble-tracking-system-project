@@ -1,38 +1,67 @@
-import React, { useState } from 'react'
-import './Navbar.css'
-import { NavLink } from 'react-router-dom'
+import { NavLink } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext.jsx';
+import './Navbar.css';
 
-export const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  }
-  const closeMenu = () => {
-    setIsOpen(false);
-  };
-  return (
-    <nav className='Navbar'>
-      <div className='logo'>
-        <img src="" alt="logo" />
-      </div>
+const Navbar = () => {
+    const { user, logout } = useAuth();
+    if (!user) return null; // If no user, don't render the navbar
 
-      <div className={`hamburger ${isOpen ? 'active' : ''}`} onClick={toggleMenu}>
-        <span className="bar"></span>
-        <span className="bar"></span>
-        <span className="bar"></span>
-      </div>
-      
-      <div className={`nav-menu ${isOpen ? 'active' : ''}`}>
-        <ul className="nav-links">
-          <li><NavLink to="/">Home</NavLink></li>
-          <li><NavLink to="/report">Report</NavLink></li>
-          <li><NavLink to="/my-problems">My Problems</NavLink></li>
-          <li><NavLink to="/static">Static</NavLink></li>
-        </ul>
-        <NavLink to="/login" className='btnLogin' onClick={closeMenu}>
-          Login
-        </NavLink>
-      </div>
-    </nav>
-  )
-}
+    const avatarSrc = user.avatarUrl ? user.avatarUrl : 'default-avatar.png';
+
+    return (
+        <nav className="navbar">
+            <div className='navbar-container'>
+
+                {/* Logo */}
+                {/* <div style={{ display: 'flex', alignItems: 'center', gap: '30px' }}> */}
+                    <div className="navbar-logo">
+                        MyWeb App
+                    </div>
+
+                    {/* Menu */}
+                    <div className="navbar-menu">
+                        <NavLink to="/"  className="nav-menu-item"> 
+                            Home
+                        </NavLink>
+                        <NavLink to="/addIssue"  className="nav-menu-item"> 
+                            Add Issue
+                        </NavLink>
+                        <NavLink to="/tracking" className="nav-menu-item">
+                            Tracking
+                        </NavLink>
+                        <NavLink to="/statistics" className="nav-menu-item">
+                            Statistics
+                        </NavLink>
+                    </div>
+                {/* </div> */}
+                {/* User Info */}
+
+
+                <div className="navbar-user-section">
+
+                    <div className="user-info">
+                        <span className="user-name">
+                            {user.fullName}
+                        </span>
+                        <span className="user-email">
+                            {user.email}
+                        </span>
+                    </div>
+
+                    <img
+                        src={avatarSrc}
+                        alt="Profile Avatar"
+                        className="navbar-avatar"
+                        referrerPolicy="no-referrer" // In case the avatar URL is from a different origin, this prevents CORS issues
+                    />
+
+                    <button className="navbar-logout-btn" onClick={logout}>
+                        LogOut
+                    </button>
+                </div>
+            </div>
+        </nav>
+    );
+};
+
+export default Navbar;
