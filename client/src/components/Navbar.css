@@ -1,0 +1,118 @@
+/* client/src/components/Navbar.css */
+
+/* ตัว Navbar หลัก */
+.navbar {
+  background-color: #019f20; /* สีเข้มดูเป็นทางการ */
+  color: white;
+  height: 70px;
+  width: 100%;
+  position: fixed; /* ตรึงไว้บนสุดเสมอ */
+  top: 0;
+  left: 0;
+  z-index: 1000; /* ให้อยู่เหนือ Layer อื่นๆ */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* กล่องครอบเนื้อหาด้านใน (เพื่อไม่ให้ชิดขอบจอเกินไป) */
+.navbar-container {
+  display: flex;
+  justify-content: space-between; /* จัดซ้าย-ขวาแยกกัน */
+  align-items: center;
+  width: 100%;
+  max-width: 1200px; /* จำกัดความกว้างบนจอใหญ่ */
+  margin: 0 auto; /* จัดกึ่งกลางก้อนเนื้อหา */
+  padding: 0 20px;
+  position: relative;
+}
+
+/* ส่วนโลโก้ซ้าย */
+.navbar-logo {
+  font-size: 22px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.navbar-menu {
+  display: flex;
+  gap: 30px; /* เว้นระยะห่างระหว่างเมนู */
+}
+
+/* ส่วนข้อมูลผู้ใช้ขวา */
+.navbar-user-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* กล่องข้อความชื่อ+เมล */
+.user-info {
+  display: flex;
+  flex-direction: column; /* จัดชื่อบน เมลล่าง */
+  text-align: right;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.user-email {
+  font-size: 12px;
+  color: white;
+}
+
+/* รูปโปรไฟล์วงกลม */
+.navbar-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%; /* วงกลมเป๊ะ */
+  border: 2px solid white;
+  object-fit: cover; /* ป้องกันรูปเบี้ยว */
+}
+
+/* ปุ่มออกจากระบบบน Navbar */
+.navbar-logout-btn {
+  background-color: transparent;
+  color: white;
+  border: 1px solid #e74c3c;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.navbar-logout-btn:hover {
+  background-color: #e74c3c;
+  transform: translateY(-1px);
+}
+
+/* --- ส่วนลูกเล่นเมนู NavLink --- */
+
+/* 1. สไตล์เริ่มต้นของเมนู (ตอนยังไม่ได้กด) */
+.nav-menu-item {
+  color: #d0d7dc; /* สีเทาอ่อน */
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 8px 0; /* เว้นที่ว่างแนวตั้งนิดนึง */
+  border-bottom: 3px solid transparent; /* เตรียมเส้นใต้ล่องหนเอาไว้ */
+  transition: all 0.3s ease; /* ให้มันค่อยๆ เปลี่ยนสีแบบนุ่มนวล */
+}
+
+/* 2. สไตล์ตอนเอาเมาส์ไปวาง (Hover) */
+.nav-menu-item:hover {
+  color: #ffffff; /* สว่างขึ้น */
+}
+
+/* 3. 🟢 สไตล์ตอนเมนูนั้นถูกเลือก (Active) 
+   React Router จะแอบเติมคำว่า .active ให้เองเมื่อ URL ตรงกับ href ของเมนู! */
+.nav-menu-item.active {
+  color: #ffffff;
+  font-weight: bold;
+  border-bottom: 3px solid #ffffff; /* โชว์เส้นใต้สีฟ้าสดใส */
+}
