@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import ticketRoutes from '../routes/ticketRoutes.js';  
+import managementRoutes from '../routes/managementRoutes.js';
 import cookiesParser from 'cookie-parser';
 import authRoutes from '../routes/authRoutes.js';
 
@@ -15,9 +17,19 @@ app.use(express.json());
 app.use(cookiesParser()); // Parse cookies
 app.use('/api/auth', authRoutes);
 
+// api add
+app.use('/api/tickets', ticketRoutes);
+app.use('/api/manage', managementRoutes);
+
+
+// api get
+app.get('/api/gettickets', ticketRoutes);
 app.get('/', (req, res) => {
   res.send('Hello from server testest!!');
 });
+
+// api update
+app.use('/api/updateTicket',ticketRoutes)
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
