@@ -1,23 +1,8 @@
-import {useState} from "react";
 import axios from "axios";
 import { GoogleLogin } from "@react-oauth/google";
 import './Login.css';
 
 const Login = () => {
-
-  const [credentials, setCredentials] = useState({ email: '', password: '' });
-  
-  const handleLocalSubmit = async (e) => {
-    e.preventDefault(); 
-    try {
-      const response = await axios.post('/api/auth/login', credentials);
-      console.log(response.data.message);
-      window.location.reload();
-    } catch (error) {
-      alert(error.response?.data?.message || "Login failed");
-    }
-  };
-
    const handleSuccess = async (credentialResponse) => {
     try {
       const response = await axios.post('http://localhost:3000/api/auth/google', {
@@ -44,28 +29,8 @@ const Login = () => {
         <p className="login-subtitle">
           Please Login with University Email<br />(@mail.rmutk.ac.th)
         </p>
-        {/* Local Login Form */}
-        <form onSubmit={handleLocalSubmit} className="local-login-form">
-          <input
-            type="text"
-            placeholder="Email"
-            value={credentials.email}
-            className="login-input"
-            onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={credentials.password}
-            className="login-input"
-            onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
-            required
-          />
-          <button type="submit" className="login-submit-btn">Login</button>
-        </form>
 
-        <div className="divider"><span>OR</span></div>
+        <div className="divider"><span>Login with Google.</span></div>
 
         {/* Google Login Button */}
         <div className="google-btn-wrapper">

@@ -35,42 +35,11 @@ services:
       - .env
     ports:
       - "5173:5173"
-    # develop:
-    #   watch:
-    #     - action: sync
-    #       path: ./src
-    #       target: /app/src
-    #       ignore:
-    #         - node_modules/
-    #     - action: rebuild
-    #       path: ./package.json
-    #       target: /app/package.json
-    #     - action: rebuild
-    #       path: ./vite.config.js
-    #       target: /app/vite.config.js
     volumes:
       - ./client:/app
       - /app/node_modules
     depends_on:
       - server
-
-  # prisma-studio:
-  #   build:
-  #     context: ./server
-  #     target: development
-  #   container_name: tts_prisma_studio
-  #   env_file:
-  #     - .env
-  #   ports:
-  #     - "5555:5555"
-  #   volumes:
-  #     - ./server:/app
-  #     - /app/node_modules
-  #   depends_on:
-  #     db:
-  #       condition: service_healthy
-  #     server:
-  #       condition: service_healthy
 
 volumes:
   pgdata:

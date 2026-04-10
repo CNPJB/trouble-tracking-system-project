@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
 
-
 export const verifyToken = (req, res, next) => {
   // 1. ล้วงหาคุกกี้ที่ชื่อว่า token
   const token = req.cookies.token;
@@ -25,3 +24,13 @@ export const verifyToken = (req, res, next) => {
     res.status(401).json({ message: "Token ไม่ถูกต้องหรือหมดอายุ" });
   }
 };
+
+// Admin check middleware
+export const requireAdmin = (req, res, next) => {
+  // ด่านนี้ต้องวางต่อจาก verifyToken เท่านั้น เพื่อให้มีข้อมูล req.user
+  if (req.user && req.user.role === 'admin') {
+    next(); // เป็น Admin ผ่านได้!
+  } else {
+    res.status(403).json({ message: "Forbidden: เฉพาะผู้ดูแลระบบเท่านั้น" });
+  }
+}

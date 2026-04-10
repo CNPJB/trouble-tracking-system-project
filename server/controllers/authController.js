@@ -1,13 +1,11 @@
 import { OAuth2Client } from 'google-auth-library';
-import { verifyToken } from '../middleware/authMiddleware.js';
 import prisma from '../config/prismaClient.js';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
-
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const ALLOWED_DOMAIN = 'mail.rmutk.ac.th';
 
+// Google Login Controller
 export const googleLogin = async (req, res) => {
     const { token } = req.body;
 
@@ -20,46 +18,73 @@ export const googleLogin = async (req, res) => {
         const { email, name: fullName, sub: googleId, picture: avatarUrl, hd } = payload;
 
         if (hd !== ALLOWED_DOMAIN && !email.endsWith(`@${ALLOWED_DOMAIN}`)) {
-            return res.status(403).json({ 
-                message: 'Access denied: Unauthorized domain' 
+            return res.status(403).json({
+                message: 'Access denied: Unauthorized domain'
             });
         }
 
-        // Check if user already exists in the daabase
-        let user = await prisma.user.findUnique({ where: { email } });
+        // 1. ลองค้นหา User ด้วย email ก่อน
+        let user = await prisma.user.findUnique({
+            where: { email: email }
+        });
 
         if (!user) {
+            // 2. กรณีผู้ใช้ใหม่ (ไม่เคย Login) -> สร้างข้อมูลใหม่
             user = await prisma.user.create({
                 data: {
-                    email,
-                    googleId,
-                    fullName,
-                    avatarUrl
+                    email: email,
+                    googleId: googleId,
+                    fullName: fullName,
+                    avatarUrl: avatarUrl,
                 }
             });
+        } else {
+            // 3. กรณีผู้ใช้เก่า -> เช็คว่าข้อมูลเปลี่ยนไปจากเดิมหรือไม่
+            const isDataChanged = user.fullName !== fullName || user.avatarUrl !== avatarUrl;
+
+            // ถ้าข้อมูลมีการเปลี่ยนแปลง ค่อยสั่ง Update
+            if (isDataChanged) {
+                user = await prisma.user.update({
+                    where: { email: email },
+                    data: {
+                        fullName: fullName,
+                        avatarUrl: avatarUrl,         
+                    }
+                });
+            }
         }
 
         // cookies session
         const sessionToken = jwt.sign(
-            { userId: user.userId, email: user.email },
+            { userId: user.userId, email: user.email, role: user.role },
             process.env.JWT_SECRET,
             { expiresIn: '1d' }
         );
-        res.cookie('token', sessionToken, {
-            httpOnly: true,
-            maxAge: 24 * 60 * 60 * 1000, // 1 day
-            sameSite: 'lax',
-        });
 
-        res.status(201).json({ user });
+        if (process.env.NODE_ENV === 'production') {
+            res.cookie('token', sessionToken, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'none',
+                maxAge: 24 * 60 * 60 * 1000, // 1 day
+            });
+        } else {
+            res.cookie('token', sessionToken, {
+                httpOnly: true,
+                sameSite: 'lax',
+                maxAge: 24 * 60 * 60 * 1000, // 1 day
+            });
+        }
+
+        res.status(200).json({ user });
     } catch (error) {
         console.error('Google login error:', error);
         return res.status(401).json({ message: 'Unauthorized' });
     }
 };
 
-// CheckAuth Middleware
-export const checkAuth = async (req, res, next) => {
+// CheckAuth Controller
+export const checkAuth = async (req, res) => {
     try {
         const userId = req.user.userId;
 
@@ -67,8 +92,8 @@ export const checkAuth = async (req, res, next) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        
-       res.json({ user });
+
+        res.json({ user });
     } catch (error) {
         console.error('CheckAuth error:', error);
         return res.status(401).json({ message: 'Unauthorized' });
@@ -77,7 +102,7 @@ export const checkAuth = async (req, res, next) => {
 
 // Logout
 export const logout = (req, res) => {
-    res.clearCookie('token',{
+    res.clearCookie('token', {
         httpOnly: true,
         sameSite: 'lax',
     });
