@@ -78,7 +78,7 @@ model Location {
   locationId     Int            @id @default(autoincrement()) @map("location_id")
   locationName   String         @map("location_name") @db.VarChar(100)
   locationStatus LocationStatus @default(active) @map("location_status")
-  createdAt      DateTime?      @map("created_at") @db.Timestamp()
+  createdAt      DateTime?      @default(now()) @map("created_at") @db.Timestamp()
   updatedAt      DateTime?      @map("updated_at") @db.Timestamp()
 
   // Relations
@@ -94,7 +94,7 @@ model Floor {
   floorLevel  String         @map("floor_level") @db.VarChar(10)
   locationId  Int            @map("location_id")
   floorStatus LocationStatus @default(active) @map("floor_status")
-  createdAt   DateTime?      @map("created_at") @db.Timestamp()
+  createdAt   DateTime?      @default(now()) @map("created_at") @db.Timestamp()
   updatedAt   DateTime?      @map("updated_at") @db.Timestamp()
 
   // Relations
@@ -111,7 +111,7 @@ model Room {
   roomName   String         @map("room_name") @db.VarChar(50)
   floorId    Int            @map("floor_id")
   roomStatus LocationStatus @default(active) @map("room_status")
-  createdAt  DateTime?      @map("created_at") @db.Timestamp()
+  createdAt  DateTime?      @default(now()) @map("created_at") @db.Timestamp()
   updatedAt  DateTime?      @map("updated_at") @db.Timestamp()
 
   // Relations
@@ -127,7 +127,7 @@ model EquipmentCategory {
   equipmentCtgId     Int            @id @default(autoincrement()) @map("equipment_ctg_id")
   equipmentCtgName   String         @unique @map("equipment_ctg_name") @db.VarChar(100)
   equipmentCtgStatus CategoryStatus @default(enable) @map("equipment_ctg_status")
-  createdAt          DateTime?      @map("created_at") @db.Timestamp()
+  createdAt          DateTime?      @default(now()) @map("created_at") @db.Timestamp()
   updatedAt          DateTime?      @map("updated_at") @db.Timestamp()
 
   // Relations
@@ -175,7 +175,7 @@ model TicketCategory {
   ticketCtgId     Int            @id @default(autoincrement()) @map("ticket_ctg_id")
   ticketCtgName   String         @unique @map("ticket_ctg_name") @db.VarChar(100)
   ticketCtgStatus CategoryStatus @default(enable) @map("ticket_ctg_status")
-  createdAt       DateTime?      @map("created_at") @db.Timestamp()
+  createdAt       DateTime?      @default(now()) @map("created_at") @db.Timestamp()
   updatedAt       DateTime?      @map("updated_at") @db.Timestamp()
 
   // Relations

@@ -1,0 +1,68 @@
+.card-FinishProblem-grid {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+    height: auto;
+    overflow-x: auto;
+    position: relative;
+    padding: 2rem 2rem;
+    margin-left: auto;
+    margin-right: auto;
+    scrollbar-width: none;
+}
+
+.card-FinishProblem-grid::-webkit-scrollbar {
+    display: none;
+}
+
+.carousel-container {
+    position: relative;
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+}
+
+.scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color:var(--tbs-green);
+    color: var(---text-color-main);
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+}
+
+.scroll-btn:hover {
+    background-color: var(--text-color-main);
+    color: var(--text-color-light);
+}
+
+.scroll-btn.left {
+  left: -30px; 
+}
+
+.scroll-btn.right {
+  right: -30px;
+}
+
+@media (max-width: 430px) {
+    .card-FinishProblem-grid{
+        width: 100%;
+    }
+    .carousel-container {
+    width: 100%;
+}
+    .scroll-btn.left {
+        left: 10px; 
+    }
+    .scroll-btn.right {
+        right: 10px;
+    }
+}
