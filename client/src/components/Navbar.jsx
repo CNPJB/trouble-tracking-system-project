@@ -6,7 +6,7 @@ const Navbar = () => {
     const { user, logout } = useAuth();
     if (!user) return null; // If no user, don't render the navbar
 
-    const avatarSrc = user.avatarUrl ? user.avatarUrl : 'default-avatar.png';
+    const avatarSrc = user.avatarUrl ? user.avatarUrl : '/default-avatar.png';
 
     return (
         <nav className="navbar">

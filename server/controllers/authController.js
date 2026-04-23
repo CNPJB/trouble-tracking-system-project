@@ -102,9 +102,11 @@ export const checkAuth = async (req, res) => {
 
 // Logout
 export const logout = (req, res) => {
-    res.clearCookie('token', {
-        httpOnly: true,
-        sameSite: 'lax',
-    });
+    const cookieOptions =
+        process.env.NODE_ENV === 'production'            
+        ? { httpOnly: true, secure: true, sameSite: 'none' }
+        : { httpOnly: true, sameSite: 'lax' };
+
+    res.clearCookie('token', cookieOptions);
     res.json({ message: 'Logged out successfully' });
 };

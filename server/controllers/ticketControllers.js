@@ -1,4 +1,4 @@
-import prisma from "../config/prismaControllers.js";
+import prisma from "../config/prismaClient.js";
 import { cloudinary } from '../config/cloudinaryControllers.js';
 import { resolve } from "node:dns";
 import { rejects } from "node:assert";
@@ -54,8 +54,8 @@ export const addTicket = async (req, res) => {
                     userId: Number(userId),
                     ticketCtgId: Number(ticketCtgId),
                     locationId: Number(locationId),
-                    floorId: Number(floorId),
-                    roomId: Number(roomId),
+                    floorId: floorId ? Number(floorId) : null,
+                    roomId: roomId ? Number(roomId) : null,
                     equipmentId: equipmentId ? Number(equipmentId) : null,
                     title,
                     description,
@@ -104,17 +104,17 @@ export const getAllTickets = async (req, res) => {
                 },
                 floor: {
                     select: {
-                        floorLevel: true,
+                        floorLevel: true, // แสดงระดับชั้นเสมอ
                     }
                 },
                 room: {
                     select: {
-                        roomName: true,
+                        roomName: true, // แสดงชื่อห้องเสมอ                    
                     }
                 },
                 equipment: {
                     select: {
-                        equipmentName: true,
+                        equipmentName: true, // แสดงชื่ออุปกรณ์เสมอ
                     }
                 },
                 ticketId: true,

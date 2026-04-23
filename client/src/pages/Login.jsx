@@ -5,7 +5,7 @@ import './Login.css';
 const Login = () => {
    const handleSuccess = async (credentialResponse) => {
     try {
-      const response = await axios.post('http://localhost:3000/api/auth/google', {
+      const response = await axios.post('/api/auth/google', {
         token: credentialResponse.credential
       });
 
@@ -30,7 +30,7 @@ const Login = () => {
           Please Login with University Email<br />(@mail.rmutk.ac.th)
         </p>
 
-        <div className="divider"><span>Login with Google.</span></div>
+        <div className="divider"><span>Login with Google Account</span></div>
 
         {/* Google Login Button */}
         <div className="google-btn-wrapper">

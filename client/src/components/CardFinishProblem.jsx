@@ -6,7 +6,7 @@ export const CardFinishProblem = ({ data }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/Ticketproblem?ticketId=${data.ticketId}`);
+    navigate(`/ticketDetail?ticketId=${data.ticketId}`);
   };
 
   return (

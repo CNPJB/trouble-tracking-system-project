@@ -5,7 +5,7 @@ import { AuthProvider } from './context/AuthContext.jsx'
 import axios from 'axios'
 import App from './App.jsx'
 
-axios.defaults.baseURL = 'http://localhost:3000';
+axios.defaults.baseURL = import.meta.env.VITE_SERVER_URL;
 axios.defaults.withCredentials = true;
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;

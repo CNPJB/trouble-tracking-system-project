@@ -6,7 +6,7 @@ export const useTickets = () => {
 
     const fetchTickets = useCallback(async () => {
         try {
-            const response = await axios.get('http://localhost:3000/api/tickets/get');
+            const response = await axios.get('/api/tickets/get');
             console.log("ข้อมูลจาก Backend:", response.data);
             setTickets(response.data);
         } catch (error) {
