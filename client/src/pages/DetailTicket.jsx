@@ -35,8 +35,14 @@ const DetailTicket = () => {
                                     <p>สถานที่ : {ticket.location.locationName}</p>
                                 </div>
                                 <div className="floor">
-                                    <p>ชั้น : {ticket.floor.floorLevel}</p>
-                                    <span>ห้อง : {ticket.room.roomName}</span>
+                                    <p>
+                                        {/* if ticket.floor doesn't exists return '-' */}
+                                        ชั้น : { ticket.floor?.floorLevel || '-' }
+                                    </p>
+                                    <span>
+                                        {/* if ticket.room doesn't exists return '-' */}
+                                        ห้อง : { ticket.room?.roomName || '-' }
+                                    </span>
                                 </div>
                                 <div className="ticket-description">
                                     <p>รายละเอียด : {ticket.description}</p>

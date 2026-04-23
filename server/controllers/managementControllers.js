@@ -1,4 +1,4 @@
-import prisma from "../config/prismaControllers.js";
+import prisma from "../config/prismaClient.js";
 
 export const addTicketCategory = async (req, res) => {
     try {

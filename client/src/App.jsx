@@ -1,6 +1,8 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext.jsx";
 import './App.css';
+import './index.css';
+
 // Components
 import Navbar from "./components/Navbar.jsx";
 
@@ -9,10 +11,6 @@ import Login from "./pages/Login.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import AddIssue from "./pages/AddIssue.jsx";
 import DetailTicket from './pages/DetailTicket.jsx';
-
-
-
-
 
 function App() {
   const { user, loading } = useAuth();
@@ -32,8 +30,10 @@ function App() {
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/addIssue" element={<AddIssue />} />
+
+              <Route path="/ticketDetail" element={<DetailTicket />} />
+
               <Route path="*" element={<Navigate to="/" />} />
-              <Route path="/Ticketproblem" element={<DetailTicket />} />
             </Routes>
           </div>
         </>

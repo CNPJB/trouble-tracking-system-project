@@ -15,21 +15,15 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(cookiesParser()); // Parse cookies
-app.use('/api/auth', authRoutes);
 
-// api add
+app.use('/api/auth', authRoutes);
 app.use('/api/tickets', ticketRoutes);
 app.use('/api/manage', managementRoutes);
 
-
-// api get
-app.get('/api/gettickets', ticketRoutes);
 app.get('/', (req, res) => {
   res.send('Hello from server testest!!');
 });
 
-// api update
-app.use('/api/updateTicket',ticketRoutes)
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
