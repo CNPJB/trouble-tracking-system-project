@@ -158,14 +158,15 @@ model Equipment {
 
 // ตารางรูปภาพของ ticket
 model TicketImage {
-  imageId   Int       @id @default(autoincrement()) @map("image_id")
-  ticketId  Int       @map("ticket_id")
-  imageUrl  String    @map("image_url") @db.Text
-  imageType String?   @map("image_type") @db.VarChar(20)
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp()
+  imageId       Int       @id @default(autoincrement()) @map("image_id")
+  ticketId      String    @map("ticket_id")
+  imageUrl      String    @map("image_url") @db.Text
+  imageType     String?   @map("image_type") @db.VarChar(20)
+  imagePublicId String?   @map("image_public_id") @db.VarChar(100)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamp()
 
   // Relations
-  ticket    Ticket    @relation(fields: [ticketId], references: [ticketId])
+  ticket        Ticket    @relation(fields: [ticketId], references: [ticketId])
 
   @@map("ticket_images")
 }
@@ -186,7 +187,7 @@ model TicketCategory {
 
 // ตาราง ticket ที่บันทึกปัญหา
 model Ticket {
-  ticketId            Int           @id @default(autoincrement()) @map("ticket_id")
+  ticketId            String        @id @map("ticket_id") @db.VarChar(10)
   userId              Int           @map("user_id")
   ticketCtgId         Int           @map("ticket_ctg_id")
   locationId          Int           @map("location_id")
@@ -196,7 +197,7 @@ model Ticket {
   title               String        @db.VarChar(100)
   description         String        @db.Text
   ticketStatus        TicketStatus? @default(pending) @map("ticket_status")
-  parentTicketId      Int?          @map("parent_ticket_id")
+  parentTicketId      String?       @map("parent_ticket_id")
   adminId             Int?          @map("admin_id")
   adminNote           String?       @map("admin_note") @db.Text
   rating              Int?
@@ -228,7 +229,7 @@ model Ticket {
 // ตาราง upvote สำหรับให้ผู้ใช้โหวตปัญหาที่พบเห็นว่ามีความสำคัญหรือไม่ โดยผู้ใช้หนึ่งคนสามารถโหวตได้เพียงครั้งเดียวต่อหนึ่ง ticket
 model Upvote {
   upvoteId  Int       @id @default(autoincrement()) @map("upvote_id")
-  ticketId  Int       @map("ticket_id")
+  ticketId  String    @map("ticket_id")
   userId    Int       @map("user_id")
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp()
 
