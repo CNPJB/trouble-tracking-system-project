@@ -6,8 +6,8 @@ const AuthContext = createContext();
 
 // AuthProvider component to wrap around the app and provide authentication state
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState(null); // State to hold user information
+    const [loading, setLoading] = useState(true); // State to track loading status
 
     const checkLoginStatus = async () => {
         try {

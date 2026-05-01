@@ -17,6 +17,7 @@ enum TicketStatus {
   in_progress
   resolved
   rejected
+  canceled
   duplicate
 
   @@map("ticket_status")
@@ -204,8 +205,8 @@ model Ticket {
   comment             String?       @db.Text
   createdAt           DateTime      @default(now()) @map("created_at") @db.Timestamp()
   updatedAt           DateTime      @updatedAt @map("updated_at") @db.Timestamp()
-  timestampInprogress DateTime?     @default(now()) @map("timestamp_inprogress") @db.Timestamp()
-  timestampFinished   DateTime?     @default(now()) @map("timestamp_finished") @db.Timestamp()
+  timestampInprogress DateTime?     @map("timestamp_inprogress") @db.Timestamp()
+  timestampFinished   DateTime?     @map("timestamp_finished") @db.Timestamp()
 
   // Relations
   user         User            @relation("UserTickets", fields: [userId], references: [userId])

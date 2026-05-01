@@ -11,6 +11,7 @@ import Login from "./pages/Login.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import AddIssue from "./pages/AddIssue.jsx";
 import DetailTicket from './pages/DetailTicket.jsx';
+import Tracking from "./pages/Tracking.jsx";
 
 function App() {
   const { user, loading } = useAuth();
@@ -20,30 +21,31 @@ function App() {
   }
 
   return (
-     <Router>
-    <div className="App">
-      {/* ถ้ามี User ให้แสดง Navbar และ Dashboard */}
-      {user ? (
-        <>
-           <Navbar /> {/* 2. แปะ Navbar ไว้บนสุด */}
-          <div style={{ marginTop: '70px' }}> {/* 3. เว้นที่ว่างด้านบนเท่ากับความสูง Navbar */}
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/addIssue" element={<AddIssue />} />
+    <Router>
+      <div className="App">
+        {/* ถ้ามี User ให้แสดง Navbar และ Dashboard */}
+        {user ? (
+          <>
+            <Navbar /> {/* 2. แปะ Navbar ไว้บนสุด */}
+            <div style={{ marginTop: '70px' }}> {/* 3. เว้นที่ว่างด้านบนเท่ากับความสูง Navbar */}
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/addIssue" element={<AddIssue />} />
+                <Route path="/tracking" element={<Tracking />} />
 
-              <Route path="/ticketDetail" element={<DetailTicket />} />
+                <Route path="/ticketDetail" element={<DetailTicket />} />
 
-              <Route path="*" element={<Navigate to="/" />} />
-            </Routes>
-          </div>
-        </>
-      ) : (
-        // if no user, show login page for all routes
-        <Routes>
-          <Route path="*" element={<Login />} />
-        </Routes>
-      )}
-    </div>
+                <Route path="*" element={<Navigate to="/" />} />
+              </Routes>
+            </div>
+          </>
+        ) : (
+          // if no user, show login page for all routes
+          <Routes>
+            <Route path="*" element={<Login />} />
+          </Routes>
+        )}
+      </div>
     </Router>
   );
 }
