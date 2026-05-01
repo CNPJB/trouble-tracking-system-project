@@ -1,0 +1,237 @@
+/* จัดให้อยู่กึ่งกลาง หรือเว้นระยะห่างของตัวครอบหลัก */
+.audit-issues-container {
+    padding: 20px;
+}
+
+/* ตัวกรอบสำหรับ Filter */
+.audit-issues-filter-container {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 30px;
+    padding: 15px;
+    gap: 20px;
+}
+
+.mearge-btn {
+    padding: 12px 24px;
+    background-color: var(--tbs-green);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.mearge-btn:hover {
+    background-color: var(--tbs-green-accent);
+    transform: translateY(-2px);
+    /* ปุ่มลอยขึ้นเล็กน้อย */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* เมื่อกดปุ่ม */
+.mearge-btn:active {
+    transform: translateY(0);
+}
+
+.audit-issues-searchbar form {
+    gap: 10px;
+    width: 100%;
+    display: flex;
+}
+.audit-issues-searchbar input {
+  padding: 12px 20px;
+  width: 400px;
+  max-width: 400px;
+  border: 2px solid #e0e0e0;
+  border-radius: 25px; /* ทรงมนสวยงาม */
+  outline: none;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  background-color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* เมื่อคลิกที่ช่อง Input */
+.audit-issues-searchbar input:focus {
+  border-color: var(--tbs-green); /* สีฟ้าตามสไตล์ Dashboard */
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+}
+
+/* ปุ่มค้นหา */
+.audit-issues-searchbar button {
+  padding: 12px 24px;
+  background-color: var(--tbs-green);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* เมื่อเอาเมาส์วางบนปุ่ม */
+.audit-issues-searchbar button:hover {
+  background-color: var(--tbs-green-accent);
+  transform: translateY(-2px); /* ปุ่มลอยขึ้นเล็กน้อย */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* เมื่อกดปุ่ม */
+.audit-issues-searchbar button:active {
+  transform: translateY(0);
+}
+
+.audit-issues-problem{
+  display: grid;
+  grid-template-columns: 1fr  1fr;
+  border-radius: 2rem;
+  padding: 2rem;
+
+  gap: 20px;
+}
+.audit-issues-selected{
+  display: grid;
+  grid-template-columns: 425px 425px;
+  gap: 20px;
+}
+
+/* =========================================================
+   ฝั่งขวา: แผงแสดงรายการปัญหาที่ถูกเลือก (Merge Panel)
+   ========================================================= */
+
+.show-audit-issues-selected {
+  width: 350px;
+  background-color: var(--card-bg); /* ใช้สีขาวของการ์ด */
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: var(--shadow-md); /* ใช้เงาแบบ md ที่คุณตั้งไว้ */
+  height: auto;
+  position: sticky;
+  top: 20px; 
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: calc(100vh - 40px);
+}
+
+.show-audit-issues-selected h3 {
+  font-size: var(--text-size-large, 18px);
+  color: var(--text-main); /* ใช้สีเทาเกือบดำ */
+  margin: 0;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #eeeeee;
+}
+
+/* =========================================================
+   รายการข้างในกล่อง (Scrollable)
+   ========================================================= */
+.selected-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+/* =========================================================
+   สไตล์ของการ์ดจิ๋วแต่ละใบ (Parent / Child)
+   ========================================================= */
+.merge-item {
+  padding: 12px;
+  border-radius: 8px;
+  background-color: var(--bg-main); /* ใช้สีเทาอ่อน */
+  border: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+/* 🌟 Parent (รายการหลัก) ใช้สีเขียว TBS Theme */
+.merge-item.parent {
+  border-color: var(--tbs-green);
+  background-color: var(--tbs-green-light); /* ใช้สีเขียวอ่อนมากของคุณ */
+  border-left: 4px solid var(--tbs-green);
+}
+
+.merge-item.parent .badge {
+  background-color: var(--tbs-green);
+  color: var(--text-color-light); /* สีขาว */
+}
+
+/* 🌟 Child (รายการย่อย) เยื้องขวา และใช้สีสถานะ Pending (สีเหลือง) */
+.merge-item.child {
+  border-color: var(--status-pending-bg);
+  background-color: rgba(241, 196, 15, 0.05); /* ดึงค่าสีเหลืองมาทำโปร่งใส */
+  margin-left: 24px;
+  border-left: 4px solid var(--status-pending-bg);
+}
+
+.merge-item.child .badge {
+  background-color: var(--status-pending-bg);
+  color: var(--status-pending-text); /* สีน้ำตาลเข้ม/ดำ */
+}
+
+/* ป้าย Tag บอกสถานะ Parent/Child */
+.badge {
+  align-self: flex-start;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 50px;
+}
+
+/* รายละเอียดข้อความ */
+.merge-detail p {
+  margin: 0;
+  font-size: var(--text-size-base);
+  color: var(--text-main);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.merge-detail small {
+  font-size: 12px;
+  color: var(--text-muted); /* สีเทาสำหรับรายละเอียดรอง */
+}
+
+/* =========================================================
+   สถานะว่างเปล่า & ปุ่มยืนยัน
+   ========================================================= */
+.empty-text {
+  text-align: center;
+  color: var(--text-color-muted);
+  font-size: var(--text-size-base);
+  margin: 30px 0;
+}
+
+/* ปุ่มยืนยัน ใช้ปุ่มสีเขียวหลักของระบบ */
+.btn-confirm-merge {
+  background-color: var(--button-green-bg);
+  color: var(--button-green-text);
+  border: none;
+  padding: 12px;
+  border-radius: 50px;
+  font-size: var(--text-size-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: auto;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-confirm-merge:hover {
+  background-color: var(--tbs-green-dark); /* ใช้สีเขียวเข้มตอน Hover */
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-confirm-merge:active {
+  transform: translateY(0);
+}

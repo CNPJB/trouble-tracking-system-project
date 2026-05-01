@@ -1,0 +1,75 @@
+.filter-container {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin: 20px 0;
+  flex-wrap: wrap; /* ให้ปุ่มลงแถวใหม่ได้ถ้าจอมือถือแคบ */
+}
+
+.filter-btn {
+    border: 1px solid transparent;
+    padding: 10px 20px;
+    border-radius: 50px; /* ทรงแคปซูลแบบในรูปคุณ */
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* เพิ่มเงาจางๆ ให้ดูไม่แบน */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-btn:hover {
+    transform: translateY(-2px); /* ลอยขึ้นนิดหน่อย */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.filter-btn[data-status="all"] { 
+    background-color: #f1f2f6; 
+    color: var(--text-muted); 
+    border-color:var(--tbs-green); 
+}
+
+.filter-btn[data-status="pending"] { 
+    background-color: #fef9e7; /* เหลืองจาง */
+    color: var(--status-pending-bg); 
+    border-color:var(--tbs-green); 
+}
+
+.filter-btn[data-status="in_progress"] { 
+    background-color: #ebf5fb; /* ฟ้าจาง */
+    color: var(--status-in-progress-bg); 
+    border-color:var(--tbs-green); 
+}
+
+.filter-btn[data-status="resolved"] { 
+    background-color: var(--tbs-green-light); /* เขียวจางที่คุณมีใน root */
+    color: var(--status-resolved-bg); 
+    border-color:var(--tbs-green);  
+}
+
+/* --- เมื่อกดเลือก (Active) ให้ดึงสีหลักจาก Root มาใช้แบบเข้มๆ --- */
+
+.filter-btn.active[data-status="all"] { 
+    background-color: var(--status-all-bg); 
+    color: var(--status-all-text); 
+    border-color: var(--status-all-bg);
+}
+
+.filter-btn.active[data-status="pending"] { 
+    background-color: var(--status-pending-bg); 
+    color: var(--status-pending-text); 
+    border-color: var(--status-pending-bg);
+}
+
+.filter-btn.active[data-status="in_progress"] { 
+    background-color: var(--status-in-progress-bg); 
+    color: var(--status-in-progress-text); 
+    border-color: var(--status-in-progress-bg);
+}
+
+.filter-btn.active[data-status="resolved"] { 
+    background-color: var(--status-resolved-bg); 
+    color: var(--status-resolved-text); 
+    border-color: var(--status-resolved-bg);
+}

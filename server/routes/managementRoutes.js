@@ -1,5 +1,13 @@
 import express from 'express';
-import { addTicketCategory,addLocation,addFloor,addRoom,addEquipmentCtg,addEquipment } from '../controllers/managementControllers.js';
+import {
+    addTicketCategory,
+    addLocation,
+    addFloor,
+    addRoom,
+    addEquipmentCtg,
+    addEquipment,getEquipment,
+    mergeTickets
+} from '../controllers/managementControllers.js';
 import { verifyToken, requireAdmin } from '../middleware/authMiddleware.js';
 
 
@@ -16,5 +24,10 @@ router.post('/addRoom', addRoom);
 router.post('/addEquipmentCtg', addEquipmentCtg);
 
 router.post('/addEquipment', addEquipment);
+router.get('/getEquipment', getEquipment);
+
+router.patch('/mergeTickets', mergeTickets);
+
+
 
 export default router;

@@ -20,16 +20,16 @@ export const addTicketCategory = async (req, res) => {
     }
 };
 
-export const addLocation  = async (req, res) => {
+export const addLocation = async (req, res) => {
     try {
         const {
             locationName,
             locationStatus,
         } = req.body;
-        
+
         const location = await prisma.location.create({
             data: {
-                locationName,  
+                locationName,
                 locationStatus,
             }
         });
@@ -40,14 +40,14 @@ export const addLocation  = async (req, res) => {
     }
 };
 
-export const addFloor = async (req,res) => {
-    try{    
+export const addFloor = async (req, res) => {
+    try {
         const {
             floorLevel,
             locationId,
             floorStatus,
         } = req.body;
-        
+
         const floor = await prisma.floor.create({
             data: {
                 floorLevel,
@@ -63,14 +63,14 @@ export const addFloor = async (req,res) => {
     }
 }
 
-export const addRoom = async (req,res) => {
-    try{    
+export const addRoom = async (req, res) => {
+    try {
         const {
             roomName,
             floorId,
             roomStatus,
         } = req.body;
-        
+
         const room = await prisma.room.create({
             data: {
                 roomName,
@@ -86,8 +86,8 @@ export const addRoom = async (req,res) => {
     }
 }
 
-export const addEquipmentCtg =  async (req,res) => {
-    try{
+export const addEquipmentCtg = async (req, res) => {
+    try {
         const {
             equipmentCtgName,
             equipmentCtgStatus,
@@ -107,8 +107,9 @@ export const addEquipmentCtg =  async (req,res) => {
     }
 }
 
-export const addEquipment =  async (req,res) => {
-    try{
+//  api  Equipment
+export const addEquipment = async (req, res) => {
+    try {
         const {
             equipmentCode,
             equipmentName,
@@ -135,3 +136,74 @@ export const addEquipment =  async (req,res) => {
         res.status(500).json({ error: 'Failed to create equipment  ' });
     }
 }
+
+export const getEquipment = async (req, res) => {
+    try {
+        const equipments = await prisma.equipment.findMany({
+            select: {
+                equipmentId: true,
+                equipmentCode: true,
+                equipmentName: true,
+                equipmentStatus: true,
+                category: { 
+                    select: {
+                        equipmentCtgName: true,
+                    }
+                },
+                room: {
+  select: {
+    roomName: true,
+    floor: { 
+      select: {
+        floorLevel: true,
+        location: { 
+          select: {
+            locationName: true
+          }
+        }
+      }
+    }
+  }
+},
+            }
+        })
+        res.status(201).json(equipments);
+
+    } catch (error) {
+        console.error('Error creating equipment:', error);
+        res.status(500).json({ error: 'Failed to create equipment  ' });
+    }
+}
+
+export const mergeTickets = async (req, res) => {
+    try {
+        const { parentId, childIds } = req.body;
+
+        if (!parentId || !childIds || !Array.isArray(childIds) || childIds.length === 0) {
+            return res.status(400).json({
+                error: 'ข้อมูลไม่ครบถ้วน กรุณาส่งตัวแม่และตัวลูกอย่างน้อย 1 รายการ'
+            });
+        }
+
+        await prisma.ticket.updateMany({
+            where: {
+                ticketId: { in: childIds }
+            },
+            data: {
+                parentTicketId: parentId,
+            }
+        });
+        console.log(`ดำเนินการรวมปัญหา: แม่ = ${parentId}, ลูกๆ =`, childIds);
+
+        res.status(200).json({
+            message: 'รวมปัญหาสำเร็จเรียบร้อยแล้ว',
+            mergedCount: childIds.length
+        });
+    } catch (error) {
+        console.error('Error creating equipment:', error);
+        res.status(500).json({ error: 'Failed to merge ticket  ' });
+    }
+}
+
+
+

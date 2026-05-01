@@ -1,0 +1,55 @@
+p,span{
+}
+.container-pending-card{
+    width: 100%;
+    border-radius: 10px;
+    padding: 1rem;
+    background-color: var(--card-bg);
+    box-shadow: var(--shadow-md);
+}
+.header-card{
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 5px;
+}
+.img-card,img{
+    object-fit: cover;
+    object-position: center;
+    width: 150px;
+    height: 150px;
+}
+.ticketStatus{
+    background-color: var(--status-yellow);
+    width: 120px;
+    padding: 2px;
+    margin: 5px;
+    text-align: center;
+    border-radius: 10px;
+    font-size: var(--text-size-base);
+}
+
+.ticketStatus.pending {
+    background-color: var(--status-pending-bg); 
+    color: #000;
+}
+
+.ticketStatus.in_progress {
+    background-color: var(--status-in-progress-bg); 
+    color: #000;
+}
+
+.ticketStatus.resolved {
+    background-color: var(--status-resolved-bg);
+    color: #000000;
+}
+.location{
+    color: var(--text-color-muted);
+}
+.floor-room{
+    padding-top: 20px;
+    display: flex;
+    gap: 50px;
+}
+.description  p{
+    padding-top: 40px;
+}
