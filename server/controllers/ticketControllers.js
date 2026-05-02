@@ -152,11 +152,39 @@ export const addTicket = async (req, res) => {
             dataToCreate.images = { create: uploadedImages };
         }
 
-        // สร้างตั๋วพร้อมรูปภาพใน transaction เดียวกัน
-        const newTicket = await prisma.ticket.create({
-            data: dataToCreate,
-            include: { images: true }
-        });
+        // -------------------------------------------------------------
+        // ระบบ Retry ป้องกัน ID ชนกัน (Race Condition & Collision)
+        // -------------------------------------------------------------
+        let newTicket;
+        let attempts = 0;
+        const MAX_ATTEMPTS = 5;
+
+        while (attempts < MAX_ATTEMPTS) {
+            try {
+                // สุ่ม ID ใหม่ทุกครั้งที่พยายามเซฟ
+                const customTicketId = generateTicketId(); 
+                dataToCreate.ticketId = customTicketId;
+
+                // สร้างตั๋วพร้อมรูปภาพใน transaction เดียวกัน
+                newTicket = await prisma.ticket.create({
+                    data: dataToCreate,
+                    include: { images: true }
+                });
+
+                break; // เซฟสำเร็จ หลุดออกจากลูป
+
+            } catch (error) {
+                // เช็คว่า Error เกิดจากเลข ID ซ้ำ (Unique constraint failed - P2002) หรือไม่
+                if (error.code === 'P2002' && attempts < MAX_ATTEMPTS - 1) {
+                    console.warn(`Ticket ID collision detected. Retrying... (${attempts + 1}/${MAX_ATTEMPTS})`);
+                    attempts++;
+                    continue; // วนกลับไปสุ่มเลขใหม่
+                }
+                
+                // ถ้าเป็น Error อื่น หรือเกินจำนวนที่จำกัดแล้ว ให้โยน Error ออกไปที่ catch ตัวนอกสุด
+                throw error; 
+            }
+        }
 
         res.status(201).json({
             success: true,
