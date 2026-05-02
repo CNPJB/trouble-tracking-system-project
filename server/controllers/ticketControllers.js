@@ -270,8 +270,12 @@ export const updateTicket = async (req, res) => {
             }
         }
 
+        const validImagesToDelete = existingTicket.images
+            .filter(img => parsedImagesToDelete.includes(img.imageId))
+            .map(img => img.imageId);
+
         // verify that all images to delete belong to the ticket
-        const remainingImagesCount = existingTicket.images.length - parsedImagesToDelete.length;
+        const remainingImagesCount = existingTicket.images.length - validImagesToDelete.length;
         const incomingImagesCount = files ? files.length : 0;
 
         if (remainingImagesCount + incomingImagesCount > 3) {
@@ -328,7 +332,7 @@ export const updateTicket = async (req, res) => {
 
         // 4. จัดการรูปภาพ (แก้ไขคำว่า image เป็น images ให้ตรงกับ Schema)
         dataToUpdate.images = {
-            deleteMany: { imageId: { in: parsedImagesToDelete } },
+            deleteMany: { imageId: { in: validImagesToDelete } },
             create: uploadedImagesData
         };
 
@@ -344,8 +348,8 @@ export const updateTicket = async (req, res) => {
         });
 
         // Delete images from Cloudinary when the database transaction is successful
-        if (parsedImagesToDelete.length > 0) {
-            const imagesToRemove = existingTicket.images.filter(img => parsedImagesToDelete.includes(img.imageId));
+        if (validImagesToDelete.length > 0) {
+            const imagesToRemove = existingTicket.images.filter(img => validImagesToDelete.includes(img.imageId));
             const deletePromises = imagesToRemove.map(img => deleteFromCloudinary(img.imagePublicId));
 
             // ใช้ Promise.all เพื่อลบพร้อมกัน 

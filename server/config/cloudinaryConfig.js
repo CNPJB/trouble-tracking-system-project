@@ -1,6 +1,18 @@
 import multer from 'multer';
 import { v2 as cloudinary } from 'cloudinary';
 
+// ตรวจสอบว่ามีตัวแปรสภาพแวดล้อมที่จำเป็นสำหรับ Cloudinary หรือไม่
+const requiredEnv = [
+  'CLOUDINARY_CLOUD_NAME',
+  'CLOUDINARY_API_KEY',
+  'CLOUDINARY_API_SECRET'
+];
+
+const missingEnv = requiredEnv.filter((k) => !process.env[k]);
+if (missingEnv.length > 0) {
+  throw new Error(`Missing required Cloudinary env vars: ${missingEnv.join(', ')}`);
+}
+
 // ตั้งค่า Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

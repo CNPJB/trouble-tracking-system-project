@@ -13,10 +13,10 @@ router.post('/add',
 
 router.patch('/updateTicket/:id',
     verifyToken,
-    upload.array('images', 3),
     checkTicketExists,
     checkTicketOwner,
     checkTicketStatus('pending'),
+    upload.array('images', 3),
     updateTicket
 );
 

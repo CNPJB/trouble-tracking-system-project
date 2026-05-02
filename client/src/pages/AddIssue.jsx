@@ -60,7 +60,7 @@ function AddIssue() {
 
   //  --- 4. Ticket categories checker ---
   const selectedCategory = categories.find(c => c.ticketCtgId === parseInt(formData.categoryId));
-  const isEquipmentCategory = selectedCategory?.ticketCtgName === 'ด้านอุปกรณ์คอมพิวเตอร์และครุภัณฑ์';
+  const isEquipmentCategory = selectedCategory?.ticketCtgName === "ด้านอุปกรณ์คอมพิวเตอร์และครุภัณฑ์"; 
 
   // --- 5. Logic to handle form input changes ---
   const handleChange = (e) => {
@@ -80,6 +80,11 @@ function AddIssue() {
       // Reset values when location changes
       if (name === 'locationId') {
         newData.floorId = '';
+        newData.roomId = '';
+        newData.equipmentCode = '';
+      }
+
+      if (name === 'floorId') {
         newData.roomId = '';
         newData.equipmentCode = '';
       }
@@ -320,9 +325,14 @@ function AddIssue() {
               
               {/* ปุ่มกดเพิ่มรูป (+ รูปภาพ) ซ่อนเมื่อครบ 3 รูป */}
               {selectedImages.length < 3 && (
-                <div className="upload-placeholder" onClick={() => fileInputRef.current.click()}>
+                <button 
+                  type="button"
+                  className="upload-placeholder" 
+                  onClick={() => fileInputRef.current?.click()}
+                  aria-label="เพิ่มรูปภาพ"
+                >
                   <span>+</span>
-                </div>
+                </button>
               )}
 
               {/* แสดงพรีวิวรูปภาพที่ถูกเลือกมา */}
