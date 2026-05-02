@@ -62,8 +62,8 @@ model User {
   googleId  String?   @map("google_id") @db.VarChar(255)
   avatarUrl String?   @map("avatar_url") @db.Text
   role      UserRole? @default(user)
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp()
+  createdAt DateTime?  @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamp()
 
   // Relations
   ticketsCreated Ticket[] @relation("UserTickets")
@@ -78,8 +78,8 @@ model Location {
   locationId     Int            @id @default(autoincrement()) @map("location_id")
   locationName   String         @map("location_name") @db.VarChar(100)
   locationStatus LocationStatus @default(active) @map("location_status")
-  createdAt      DateTime       @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt      DateTime       @updatedAt @map("updated_at") @db.Timestamp()
+  createdAt      DateTime?       @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt      DateTime?       @updatedAt @map("updated_at") @db.Timestamp()
 
   // Relations
   floors         Floor[]
@@ -94,8 +94,8 @@ model Floor {
   floorLevel  String         @map("floor_level") @db.VarChar(10)
   locationId  Int            @map("location_id")
   floorStatus LocationStatus @default(active) @map("floor_status")
-  createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt   DateTime       @updatedAt @map("updated_at") @db.Timestamp()
+  createdAt   DateTime?       @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt   DateTime?      @updatedAt @map("updated_at") @db.Timestamp()
 
   // Relations
   location    Location       @relation(fields: [locationId], references: [locationId])
@@ -111,8 +111,8 @@ model Room {
   roomName   String         @map("room_name") @db.VarChar(50)
   floorId    Int            @map("floor_id")
   roomStatus LocationStatus @default(active) @map("room_status")
-  createdAt  DateTime       @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt  DateTime       @updatedAt @map("updated_at") @db.Timestamp()
+  createdAt  DateTime?       @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt  DateTime?       @updatedAt @map("updated_at") @db.Timestamp()
 
   // Relations
   floor      Floor          @relation(fields: [floorId], references: [floorId])
@@ -127,8 +127,8 @@ model EquipmentCategory {
   equipmentCtgId     Int            @id @default(autoincrement()) @map("equipment_ctg_id")
   equipmentCtgName   String         @unique @map("equipment_ctg_name") @db.VarChar(100)
   equipmentCtgStatus CategoryStatus @default(enable) @map("equipment_ctg_status")
-  createdAt          DateTime       @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt          DateTime       @updatedAt @map("updated_at") @db.Timestamp()
+  createdAt          DateTime?       @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt          DateTime?      @updatedAt @map("updated_at") @db.Timestamp()
 
   // Relations
   equipments         Equipment[]
@@ -145,8 +145,8 @@ model Equipment {
   equipmentStatus   EquipmentStatus @default(active) @map("equipment_status")
   equipmentCtgId    Int             @map("equipment_ctg_id")
   roomId            Int             @map("room_id")
-  createdAt         DateTime        @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt         DateTime        @updatedAt @map("updated_at") @db.Timestamp()
+  createdAt         DateTime?        @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt         DateTime?       @updatedAt @map("updated_at") @db.Timestamp()
 
   // Relations
   category          EquipmentCategory @relation(fields: [equipmentCtgId], references: [equipmentCtgId])
@@ -162,7 +162,7 @@ model TicketImage {
   ticketId  Int       @map("ticket_id")
   imageUrl  String    @map("image_url") @db.Text
   imageType String?   @map("image_type") @db.VarChar(20)
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp()
+  createdAt DateTime?  @default(now()) @map("created_at") @db.Timestamp()
 
   // Relations
   ticket    Ticket    @relation(fields: [ticketId], references: [ticketId])
@@ -175,8 +175,8 @@ model TicketCategory {
   ticketCtgId     Int            @id @default(autoincrement()) @map("ticket_ctg_id")
   ticketCtgName   String         @unique @map("ticket_ctg_name") @db.VarChar(100)
   ticketCtgStatus CategoryStatus @default(enable) @map("ticket_ctg_status")
-  createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt       DateTime       @updatedAt @map("updated_at") @db.Timestamp()
+  createdAt       DateTime?       @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt       DateTime?       @updatedAt @map("updated_at") @db.Timestamp()
 
   // Relations
   tickets         Ticket[]
@@ -201,8 +201,8 @@ model Ticket {
   adminNote           String?       @map("admin_note") @db.Text
   rating              Int?
   comment             String?       @db.Text
-  createdAt           DateTime      @default(now()) @map("created_at") @db.Timestamp()
-  updatedAt           DateTime      @updatedAt @map("updated_at") @db.Timestamp()
+  createdAt           DateTime?     @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt           DateTime?      @updatedAt @map("updated_at") @db.Timestamp()
   timestampInprogress DateTime?     @default(now()) @map("timestamp_inprogress") @db.Timestamp()
   timestampFinished   DateTime?     @default(now()) @map("timestamp_finished") @db.Timestamp()
 
@@ -230,7 +230,7 @@ model Upvote {
   upvoteId  Int       @id @default(autoincrement()) @map("upvote_id")
   ticketId  Int       @map("ticket_id")
   userId    Int       @map("user_id")
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp()
+  createdAt DateTime?  @default(now()) @map("created_at") @db.Timestamp()
 
   // Relations
   ticket    Ticket    @relation(fields: [ticketId], references: [ticketId])

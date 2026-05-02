@@ -7,6 +7,8 @@
     border-radius: 20px;
     box-shadow: 0 0 0, 0 0 10px;
     border: solid 1px var(--tbs-green);
+    height: 300px;
+    line-height: 2;
 }
 
 .type-status-ticket {
@@ -15,10 +17,12 @@
 }
 
 .ticket-type {
-    background-color: var(--tbs-green-accent);
+    background-color: var(--tbs-green);
     padding: 5px;
     border-radius: 20px;
     margin-right: auto;
+    font-size: var(--text-size-base);
+    color: var( --bg-main);
 }
 
 .header-ticket-title {
@@ -34,6 +38,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
+    height: auto;
 }
 
 .starRating {
@@ -54,6 +59,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
+    height: 250px;
 }
 
 .ticket-img img {
@@ -63,6 +69,7 @@
     object-position: center;
     border-radius: 10px;
     border: solid 1px ;
+    height: 250px;
 }
 
 .no-image {
@@ -73,7 +80,9 @@
     justify-content: center;
     border: solid 2px rgb(189, 189, 189);
 }
-
+.roadmap-working .main-comment  p{
+    line-height: 2;
+}
 .roadmap-working {
     max-width: 80%;
     padding: 20px;
@@ -83,6 +92,7 @@
     border-radius: 20px;
     box-shadow: 0 0 0, 0 0 10px;
     border: solid 1px var(--tbs-green);
+
 }
 
 /* Timeline */

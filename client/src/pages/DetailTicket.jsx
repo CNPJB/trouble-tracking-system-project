@@ -37,11 +37,11 @@ const DetailTicket = () => {
                                 <div className="floor">
                                     <p>
                                         {/* if ticket.floor doesn't exists return '-' */}
-                                        ชั้น : { ticket.floor?.floorLevel || '-' }
+                                        ชั้น : {ticket.floor?.floorLevel || '-'}
                                     </p>
                                     <span>
                                         {/* if ticket.room doesn't exists return '-' */}
-                                        ห้อง : { ticket.room?.roomName || '-' }
+                                        ห้อง : {ticket.room?.roomName || '-'}
                                     </span>
                                 </div>
                                 <div className="ticket-description">
@@ -87,7 +87,7 @@ const DetailTicket = () => {
                                             />
                                         ))
                                 ) : (
-                                    <p className="no-image-text">รอแอดมินอัปโหลดหลักฐาน</p>
+                                    <p className="no-image">รอแอดมินอัปโหลดหลักฐาน</p>
                                 )}
                             </div>
                         </div>
@@ -99,9 +99,15 @@ const DetailTicket = () => {
                 {ticket && (
                     <div className="main-comment">
                         <div className="comment">
-                            <p>ความคิดเห็น : {ticket.comment}</p>
-                            <p>ผู้ดำเนินการ : </p>
-                            <p>ความคิดเห็นผู้ดูแลระบบ : {ticket.adminNote}</p>
+                            {ticket.comment && (
+                                <p>ความคิดเห็น : {ticket.comment}</p>
+                            )}
+                            {ticket.admin && (
+                                <p>ผู้ดำเนินการ : {ticket.admin}</p>
+                            )}
+                            {ticket.adminNote && (
+                                <p>ความคิดเห็นผู้ดูแลระบบ : {ticket.adminNote}</p>
+                            )}
                         </div>
                     </div>
                 )}

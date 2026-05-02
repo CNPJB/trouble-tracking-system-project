@@ -42,7 +42,7 @@ svg {
   --button-orange-text: #fff;
   --button-orange-hover: #e67e22;
 
-  --button-blue-bg: #3498db;      /* ปุ่มสีฟ้า */
+  --button-blue-bg: #61b8f1;      /* ปุ่มสีฟ้า */
   --button-blue-text: #fff;
   --button-blue-hover: #2980b9;
 
@@ -53,14 +53,35 @@ svg {
   --button-disabled-bg: #ddd;    /* ปุ่มที่ปิดการใช้งาน */
   --button-disabled-text: #888;
 
+  --status-all-bg: #34495e;
+  --status-all-text: #ffffff;
+
+  /* รอรับเรื่อง (Pending) - ใช้สีเหลือง/ส้ม "คำเตือน" */
+  --status-pending-bg: #f1c40f; 
+  --status-pending-text: #453505;
+
+  /* กำลังดำเนินการ (In Progress) - ใช้สีฟ้า "การเคลื่อนไหว" */
+  --status-in-progress-bg: #3498db;
+  --status-in-progress-text: #ffffff;
+
+  /* เสร็จสิ้น (Resolved) - ใช้สีเขียว "ความสำเร็จ" */
+  --status-resolved-bg: #27ae60;
+  --status-resolved-text: #ffffff;
+
+  /* ยกเลิก/ด่วนมาก (Emergency/Cancel) */
+  --status-red: #e74c3c;
+
   /* =========================================
-     4. สีสถานะของ "งาน" (Job/Status Color)
-     =========================================
-     (จากแถบสีด้านซ้ายของงานในหน้าออกแบบ) */
-  --status-yellow: #f1c40f;      /* แถบสีเหลือง */
-  --status-gray: #ddd;           /* แถบสีเทา (เช่น ปิดงานแล้ว) */
-  --status-orange: #e67e22;      /* แถบสีส้ม */
-  --status-red: #c0392b;         /* แถบสีแดง */
+     3. Surface & Text (มิติของหน้าเว็บ)
+     ========================================= */
+  --bg-main: #f8f9fa;            /* สีเทาอ่อนมากสำหรับพื้นหลังกันแสงสะท้อน */
+  --card-bg: #ffffff;            /* สีขาวบริสุทธิ์สำหรับการ์ดงาน */
+  --text-main: #2d3436;          /* เทาเกือบดำ อ่านง่ายกว่าดำสนิท */
+  --text-muted: #636e72;         /* สำหรับรายละเอียดงานที่สำคัญรองลงมา */
+  
+  /* Shadow - เพิ่มมิติให้ปุ่มและหน้าจอไม่แบน */
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
   
   /* =========================================
      5. สีของข้อความและพื้นหลัง (Text & Background)
@@ -76,6 +97,6 @@ svg {
   /* =========================================
      6. แบบอักษรและขนาด (Typography - เผื่อไว้)
      ========================================= */
-  --text-size-base: 16px;
+  --text-size-base: 14px;
   --text-size-large: 20px;
 }

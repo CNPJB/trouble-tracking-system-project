@@ -1,0 +1,104 @@
+.assetManagement-container{
+    padding: 20px;
+}
+.main-equiment-container{
+  display: grid;
+  grid-template-columns: 1fr  1fr;
+}
+.filter-assetManagement-container{
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 30px;
+    padding: 15px;
+    gap: 20px;
+}
+.audit-issues-searchbar form {
+    gap: 10px;
+    width: 100%;
+    display: flex;
+}
+.audit-issues-searchbar input {
+  padding: 12px 20px;
+  width: 400px;
+  max-width: 400px;
+  border: 2px solid #e0e0e0;
+  border-radius: 25px; /* ทรงมนสวยงาม */
+  outline: none;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  background-color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* เมื่อคลิกที่ช่อง Input */
+.audit-issues-searchbar input:focus {
+  border-color: var(--tbs-green); /* สีฟ้าตามสไตล์ Dashboard */
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+}
+
+/* ปุ่มค้นหา */
+.audit-issues-searchbar button {
+  padding: 12px 24px;
+  background-color: var(--tbs-green);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* เมื่อเอาเมาส์วางบนปุ่ม */
+.audit-issues-searchbar button:hover {
+  background-color: var(--tbs-green-accent);
+  transform: translateY(-2px); /* ปุ่มลอยขึ้นเล็กน้อย */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* เมื่อกดปุ่ม */
+.audit-issues-searchbar button:active {
+  transform: translateY(0);
+}
+
+/* table */
+/* สไตล์ภาพรวมของตาราง */
+.equipment-table {
+  width: 100%;
+  border-collapse: collapse; /* ทำให้เส้นขอบตารางติดกัน */
+  margin: 1rem 0;
+  font-family: sans-serif;
+  font-size: 0.9rem;
+}
+
+/* จัดการส่วนหัวตาราง */
+.equipment-table thead tr {
+  text-align: center;
+  font-weight: bold;
+}
+
+/* จัดการระยะห่างในแต่ละช่อง (Cell) */
+.equipment-table th,
+.equipment-table td {
+  padding: 12px 15px;
+  border: 1px solid; /* ใส่เส้นขอบไว้ให้เห็นโครงสร้างเฉยๆ สามารถเปลี่ยนสีภายหลังได้ */
+}
+
+/* สไตล์สำหรับแถวข้อมูล */
+.data-equipment-row {
+  transition: all 0.2s ease; /* เผื่อไว้สำหรับทำ Hover */
+}
+
+/* กรณีต้องการให้ตัวอักษรอยู่กึ่งกลางในบางคอลัมน์ (เช่น รหัส หรือ สถานะ) */
+.equipment-table td {
+  vertical-align: middle;
+}
+
+/* Responsive: ถ้าจอเล็กเกินไปให้เลื่อนซ้ายขวาได้ */
+@media (max-width: 600px) {
+  .equipment-table {
+    display: block;
+    overflow-x: auto;
+  }
+}
