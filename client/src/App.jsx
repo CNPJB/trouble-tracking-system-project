@@ -13,6 +13,7 @@ import Login from "./pages/Login.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import AddIssue from "./pages/AddIssue.jsx";
 import DetailTicket from './pages/DetailTicket.jsx';
+import Tracking from "./pages/Tracking.jsx";
 
 // Pages admin
 const AuditIssues = React.lazy(() => import('./pages/adminPage/AuditIssues.jsx'))
@@ -37,6 +38,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/addIssue" element={<AddIssue />} />
+                <Route path="/tracking" element={<Tracking />} />
 
                 <Route path="/ticketDetail" element={<DetailTicket />} />
 

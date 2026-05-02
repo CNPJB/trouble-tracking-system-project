@@ -1,5 +1,6 @@
 import prisma from "../config/prismaClient.js";
 
+/* Ticket Category Management */
 export const addTicketCategory = async (req, res) => {
     try {
         const {
@@ -20,7 +21,18 @@ export const addTicketCategory = async (req, res) => {
     }
 };
 
-export const addLocation = async (req, res) => {
+export const getTicketCategories = async (req, res) => {
+    try {
+        const categories = await prisma.ticketCategory.findMany();
+        res.status(200).json(categories);
+    } catch (error) {
+        console.error('Error fetching ticket categories:', error);
+        res.status(500).json({ error: 'Failed to fetch ticket categories' });
+    }
+};
+
+/* Location Management */
+export const addLocation  = async (req, res) => {
     try {
         const {
             locationName,
@@ -40,8 +52,19 @@ export const addLocation = async (req, res) => {
     }
 };
 
-export const addFloor = async (req, res) => {
+export const getLocations = async (req, res) => {
     try {
+        const locations = await prisma.location.findMany();
+        res.status(200).json(locations);
+    } catch (error) {
+        console.error('Error fetching locations:', error);
+        res.status(500).json({ error: 'Failed to fetch locations' });
+    }
+};
+
+/* Floor Management */
+export const addFloor = async (req,res) => {
+    try{    
         const {
             floorLevel,
             locationId,
@@ -63,8 +86,21 @@ export const addFloor = async (req, res) => {
     }
 }
 
-export const addRoom = async (req, res) => {
+export const getFloors = async (req,res) => {
     try {
+        const floors = await prisma.floor.findMany({
+            include: { location: true } // include location details in the response in case it's needed on the frontend
+        });
+        res.status(200).json(floors);
+    } catch (error) {
+        console.error('Error fetching floors:', error);
+        res.status(500).json({ error: 'Failed to fetch floors' });
+    }
+};
+
+/* Room Management */
+export const addRoom = async (req,res) => {
+    try{    
         const {
             roomName,
             floorId,
@@ -86,8 +122,21 @@ export const addRoom = async (req, res) => {
     }
 }
 
-export const addEquipmentCtg = async (req, res) => {
+export const getRooms = async (req,res) => {
     try {
+        const rooms = await prisma.room.findMany({
+            include: { floor: true }
+        });
+        res.status(200).json(rooms);
+    } catch (error) {
+        console.error('Error fetching rooms:', error);
+        res.status(500).json({ error: 'Failed to fetch rooms' });
+    }
+};
+
+/* Equipment Category Management */
+export const addEquipmentCtg =  async (req,res) => {
+    try{
         const {
             equipmentCtgName,
             equipmentCtgStatus,
@@ -107,9 +156,19 @@ export const addEquipmentCtg = async (req, res) => {
     }
 }
 
-//  api  Equipment
-export const addEquipment = async (req, res) => {
+export const getEquipmentCtgs = async (req,res) => {
     try {
+        const equipmentCtgs = await prisma.equipmentCategory.findMany();
+        res.status(200).json(equipmentCtgs);
+    } catch (error) {
+        console.error('Error fetching equipment categories:', error);
+        res.status(500).json({ error: 'Failed to fetch equipment categories' });
+    }
+};
+
+/* Equipment Management */
+export const addEquipment =  async (req,res) => {
+    try{
         const {
             equipmentCode,
             equipmentName,
