@@ -1,0 +1,103 @@
+/* ConfirmModal.css */
+
+/* พื้นหลังสีดำโปร่งแสง */
+.confirm-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+/* ตัวกล่อง Modal */
+.confirm-modal-content {
+    background-color: #ffffff;
+    padding: 24px;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
+    height: fit-content;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    
+    /* แอนิเมชันตอนกล่องเด้งขึ้นมา */
+    animation: slideUp 0.3s ease-out;
+}
+
+.confirm-modal-title {
+    margin-top: 0;
+    color: var( --text-color-main);
+    font-size: 1.25rem;
+}
+
+.confirm-modal-message {
+    color: var(--text-color-muted);
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+/* โซนปุ่มกด */
+.confirm-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+/* ปุ่มยกเลิก */
+.confirm-btn-cancel {
+    padding: 10px 16px;
+    background-color: var(--button-red-bg);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text-color-light);
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.confirm-btn-cancel:hover {
+    background-color:   var(--button-red-hover);
+}
+
+/* ปุ่มยืนยัน */
+.confirm-btn-submit {
+    padding: 10px 16px;
+    background-color: var( --tbs-green-accent);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #ffffff;
+    font-weight: bold;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.confirm-btn-submit:hover {
+    background-color: #218838;
+}
+
+.confirm-btn-submit:active {
+    transform: scale(0.96); /* เวลากดให้ปุ่มยุบลงไปนิดนึง */
+}
+
+/* --- Animations --- */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { 
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

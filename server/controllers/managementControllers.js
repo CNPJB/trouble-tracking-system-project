@@ -38,10 +38,10 @@ export const addLocation  = async (req, res) => {
             locationName,
             locationStatus,
         } = req.body;
-        
+
         const location = await prisma.location.create({
             data: {
-                locationName,  
+                locationName,
                 locationStatus,
             }
         });
@@ -70,7 +70,7 @@ export const addFloor = async (req,res) => {
             locationId,
             floorStatus,
         } = req.body;
-        
+
         const floor = await prisma.floor.create({
             data: {
                 floorLevel,
@@ -106,7 +106,7 @@ export const addRoom = async (req,res) => {
             floorId,
             roomStatus,
         } = req.body;
-        
+
         const room = await prisma.room.create({
             data: {
                 roomName,
@@ -198,15 +198,71 @@ export const addEquipment =  async (req,res) => {
 
 export const getEquipment = async (req, res) => {
     try {
-        const equipment = await prisma.equipment.findMany({
-            include: {
-                category: true,
-                room: true,
+        const equipments = await prisma.equipment.findMany({
+            select: {
+                equipmentId: true,
+                equipmentCode: true,
+                equipmentName: true,
+                equipmentStatus: true,
+                category: { 
+                    select: {
+                        equipmentCtgName: true,
+                    }
+                },
+                room: {
+  select: {
+    roomName: true,
+    floor: { 
+      select: {
+        floorLevel: true,
+        location: { 
+          select: {
+            locationName: true
+          }
+        }
+      }
+    }
+  }
+},
+            }
+        })
+        res.status(201).json(equipments);
+
+    } catch (error) {
+        console.error('Error creating equipment:', error);
+        res.status(500).json({ error: 'Failed to create equipment  ' });
+    }
+}
+
+export const mergeTickets = async (req, res) => {
+    try {
+        const { parentId, childIds } = req.body;
+
+        if (!parentId || !childIds || !Array.isArray(childIds) || childIds.length === 0) {
+            return res.status(400).json({
+                error: 'ข้อมูลไม่ครบถ้วน กรุณาส่งตัวแม่และตัวลูกอย่างน้อย 1 รายการ'
+            });
+        }
+
+        await prisma.ticket.updateMany({
+            where: {
+                ticketId: { in: childIds }
+            },
+            data: {
+                parentTicketId: parentId,
             }
         });
-        res.status(200).json(equipment);
+        console.log(`ดำเนินการรวมปัญหา: แม่ = ${parentId}, ลูกๆ =`, childIds);
+
+        res.status(200).json({
+            message: 'รวมปัญหาสำเร็จเรียบร้อยแล้ว',
+            mergedCount: childIds.length
+        });
     } catch (error) {
-        console.error('Error fetching equipment:', error);
-        res.status(500).json({ error: 'Failed to fetch equipment' });
+        console.error('Error creating equipment:', error);
+        res.status(500).json({ error: 'Failed to merge ticket  ' });
     }
-};
+}
+
+
+

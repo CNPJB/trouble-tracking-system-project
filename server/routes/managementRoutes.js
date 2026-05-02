@@ -5,29 +5,35 @@ import {
         addFloor, getFloors,
         addRoom, getRooms,
         addEquipmentCtg, getEquipmentCtgs,
-        addEquipment, getEquipment 
+        addEquipment, getEquipment,
+        mergeTickets
         } from '../controllers/managementControllers.js';
 import { verifyToken, requireAdmin } from '../middleware/authMiddleware.js';
 
 
 const router = express.Router();
 
-router.post('/addTicketCategory', addTicketCategory);
-router.get('/getTicketCategories', getTicketCategories);
+router.post('/addTicketCategory', verifyToken, requireAdmin, addTicketCategory);
+router.get('/getTicketCategories', verifyToken, getTicketCategories);
 
-router.post('/addLocation', addLocation);
-router.get('/getLocations', getLocations);
+router.post('/addLocation', verifyToken, requireAdmin, addLocation);
+router.get('/getLocations', verifyToken, getLocations);
 
-router.post('/addFloor', addFloor);
-router.get('/getFloors', getFloors);
+router.post('/addFloor', verifyToken, requireAdmin, addFloor);
+router.get('/getFloors', verifyToken, getFloors);
 
-router.post('/addRoom', addRoom);
-router.get('/getRooms', getRooms);
+router.post('/addRoom', verifyToken, requireAdmin, addRoom);
+router.get('/getRooms', verifyToken, getRooms);
 
-router.post('/addEquipmentCtg', addEquipmentCtg);
-router.get('/getEquipmentCtgs', getEquipmentCtgs);
+router.post('/addEquipmentCtg', verifyToken, requireAdmin, addEquipmentCtg);
+router.get('/getEquipmentCtgs', verifyToken, getEquipmentCtgs);
 
-router.post('/addEquipment', addEquipment);
-router.get('/getEquipment', getEquipment);
+router.post('/addEquipment', verifyToken, requireAdmin, addEquipment);
+router.get('/getEquipment', verifyToken, getEquipment);
+router.get('/getEquipmentByadmin', verifyToken, requireAdmin, getEquipment);
+
+router.patch('/mergeTickets', verifyToken, requireAdmin, mergeTickets);
+
+
 
 export default router;
