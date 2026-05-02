@@ -3,7 +3,7 @@ import './AuditIssues.css'
 // components
 import { SearchBar } from '../../components/SearchBar.jsx'
 import { DateRangeFilter } from '../../components/DateRangeFilter.jsx'
-import { CardPendingProblem } from '../../components/CardpendingProblem.jsx'
+import { CardPendingProblem } from '../../components/CardPendingProblem.jsx'
 import { ConfirmButton } from '../../components/ConfirmButton.jsx'
 // hooks 
 import { useTicketSearch } from '../../hooks/useTicketSearch.js'

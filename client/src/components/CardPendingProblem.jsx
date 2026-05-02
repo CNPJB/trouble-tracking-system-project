@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { formatDate } from '../utils/formatDate';
 import './CardPendingProblem.css'
 
-export const CardPendingProblem = ({ data, isReadOnly = false, isMergeMode, isSelected, onSelect }) => {
+export const CardPendingProblem = ({ data, isReadOnly = false, isMergeMode, isSelected, onSelect,handleClick}) => {
     const navigate = useNavigate();
     const statusLabels = {
         'pending': 'รอรับเรื่อง',

@@ -7,7 +7,7 @@ export const useEquipment = () => {
 
     const fetchEquipment = useCallback(async () => {
         try {
-            const response = await axios.get('/api/manage/getEquipment');
+            const response = await axios.get('/api/manage/getEquipmentByadmin');
             console.log("ข้อมูลจาก Backend:", response.data);
             setEquipment(response.data);
         } catch (error) {
