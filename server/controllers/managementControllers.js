@@ -32,7 +32,7 @@ export const getTicketCategories = async (req, res) => {
 };
 
 /* Location Management */
-export const addLocation  = async (req, res) => {
+export const addLocation = async (req, res) => {
     try {
         const {
             locationName,
@@ -63,8 +63,8 @@ export const getLocations = async (req, res) => {
 };
 
 /* Floor Management */
-export const addFloor = async (req,res) => {
-    try{    
+export const addFloor = async (req, res) => {
+    try {
         const {
             floorLevel,
             locationId,
@@ -86,7 +86,7 @@ export const addFloor = async (req,res) => {
     }
 }
 
-export const getFloors = async (req,res) => {
+export const getFloors = async (req, res) => {
     try {
         const floors = await prisma.floor.findMany({
             include: { location: true } // include location details in the response in case it's needed on the frontend
@@ -99,8 +99,8 @@ export const getFloors = async (req,res) => {
 };
 
 /* Room Management */
-export const addRoom = async (req,res) => {
-    try{    
+export const addRoom = async (req, res) => {
+    try {
         const {
             roomName,
             floorId,
@@ -122,7 +122,7 @@ export const addRoom = async (req,res) => {
     }
 }
 
-export const getRooms = async (req,res) => {
+export const getRooms = async (req, res) => {
     try {
         const rooms = await prisma.room.findMany({
             include: { floor: true }
@@ -135,8 +135,8 @@ export const getRooms = async (req,res) => {
 };
 
 /* Equipment Category Management */
-export const addEquipmentCtg =  async (req,res) => {
-    try{
+export const addEquipmentCtg = async (req, res) => {
+    try {
         const {
             equipmentCtgName,
             equipmentCtgStatus,
@@ -156,7 +156,7 @@ export const addEquipmentCtg =  async (req,res) => {
     }
 }
 
-export const getEquipmentCtgs = async (req,res) => {
+export const getEquipmentCtgs = async (req, res) => {
     try {
         const equipmentCtgs = await prisma.equipmentCategory.findMany();
         res.status(200).json(equipmentCtgs);
@@ -167,8 +167,8 @@ export const getEquipmentCtgs = async (req,res) => {
 };
 
 /* Equipment Management */
-export const addEquipment =  async (req,res) => {
-    try{
+export const addEquipment = async (req, res) => {
+    try {
         const {
             equipmentCode,
             equipmentName,
@@ -204,26 +204,27 @@ export const getEquipment = async (req, res) => {
                 equipmentCode: true,
                 equipmentName: true,
                 equipmentStatus: true,
-                category: { 
+                roomId: true,
+                category: {
                     select: {
                         equipmentCtgName: true,
                     }
                 },
                 room: {
-  select: {
-    roomName: true,
-    floor: { 
-      select: {
-        floorLevel: true,
-        location: { 
-          select: {
-            locationName: true
-          }
-        }
-      }
-    }
-  }
-},
+                    select: {
+                        roomName: true,
+                        floor: {
+                            select: {
+                                floorLevel: true,
+                                location: {
+                                    select: {
+                                        locationName: true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
             }
         })
         res.status(201).json(equipments);

@@ -162,7 +162,7 @@ export const addTicket = async (req, res) => {
         while (attempts < MAX_ATTEMPTS) {
             try {
                 // สุ่ม ID ใหม่ทุกครั้งที่พยายามเซฟ
-                const customTicketId = generateTicketId(); 
+                const customTicketId = generateTicketId();
                 dataToCreate.ticketId = customTicketId;
 
                 // สร้างตั๋วพร้อมรูปภาพใน transaction เดียวกัน
@@ -180,9 +180,9 @@ export const addTicket = async (req, res) => {
                     attempts++;
                     continue; // วนกลับไปสุ่มเลขใหม่
                 }
-                
+
                 // ถ้าเป็น Error อื่น หรือเกินจำนวนที่จำกัดแล้ว ให้โยน Error ออกไปที่ catch ตัวนอกสุด
-                throw error; 
+                throw error;
             }
         }
 
@@ -413,6 +413,7 @@ export const upvoteTicket = async (req, res) => {
         const existingTicket = req.ticket;
 
         if (existingTicket.userId === userId) {
+            console.log("User attempted to upvote their own ticket:", { userId, ticketId: id });
             return res.status(403).json({
                 success: false,
                 message: "You cannot upvote your own ticket. Your Issue will be resolved as soon as possible."
@@ -516,8 +517,22 @@ export const getAllTickets = async (req, res) => {
                 locationId: true,
                 floorId: true,
                 roomId: true,
-                equipmentId: true,
-                upvotes: true
+                equipment: {
+                    select: {
+                        equipmentCode: true
+                    }
+                },
+                upvotes: {
+                    select: {
+                        userId: true
+                    }
+                },
+                user: {
+                    select: {
+                        userId: true,
+                        fullName: true
+                    }
+                }
             }
         });
         res.status(200).json(tickets);
