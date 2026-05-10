@@ -489,55 +489,113 @@ export const cancelTicket = async (req, res) => {
 
 export const getAllTickets = async (req, res) => {
     try {
-        const tickets = await prisma.ticket.findMany({
-            select: {
-                ticketId: true,
-                category: { select: { ticketCtgName: true } },
-                location: { select: { locationName: true } },
-                floor: { select: { floorLevel: true } },
-                room: { select: { roomName: true } },
-                equipment: { select: { equipmentName: true } },
-                title: true,
-                description: true,
-                ticketStatus: true,
-                parentTicketId: true,
-                adminId: true,
-                adminNote: true,
-                rating: true,
-                comment: true,
-                createdAt: true,
-                updatedAt: true,
-                images: {
-                    select: {
-                        imageUrl: true,
-                        imageType: true
-                    }
+        // รับค่าจาก Query Parameters
+        const page = parseInt(req.query.page) || 1; // หน้า
+        const limit = parseInt(req.query.limit) || 10; // จำนวน
+        const skip = (page - 1) * limit; // จำนวนที่ข้าม
+
+        // เงื่อนไข Where สำหรับการกรองข้อมูล
+        const whereClause = {};
+        // กรองตามสถานะ (Status)
+        if (req.query.status) {
+            whereClause.ticketStatus = req.query.status;
+        }
+        // ค้นหาข้อความ (Search Keyword)
+        if (req.query.search) {
+            whereClause.OR = [
+                { ticketId: { contains: req.query.search, mode: 'insensitive' } },
+                { title: { contains: req.query.search, mode: 'insensitive' } },
+                { description: { contains: req.query.search, mode: 'insensitive' } }
+            ];
+        }
+
+        const [tickets, totalTickets] = await prisma.$transaction([
+            prisma.ticket.findMany({
+                where: whereClause,
+                skip: skip,
+                take: limit,
+                orderBy: {
+                    createdAt: 'desc' // สำคัญมาก: ต้องเรียงจากตั๋วใหม่ไปเก่าเสมอ ไม่งั้นข้อมูลแต่ละหน้าจะมั่ว
                 },
-                ticketCtgId: true,
-                locationId: true,
-                floorId: true,
-                roomId: true,
-                equipment: {
-                    select: {
-                        equipmentCode: true
-                    }
-                },
-                upvotes: {
-                    select: {
-                        userId: true
-                    }
-                },
-                user: {
-                    select: {
-                        userId: true,
-                        fullName: true
-                    }
-                }
+                select: {
+                    ticketId: true,
+                    category: { select: { ticketCtgName: true } },
+                    location: { select: { locationName: true } },
+                    floor: { select: { floorLevel: true } },
+                    room: { select: { roomId: true, roomName: true } },
+                    equipment: { select: { equipmentName: true } },
+                    title: true,
+                    description: true,
+                    ticketStatus: true,
+                    parentTicketId: true,
+                    adminId: true,
+                    adminNote: true,
+                    rating: true,
+                    comment: true,
+                    createdAt: true,
+                    updatedAt: true,
+                    images: { select: { imageUrl: true, imageType: true } },
+                    ticketCtgId: true,
+                    locationId: true,
+                    floorId: true,
+                    roomId: true,
+                    equipment: { select: { equipmentCode: true } },
+                    upvotes: { select: { userId: true } },
+                    user: { select: { userId: true, fullName: true } }                 }
+            }),
+            prisma.ticket.count({
+                where: whereClause // count ก็ต้องใช้ where เดียวกับ findMany เพื่อให้นับจำนวนได้ตรงกัน
+            })
+        ]);
+        res.status(200).json({
+            success: true,
+            data: tickets,
+            pagination: {
+                currentPage: page,
+                itemsPerPage: limit,
+                totalItems: totalTickets,
+                totalPages: Math.ceil(totalTickets / limit),
+                hasNextPage: page < Math.ceil(totalTickets / limit),
+                hasPrevPage: page > 1
             }
         });
-        res.status(200).json(tickets);
     } catch (error) {
         console.error('Error fetching tickets:', error);
-        res.status(500).json({ error: 'Failed to fetch tickets' });
+        res.status(500).json({success: false, error: 'Failed to fetch tickets' });
+    }
+};
+
+// ดึงข้อมูลสรุปจำนวนตั๋วแยกตามสถานะ
+export const getTicketSummary = async (req, res) => {
+    try {
+        const groupCounts = await prisma.ticket.groupBy({
+            by: ['ticketStatus'],
+            _count: {
+                ticketStatus: true
+            }
+        });
+
+        // นับจำนวนตั๋วทั้งหมดในระบบ
+        const total = await prisma.ticket.count();
+
+        // เตรียม Object เปล่าๆ รอรับข้อมูล
+        const summary = {
+            all: total,
+            pending: 0,
+            in_progress: 0,
+            resolved: 0
+        };
+
+        // เอาผลลัพธ์จาก Database มาหยอดใส่ Object
+        groupCounts.forEach(item => {
+            if (summary[item.ticketStatus] !== undefined) {
+                summary[item.ticketStatus] = item._count.ticketStatus;
+            }
+        });
+
+        res.status(200).json({ success: true, data: summary });
+    } catch (error) {
+        console.error('Error fetching ticket summary:', error);
+        res.status(500).json({ success: false, error: 'Failed to fetch ticket summary' });
     }
 };

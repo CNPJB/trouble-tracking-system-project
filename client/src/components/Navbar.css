@@ -28,6 +28,12 @@
   position: relative;
 }
 
+.nav-icon {
+  margin-left: 5px; /* เว้นระยะห่างระหว่างข้อความกับไอคอน */
+  vertical-align: middle; /* จัดให้อยู่ตรงกลางแนวตั้งกับข้อความ */
+  font-size: 18px; /* ขนาดไอคอน */
+}
+
 /* ส่วนโลโก้ซ้าย */
 .navbar-logo {
   font-size: 22px;

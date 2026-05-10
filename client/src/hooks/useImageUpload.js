@@ -1,8 +1,15 @@
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export const useImageUpload = (maxImages = 3) => {
     const [selectedImages, setSelectedImages] = useState([]);
     const fileInputRef = useRef(null);
+
+    // useEffect(() => {
+    //     return () => {
+    //         // เมื่อปิดหน้าเว็บ ให้ทำลาย URL ทิ้งทั้งหมด
+    //         selectedImages.forEach(img => URL.revokeObjectURL(img.previewUrl));
+    //     };
+    // }, [selectedImages]);
 
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);

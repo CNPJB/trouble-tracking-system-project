@@ -1,5 +1,6 @@
 import React from 'react';
 import './SimilarTickets.css';
+import { FaThumbsUp } from 'react-icons/fa';
 
 const SimilarTickets = ({ tickets, onUpvote, currentUserId }) => {
     return (
@@ -36,7 +37,8 @@ const SimilarTickets = ({ tickets, onUpvote, currentUserId }) => {
                                     onClick={() => onUpvote(ticket.ticketId)}
                                     disabled={ticket.userId === currentUserId}
                                 >
-                                    Vote ({ticket.upvotes?.length || 0})
+                                    <FaThumbsUp className="nav-icon" />
+                                    Vote ({ticket.upvotes?.length || 0}) 
                                 </button>
                             </div>
                         </div>

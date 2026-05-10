@@ -1,6 +1,8 @@
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import './Navbar.css';
+// icons {
+import { FaHome, FaPlus, FaMapMarkerAlt , FaChartBar, FaUserCog } from 'react-icons/fa';
 
 const Navbar = () => {
     const { user, logout } = useAuth();
@@ -21,16 +23,16 @@ const Navbar = () => {
                 {/* Menu */}
                 <div className="navbar-menu">
                     <NavLink to="/" className="nav-menu-item">
-                        Home
+                         Home <FaHome className="nav-icon"  />
                     </NavLink>
                     <NavLink to="/addIssue" className="nav-menu-item">
-                        Add Issue
+                        Add Issue <FaPlus className="nav-icon" />
                     </NavLink>
                     <NavLink to="/tracking" className="nav-menu-item">
-                        Tracking
+                         Tracking <FaMapMarkerAlt className="nav-icon" />
                     </NavLink>
                     <NavLink to="/statistics" className="nav-menu-item">
-                        Statistics
+                        Statistics <FaChartBar className="nav-icon" />
                     </NavLink>
                     {user.role === 'admin' && (
                         <NavLink
@@ -41,7 +43,7 @@ const Navbar = () => {
                                     : "nav-menu-item"      
                             }
                         >
-                            Menu admin
+                            Menu admin <FaUserCog className="nav-icon" />
                         </NavLink>
                     )}
                 </div>

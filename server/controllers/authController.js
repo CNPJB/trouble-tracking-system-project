@@ -157,7 +157,9 @@ export const localLogin = async (req, res) => {
         }
 
         // Create JWT token
-        const token = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        const token = jwt.sign({ userId: user.userId, email: user.email, role: user.role }, 
+            process.env.JWT_SECRET, 
+            { expiresIn: '1d' });
 
         // Set cookie
         if (process.env.NODE_ENV === 'production') {

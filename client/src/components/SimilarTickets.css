@@ -166,7 +166,7 @@
   color: #000000;
   border: 1px solid #74db51; /* เส้นขอบสีเขียวเข้มขึ้นนิดนึง */
   border-radius: 6px;
-  padding: 4px 8px;
+  padding: 4px 8px 6px 4px;
   font-size: 11px;
   font-weight: bold;
   cursor: pointer;
@@ -178,6 +178,12 @@
 
 .btn-upvote:hover:not(:disabled) {
   background-color: #03b927;
+}
+
+.btn-upvote .nav-icon {
+  margin-right: 4px; /* เว้นระยะห่างระหว่างข้อความกับไอคอน */
+  font-size: 12px; /* ขนาดไอคอน */
+  vertical-align: middle; /* จัดให้อยู่ตรงกลางแนวตั้งกับข้อความ */
 }
 
 /* ปุ่ม Upvote กรณีถูก Disabled (ผู้ใช้แจ้งเอง หรือกดโหวตไปแล้ว) */

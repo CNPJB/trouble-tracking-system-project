@@ -1,5 +1,5 @@
 import express from 'express';
-import { addTicket, getAllTickets, updateTicket, upvoteTicket, cancelTicket/*, updateTicketByadmin*/ } from '../controllers/ticketControllers.js';
+import { addTicket, getAllTickets, updateTicket, upvoteTicket, cancelTicket, getTicketSummary/*, updateTicketByadmin*/ } from '../controllers/ticketControllers.js';
 import { verifyToken, requireAdmin } from '../middleware/authMiddleware.js';
 import { checkTicketExists, checkTicketOwner, checkTicketStatus } from '../middleware/ticketMiddleware.js';
 import { upload } from '../config/cloudinaryConfig.js';
@@ -36,6 +36,8 @@ router.patch('/cancelTicket/:id',
 );
 
 router.get('/get', getAllTickets);
+
+router.get('/summary', getTicketSummary)
 
 //router.patch('/admin/updateticket/:id', upload.array('images', 3), updateTicketByadmin);
 
