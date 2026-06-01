@@ -42,7 +42,7 @@ model Floor {
   floorStatus LocationStatus @default(active) @map("floor_status")
   createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt   DateTime       @updatedAt @map("updated_at") @db.Timestamp(6)
-  location    Location       @relation(fields: [locationId], references: [locationId])
+  location    Location       @relation(fields: [locationId], references: [locationId],onDelete: Cascade)
   rooms       Room[]
   tickets     Ticket[]
 
@@ -57,7 +57,7 @@ model Room {
   createdAt  DateTime       @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt  DateTime       @updatedAt @map("updated_at") @db.Timestamp(6)
   equipments Equipment[]
-  floor      Floor          @relation(fields: [floorId], references: [floorId])
+  floor      Floor          @relation(fields: [floorId], references: [floorId], onDelete: Cascade)
   tickets    Ticket[]
 
   @@map("rooms")
@@ -85,7 +85,7 @@ model Equipment {
   createdAt         DateTime          @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt         DateTime          @updatedAt @map("updated_at") @db.Timestamp(6)
   category          EquipmentCategory @relation(fields: [equipmentCtgId], references: [equipmentCtgId])
-  room              Room              @relation(fields: [roomId], references: [roomId])
+  room              Room              @relation(fields: [roomId], references: [roomId], onDelete: Cascade)
   tickets           Ticket[]
 
   @@map("equipments")
@@ -98,7 +98,7 @@ model TicketImage {
   imageType     String?  @map("image_type") @db.VarChar(20)
   createdAt     DateTime @default(now()) @map("created_at") @db.Timestamp(6)
   imagePublicId String?  @map("image_public_id") @db.VarChar(100)
-  ticket        Ticket   @relation(fields: [ticketId], references: [ticketId])
+  ticket        Ticket   @relation(fields: [ticketId], references: [ticketId],onDelete: Cascade)
 
   @@map("ticket_images")
 }
@@ -138,10 +138,10 @@ model Ticket {
   admin               User?          @relation("AdminTickets", fields: [adminId], references: [userId])
   equipment           Equipment?     @relation(fields: [equipmentId], references: [equipmentId])
   floor               Floor?         @relation(fields: [floorId], references: [floorId])
-  location            Location       @relation(fields: [locationId], references: [locationId])
+  location            Location       @relation(fields: [locationId], references: [locationId],onDelete: Cascade)
   parentTicket        Ticket?        @relation("SubTickets", fields: [parentTicketId], references: [ticketId])
   subTickets          Ticket[]       @relation("SubTickets")
-  room                Room?          @relation(fields: [roomId], references: [roomId])
+  room                Room?          @relation(fields: [roomId], references: [roomId],onDelete: Cascade)
   category            TicketCategory @relation(fields: [ticketCtgId], references: [ticketCtgId])
   user                User           @relation("UserTickets", fields: [userId], references: [userId])
   upvotes             Upvote[]

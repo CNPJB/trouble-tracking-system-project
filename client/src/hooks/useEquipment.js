@@ -17,7 +17,7 @@ export const useEquipment = () => {
 
     const addEquipment = useCallback(async (newEquipment) => {
         try {
-            await axios.post('/api/equipment/add', newEquipment);
+            await axios.post('/api/manage/addEquipment', newEquipment);
             fetchEquipment(); // เพิ่มเสร็จแล้วดึงข้อมูลใหม่ทันที
         } catch (error) {
             console.error('Error adding equipment:', error);
@@ -26,7 +26,7 @@ export const useEquipment = () => {
 
     const updateEquipment = useCallback(async (id,updatedEquipment) => {
         try {
-            const response = await axios.patch(`/api/equipment/update/${id}`,updatedEquipment);
+            const response = await axios.patch(`/api/manage/updateEquipment/${id}`,updatedEquipment);
             console.log("ข้อมูลจาก Backend:", response.data);
             fetchEquipment();
         } catch (error) {
@@ -36,7 +36,7 @@ export const useEquipment = () => {
 
     const deleteEquipment = useCallback(async (id) => {
         try {
-            const response = await axios.delete(`/api/equipment/delete/${id}`);
+            const response = await axios.delete(`/api/manage/deleteEquipment/${id}`);
             console.log("ข้อมูลจาก Backend:", response.data);
             fetchEquipment();
         } catch (error) {

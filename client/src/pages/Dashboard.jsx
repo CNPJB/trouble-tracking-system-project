@@ -5,7 +5,8 @@ import "./Dashboard.css"
 // Components
 import { SearchBar } from '../components/SearchBar.jsx';
 import { CardFinishProblem } from '../components/CardFinishProblem'
-import { CardPendingProblem } from '../components/CardpendingProblem.jsx';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { CardPendingProblem, CardPendingSkeleton } from '../components/CardPendingProblem.jsx';
 import { FilterProblem } from '../components/FilterProblem.jsx';
 // Custom Hooks 
 // import { useTicketSearch } from '../hooks/useTicketSearch.js';
@@ -23,7 +24,9 @@ const Dashboard = () => {
     changePage,
     updateFilters
   } = useTickets();
-
+  
+  const { displayData, handleSearch, filterStatus, setFilterStatus } = useTicketSearch(tickets);
+  
   // ดึงข้อมูลสรุปยอดสำหรับทำ Filter Bar
   const { summary } = useTicketSummary();
 
@@ -105,7 +108,9 @@ const Dashboard = () => {
         <div className="ticket-pending-list">
           {/* โหลดครั้งแรก */}
           {isLoading && tickets.length === 0 && (
-            <div style={{ textAlign: 'center', padding: '20px' }}>กำลังโหลดข้อมูล...</div>
+             Array.from({ length: 8 }).map((_, index) => (
+              <CardPendingSkeleton key={`skeleton-${index}`} />
+            )
           )}
 
           {tickets.map((ticket, index) => {

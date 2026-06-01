@@ -51,7 +51,9 @@
 .scroll-btn.right {
     right: -30px;
 }
-
+.filter-container {
+    
+}
 /* ปัญหาที่รอดำเนินการ */
 .ticket-pending-list {
     display: grid;

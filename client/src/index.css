@@ -20,7 +20,8 @@ svg {
   --tbs-green: #37A70B;         /* สีเขียวหลัก */
   --tbs-green-light: #F7FFF3;   /* สีเขียวอ่อนกว่า (สำหรับ Hover) */
   --tbs-green-dark: #27ae60;    /* สีเขียวเข้ม (สำหรับ Text) */
-  --tbs-green-accent: #27ae60;  /* สีเขียวที่เน้นหนักขึ้น */
+  --tbs-green-accent: #229b09;  /* สีเขียวที่เน้นหนักขึ้น */
+  --tbs-green-active: #d7ffd4;
   /* =========================================
      2. สีของ Navbar (Navbar Color)
      =========================================
@@ -53,20 +54,23 @@ svg {
   --button-disabled-bg: #ddd;    /* ปุ่มที่ปิดการใช้งาน */
   --button-disabled-text: #888;
 
-  --status-all-bg: #34495e;
-  --status-all-text: #ffffff;
+ /* ทั้งหมด - สีเทาอ่อน */
+    --status-all-bg: #8b8b8b; 
+    --status-all-text: #ffffff;
 
-  /* รอรับเรื่อง (Pending) - ใช้สีเหลือง/ส้ม "คำเตือน" */
-  --status-pending-bg: #f1c40f; 
-  --status-pending-text: #453505;
+    /* รอรับเรื่อง - สีเหลือง/ส้มอ่อน */
+    --status-pending-bg: #ffd52c; 
+    --status-pending-text: #ffffff;
 
-  /* กำลังดำเนินการ (In Progress) - ใช้สีฟ้า "การเคลื่อนไหว" */
-  --status-in-progress-bg: #3498db;
-  --status-in-progress-text: #ffffff;
+    /* กำลังดำเนินการ - สีฟ้าอ่อน */
+    --status-in-progress-bg: #0089e4; 
+    --status-in-progress-text: #ffffff;
 
-  /* เสร็จสิ้น (Resolved) - ใช้สีเขียว "ความสำเร็จ" */
-  --status-resolved-bg: #27ae60;
-  --status-resolved-text: #ffffff;
+    /* เสร็จสิ้น - สีเขียวอ่อน */
+    --status-resolved-bg: #37A70B; 
+    --tbs-green-active: #dcfce3; 
+    --status-resolved-text:#ffffff;
+    --text-color-main: #166534;
 
   /* ยกเลิก/ด่วนมาก (Emergency/Cancel) */
   --status-red: #e74c3c;
@@ -76,6 +80,7 @@ svg {
      ========================================= */
   --bg-main: #f8f9fa;            /* สีเทาอ่อนมากสำหรับพื้นหลังกันแสงสะท้อน */
   --card-bg: #ffffff;            /* สีขาวบริสุทธิ์สำหรับการ์ดงาน */
+  --card-hover: #ff0000;
   --text-main: #2d3436;          /* เทาเกือบดำ อ่านง่ายกว่าดำสนิท */
   --text-muted: #636e72;         /* สำหรับรายละเอียดงานที่สำคัญรองลงมา */
   

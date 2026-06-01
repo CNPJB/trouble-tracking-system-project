@@ -35,17 +35,17 @@ export const AdminSidebar = () => {
           <span>Asset Management</span>
         </NavLink>
 
-        <NavLink to="/" className="nav-item">
+        <NavLink to="/adminPage/UserManagement" className="nav-item">
           <FaUserCog className="nav-icon" />
           <span>User Management</span>
         </NavLink>
 
-        <NavLink to="/" className="nav-item">
+        <NavLink to="/adminPage/LocationManagement" className="nav-item">
           <FaMapMarkedAlt className="nav-icon" />
           <span>Location Management</span>
         </NavLink>
 
-        <NavLink to="/" className="nav-item">
+        <NavLink to="/adminPage/Categories" className="nav-item">
           <FaTags className="nav-icon" />
           <span>Issue Categories</span>
         </NavLink>

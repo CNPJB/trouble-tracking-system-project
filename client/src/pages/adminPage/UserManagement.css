@@ -1,0 +1,78 @@
+.manage-user-container {
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.manage-user-container label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: #4a5568;
+    font-size: 0.95rem;
+}
+
+.manage-user-container input[type="text"],
+.manage-user-container select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    font-size: 1rem;
+    color: #2d3748;
+    background-color: #f7fafc;
+    box-sizing: border-box;
+    /* สำคัญมาก ป้องกัน input ล้นกรอบ */
+    transition: all 0.3s ease;
+}
+
+.manage-user-container input[type="text"]:focus,
+.manage-user-container select:focus {
+    outline: none;
+    border-color: var(--tbs-green);
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
+}
+
+.form-selected {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 5px;
+    padding-top: 20px;
+    border-top: 1px dashed #e2e8f0;
+    /* เส้นประแบ่งโซน */
+}
+
+.btn {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-content: center;
+    padding: 20px;
+    gap: 10px;
+}
+
+.btn-confirm {
+  padding: 12px 0;
+  background-color: var(--tbs-green);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.btn-cancel {
+  padding: 12px 0;
+  background-color: var(--button-red-bg);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}

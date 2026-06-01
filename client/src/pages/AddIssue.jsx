@@ -17,6 +17,7 @@ import { LoadingSpinner, ToastAlert } from '../components/LoadingSpinner.jsx';
 import { ticketService } from '../services/ticketService.js';
 // Styles
 import './AddIssue.css';
+import { ConfirmButton } from '../components/ConfirmButton.jsx';
 
 function AddIssue() {
   
@@ -286,7 +287,7 @@ function AddIssue() {
       {/* ฝั่งซ้าย: ฟอร์มแจ้งปัญหา */}
       <div className="form-section">
         <h2>กรุณากรอกแบบฟอร์มแจ้งปัญหาของคุณ</h2>
-        <form onSubmit={handleSubmit}>
+        <form id='add-issue' onSubmit={handleSubmit}>
 
           <div className="form-row">
             <div className="form-group">
