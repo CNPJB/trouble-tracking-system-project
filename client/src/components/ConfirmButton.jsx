@@ -8,7 +8,8 @@ export const ConfirmButton = ({
     onConfirm,
     onCancel,
     confirmText = "ยืนยัน",
-    cancelText = "ยกเลิก"
+    cancelText = "ยกเลิก",
+    isLoading = false
 }) => {
     // ถ้า isOpen เป็น false จะไม่แสดงอะไรเลย
     if (!isOpen) return null;
@@ -20,11 +21,26 @@ export const ConfirmButton = ({
                 <p className="confirm-modal-message">{message}</p>
 
                 <div className="confirm-modal-actions">
-                    <button className="confirm-btn-cancel" onClick={onCancel}>
+                    <button 
+                    className="confirm-btn-cancel" 
+                    onClick={onCancel}
+                    disabled={isLoading} // ปิดปุ่มเมื่อกำลังโหลด
+                    >
                         {cancelText}
                     </button>
-                    <button className="confirm-btn-submit" onClick={onConfirm}>
-                        {confirmText}
+                    <button 
+                    className="confirm-btn-submit" 
+                    onClick={onConfirm}
+                    disabled={isLoading} // ปิดปุ่มเมื่อกำลังโหลด
+                    >
+                        {isLoading ? (
+                            <>
+                                <span className="spinner-small"></span>
+                                {confirmText}
+                            </>
+                        ) : (
+                            confirmText
+                        )}
                     </button>
                 </div>
             </div>

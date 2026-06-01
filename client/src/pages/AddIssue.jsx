@@ -1,17 +1,38 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+// Custom Hooks
+import { useLoadingState } from '../hooks/useLoadingState.js';
 import { useTickets } from '../hooks/useTickets.js';
-import axios from 'axios';
+import { useImageUpload } from '../hooks/useImageUpload.js';
+import { useMasterData } from '../hooks/useMasterData.js';
+import { useSimilarTickets } from '../hooks/useSimilarTickets.js';
+import { useEquipmentValidation } from '../hooks/useEquipmentValidation.js';
+// Components
+import ImageUploader from '../components/ImageUploader.jsx';
+import SimilarTickets from '../components/SimilarTickets.jsx';
+import { ConfirmButton } from '../components/ConfirmButton.jsx';
+import { LoadingSpinner, ToastAlert } from '../components/LoadingSpinner.jsx';
+// Services
+import { ticketService } from '../services/ticketService.js';
+// Styles
 import './AddIssue.css';
 
 function AddIssue() {
+  
   //  Contexts and Hooks for Authentication and Tickets
   const { user } = useAuth();
-  const { tickets, refetch } = useTickets();
+  const { refetch } = useTickets();
   const navigate = useNavigate();
 
-  // --- 1. State for form data ---
+  // --- State and functions for loading and error handling ---
+  const { loading, startLoading, setError, setSuccess, reset, clearError } = useLoadingState();
+
+  // --- State for master data and image upload from custom hooks ---
+  const { selectedImages, fileInputRef, handleImageChange, removeImage, clearImages } = useImageUpload(3, setError);
+  const { categories, locations, floors, rooms, equipments } = useMasterData();
+
+  // --- State for form data ---
   const [formData, setFormData] = useState({
     categoryId: '',
     title: '',
@@ -22,47 +43,56 @@ function AddIssue() {
     description: '',
   });
 
-  // --- 2. State for Master Data ---
-  const [selectedImages, setSelectedImages] = useState([]);
-  const fileInputRef = useRef(null);
+  // --- Ticket categories checker ---
+  const parsedCategoryId = formData.categoryId ? parseInt(formData.categoryId, 10) : null;
+  const selectedCategory = categories.find(c => c.ticketCtgId === parsedCategoryId);
+  const isEquipmentCategory = selectedCategory?.ticketCtgName === "ด้านอุปกรณ์คอมพิวเตอร์และครุภัณฑ์"
+    || selectedCategory?.ticketCtgName === "ด้านซอฟต์แวร์และระบบปฏิบัติการ";
 
-  const [categories, setCategories] = useState([]);
-  const [locations, setLocations] = useState([]);
-  const [floors, setFloors] = useState([]);
-  const [rooms, setRooms] = useState([]);
-  const [equipments, setEquipments] = useState([]);
-  // State to check equipment status
-  const [equipmentValidation, setEquipmentValidation] = useState({ status: null, message: '' });
+  // --- State to confirm modal visibility ---
+  const [confirmUpvote, setConfirmUpvote] = useState({
+    isOpen: false,
+    ticketId: null
+  });
 
-  // --- 3. Fetch Master Data on Component Mount ---
+  // --- State to confirm form submission ---
+  const [confirmSubmit, setConfirmSubmit] = useState({
+    isOpen: false,
+  });
+
+  // --- State for debouncing input ---
+  const [debouncedTitle, setDebouncedTitle] = useState('');
+
+  // --- Logic to Debounce Title  ---
   useEffect(() => {
-    const fetchMasterData = async () => {
-      try {
-        const [catRes, locRes, floorRes, roomRes, equipRes] = await Promise.all([
-          axios.get('/api/manage/getTicketCategories', { withCredentials: true }),
-          axios.get('/api/manage/getLocations', { withCredentials: true }),
-          axios.get('/api/manage/getFloors', { withCredentials: true }),
-          axios.get('/api/manage/getRooms', { withCredentials: true }),
-          axios.get('/api/manage/getEquipment', { withCredentials: true }),
-        ]);
+    const timerId = setTimeout(() => {
+      setDebouncedTitle(formData.title);
+    }, 500);
 
-        setCategories(catRes.data);
-        setLocations(locRes.data);
-        setFloors(floorRes.data);
-        setRooms(roomRes.data);
-        setEquipments(equipRes.data);
-      } catch (error) {
-        console.error('Error fetching master data:', error);
-      }
+    return () => {
+      clearTimeout(timerId);
     };
-    fetchMasterData();
-  }, []);
+  }, [formData.title]);
 
-  //  --- 4. Ticket categories checker ---
-  const selectedCategory = categories.find(c => c.ticketCtgId === parseInt(formData.categoryId));
-  const isEquipmentCategory = selectedCategory?.ticketCtgName === "ด้านอุปกรณ์คอมพิวเตอร์และครุภัณฑ์"; 
+  // --- State for validating equipment code ---
+  const { equipmentValidation } = useEquipmentValidation(
+    isEquipmentCategory,
+    formData.equipmentCode,
+    formData.roomId,
+    equipments
+  );
 
-  // --- 5. Logic to handle form input changes ---
+  // --- State for Searching similar ticket from add issue form ---
+  const { similarTickets, isSearchingSimilar } = useSimilarTickets(
+    formData.categoryId,
+    formData.locationId,
+    formData.roomId,
+    equipmentValidation.status === 'success' ? equipmentValidation.equipmentId : null,
+    debouncedTitle,
+    user?.userId
+  );  
+
+  // --- Logic to handle form input changes ---
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -71,7 +101,7 @@ function AddIssue() {
 
       // Auto-populate floorId when roomId is selected
       if (name === 'roomId' && value) {
-        const selectedRoom = rooms.find(r => r.roomId === parseInt(value));
+        const selectedRoom = rooms.find(r => r.roomId === parseInt(value, 10));
         if (selectedRoom) {
           newData.floorId = selectedRoom.floorId.toString();
         }
@@ -93,84 +123,53 @@ function AddIssue() {
     });
   };
 
-  // --- 6. Logic to validate equipment code ---
-  useEffect(() => {
-    if (!isEquipmentCategory || !formData.equipmentCode) {
-      setEquipmentValidation({ status: null, message: '' });
-      return;
-    }
-    if (!formData.roomId) {
-      setEquipmentValidation({ status: 'error', message: 'กรุณาเลือกห้องก่อนระบุรหัสครุภัณฑ์' });
-      return;
-    }
+  /* ============================================
+    --- Logic จัดการตัวเลือก (Cascading Dropdown) ---
+     ============================================ */
+  //    1. กรอง "ชั้น" ให้เหลือเฉพาะที่อยู่ใน "สถานที่" ที่เลือก
+  const availableFloors = useMemo(() => {
+    if (!formData.locationId) return [];
+    return floors.filter(f => f.locationId === parseInt(formData.locationId, 10));
+  }, [floors, formData.locationId]);
 
-    // Find equipment with user input
-    const foundEquipment = equipments.find(
-      eq => eq.roomId === parseInt(formData.roomId) && eq.equipmentCode === formData.equipmentCode
-    );
+  //    2. กรอง "ห้อง" ให้สัมพันธ์กับสถานที่และชั้น
+  const availableRooms = useMemo(() => {
+    if (!formData.locationId) return []; // ถ้ายังไม่เลือกสถานที่ ไม่ต้องโชว์ห้อง
 
-    if (foundEquipment) {
-      setEquipmentValidation({ status: 'success', message: `พบข้อมูล: ${foundEquipment.equipmentName}` });
+    if (formData.floorId) {
+      // กรณี 2.1: เลือกชั้นแล้ว -> โชว์เฉพาะห้องที่อยู่ในชั้นนั้นเป๊ะๆ
+      return rooms.filter(r => r.floorId === parseInt(formData.floorId, 10));
     } else {
-      setEquipmentValidation({ status: 'error', message: 'ไม่พบรหัสครุภัณฑ์นี้ในห้องที่เลือก' });
+      // กรณี 2.2: เลือกสถานที่ แต่ข้ามการเลือกชั้น -> ดึงห้อง "ทั้งหมด" ที่อยู่ในสถานที่นั้นมาโชว์
+      const validFloorIds = availableFloors.map(f => f.floorId);
+      return rooms.filter(r => validFloorIds.includes(r.floorId));
     }
-  }, [formData.equipmentCode, formData.roomId, isEquipmentCategory, equipments]);
+  }, [rooms, availableFloors, formData.locationId, formData.floorId]);
 
-  // --- Logic to handle image selection ---
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-
-    if (selectedImages.length + files.length > 3) {
-      alert("อัปโหลดรูปภาพได้สูงสุด 3 รูปเท่านั้นครับ");
-      return;
-    }
-
-    const newImages = files.map(file => ({
-      file,
-      previewUrl: URL.createObjectURL(file) // สร้าง URL จำลองเพื่อให้โชว์รูปได้ทันที
-    }));
-
-    setSelectedImages(prev => [...prev, ...newImages]);
-    e.target.value = null; // รีเซ็ตค่า input เพื่อให้สามารถเลือกไฟล์เดิมได้อีกครั้ง
-  };
-
-  const removeImage = (indexToRemove) => {
-    setSelectedImages(prev => {
-      const newImages = [...prev];
-
-      URL.revokeObjectURL(newImages[indexToRemove].previewUrl);
-      newImages.splice(indexToRemove, 1);
-      return newImages;
-    });
-  };
-
-  // --- 7. Logic to filter similar tickets based on form input ---
-  const similarTickets = useMemo(() => {
-    let filtered = tickets.filter(t => t.ticketStatus === 'pending');
-
-    if (formData.categoryId || formData.locationId || formData.title) {
-      filtered = filtered.filter(t => {
-        const matchCategory = formData.categoryId ? t.ticketCtgId === parseInt(formData.categoryId) : false;
-        const matchLocation = formData.locationId ? t.locationId === parseInt(formData.locationId) : false;
-        const matchTitle = formData.title ? t.title.includes(formData.title) : false;
-        return matchCategory || matchLocation || matchTitle;
-      });
-    }
-
-    return filtered.sort((a, b) => (b.upvotes?.length || 0) - (a.upvotes?.length || 0));
-  }, [tickets, formData]);
-
-  // --- 8. Logic to handle submission ---
-  const handleSubmit = async (e) => {
+  // --- Logic to handle submission trigger ---
+  const handleSubmit = (e) => {
     e.preventDefault();
 
+    reset();
     // Equipment code validation before submission
     if (isEquipmentCategory && equipmentValidation.status !== 'success') {
-      alert("กรุณาระบุรหัสครุภัณฑ์ให้ถูกต้องตามที่มีในระบบ");
+      setError("กรุณาระบุรหัสครุภัณฑ์ให้ถูกต้องตามที่มีในระบบ", "warning");
       return;
     }
 
-    // Submit the form data
+    if (!formData.title.trim()) {
+      setError("กรุณากรอกหัวข้อปัญหาให้ครบถ้วนและไม่เป็นช่องว่าง", "warning");
+      return;
+    }
+
+    // Open confirmation modal instead of submitting directly
+    setConfirmSubmit({ isOpen: true });
+  };
+
+  // --- Logic to confirm and submit form ---
+  const handleConfirmSubmit = async () => {
+    startLoading();
+
     try {
       const submitData = new FormData();
 
@@ -186,7 +185,7 @@ function AddIssue() {
       // ถ้าเป็นหมวดอุปกรณ์และมีรหัสครุภัณฑ์ที่ถูกต้อง ให้ส่ง equipmentId ไปด้วย
       if (isEquipmentCategory && formData.equipmentCode) {
         const foundEq = equipments.find(
-          eq => eq.roomId === parseInt(formData.roomId) && eq.equipmentCode === formData.equipmentCode
+          eq => eq.roomId === parseInt(formData.roomId, 10) && eq.equipmentCode === formData.equipmentCode
         );
         if (foundEq) {
           submitData.append('equipmentId', foundEq.equipmentId);
@@ -197,34 +196,75 @@ function AddIssue() {
         submitData.append('images', img.file);
       });
 
-      const response = await axios.post('/api/tickets/add', submitData, {
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'multipart/form-data' // จำเป็นมากเมื่อมีไฟล์
-        }
-      });
+      const result = await ticketService.createTicket(submitData);
 
-      if (response.data.success) {
-        alert("แจ้งปัญหาสำเร็จเรียบร้อยแล้ว!");
-        // 5. นำทางไปหน้า Tracking อัตโนมัติ
-        navigate('/tracking'); 
-      } 
+      if (result.success) {
+        setSuccess("แจ้งปัญหาสำเร็จเรียบร้อยแล้ว");
+        clearImages(); // เคลียร์รูปภาพหลังจากส่งสำเร็จ
+        refetch();
+
+        reset();
+        setConfirmSubmit({ isOpen: false });
+
+        navigate('/tracking?tab=mine', {
+          state: {
+            showToast: true,
+            message: "แจ้งปัญหาสำเร็จเรียบร้อยแล้ว!",
+          }
+        });
+      }
 
     } catch (error) {
-      console.error("Error submitting ticket:", error);
-      alert(error.response?.data?.message || "เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+      const errorMessage = error.response?.data?.message || "เกิดข้อผิดพลาดในการบันทึกข้อมูล";
+      const severityLevel = error.response?.status === 409 ? 'warning' : 'error';
+
+      setError(errorMessage, severityLevel);
+      setConfirmSubmit({ isOpen: false });
     }
+  };
+
+  const handleCancelSubmit = () => {
+    setConfirmSubmit({ isOpen: false });
+    reset();
   };
 
   // Handle upvote logic for similar tickets
   const handleUpvote = async (ticketId) => {
+    setConfirmUpvote({ isOpen: true, ticketId });
+  };
+
+  const handleConfirmUpvote = async () => {
+    startLoading();
     try {
-      await axios.post(`/api/tickets/upvoteTicket/${ticketId}`, {}, { withCredentials: true });
-      refetch();
+      const result = await ticketService.upvoteTicket(confirmUpvote.ticketId);
+
+      if (result.success) {
+        setSuccess("โหวตให้ปัญหานี้สำเร็จเรียบร้อยแล้ว");
+        refetch();
+
+        reset();
+        setConfirmUpvote({ isOpen: false, ticketId: null });
+
+        navigate('/tracking?tab=upvoted', {
+          state: {
+            showToast: true,
+            message: "โหวตให้ปัญหานี้สำเร็จเรียบร้อยแล้ว!"
+          }
+        });
+      }
+
     } catch (error) {
       console.error("Error upvoting ticket:", error);
+      setError(error.response?.data?.message || "เกิดข้อผิดพลาดในการโหวต");
+
+      setConfirmUpvote({ isOpen: false, ticketId: null });
     }
   };
+
+  const handleCancelUpvote = () => {
+    setConfirmUpvote({ isOpen: false, ticketId: null });
+    reset();
+  }
 
   if (!user) {
     return <div style={{ textAlign: 'center', marginTop: '50px' }}>Loading...</div>;
@@ -232,6 +272,17 @@ function AddIssue() {
 
   return (
     <div className="add-issue-container">
+      {/* แสดงสถานะการโหลด เมื่อกำลังประมวลผล */}
+      <LoadingSpinner
+        isLoading={loading.isLoading}
+        message="กำลังประมวลผล..."
+      />
+      {/* แสดงข้อผิดพลาดเมื่อมีการโหลดไม่สำเร็จ */}
+      <ToastAlert
+        error={loading.error}
+        success={loading.success}
+        onDismiss={reset}
+      />
       {/* ฝั่งซ้าย: ฟอร์มแจ้งปัญหา */}
       <div className="form-section">
         <h2>กรุณากรอกแบบฟอร์มแจ้งปัญหาของคุณ</h2>
@@ -239,21 +290,21 @@ function AddIssue() {
 
           <div className="form-row">
             <div className="form-group">
-              <label>ประเภทปัญหา <span style={{color: 'red'}}>*</span></label>
+              <label>ประเภทปัญหา <span style={{ color: 'red' }}>*</span></label>
               <select name="categoryId" onChange={handleChange} value={formData.categoryId} required>
                 <option value="">เลือกประเภทปัญหา</option>
                 {categories.map(c => <option key={c.ticketCtgId} value={c.ticketCtgId}>{c.ticketCtgName}</option>)}
               </select>
             </div>
             <div className="form-group">
-              <label>หัวข้อปัญหา <span style={{color: 'red'}}>*</span></label>
+              <label>หัวข้อปัญหา <span style={{ color: 'red' }}>*</span></label>
               <input type="text" name="title" onChange={handleChange} value={formData.title} placeholder="ระบุหัวข้อปัญหา" required />
             </div>
           </div>
 
           <div className="form-row">
             <div className="form-group">
-              <label>สถานที่ <span style={{color: 'red'}}>*</span></label>
+              <label>สถานที่ <span style={{ color: 'red' }}>*</span></label>
               <select name="locationId" onChange={handleChange} value={formData.locationId} required>
                 <option value="">เลือกสถานที่</option>
                 {locations.map(l => <option key={l.locationId} value={l.locationId}>{l.locationName}</option>)}
@@ -262,7 +313,7 @@ function AddIssue() {
 
             {isEquipmentCategory && (
               <div className="form-group highlight-field">
-                <label>รหัสครุภัณฑ์ *</label>
+                <label>รหัสครุภัณฑ์ <span style={{ color: 'red' }}>*</span></label>
                 <input
                   type="text"
                   name="equipmentCode"
@@ -287,16 +338,20 @@ function AddIssue() {
               <label>ชั้น</label>
               <select name="floorId" onChange={handleChange} value={formData.floorId} disabled={!formData.locationId}>
                 <option value="">เลือกชั้น</option>
-                {floors.filter(f => f.locationId === parseInt(formData.locationId)).map(f => (
+                {availableFloors.map(f => (
                   <option key={f.floorId} value={f.floorId}>{f.floorLevel || f.floorName}</option>
                 ))}
               </select>
             </div>
             <div className="form-group">
               <label>ห้อง</label>
-              <select name="roomId" onChange={handleChange} value={formData.roomId} disabled={!formData.locationId}>
+              <select
+                name="roomId"
+                onChange={handleChange}
+                value={formData.roomId}
+                disabled={!formData.locationId} >
                 <option value="">เลือกห้อง</option>
-                {rooms.filter(r => r.floorId === parseInt(formData.floorId) || !formData.floorId).map(r => (
+                {availableRooms.map(r => (
                   <option key={r.roomId} value={r.roomId}>{r.roomName}</option>
                 ))}
               </select>
@@ -308,85 +363,71 @@ function AddIssue() {
             <textarea name="description" onChange={handleChange} value={formData.description} placeholder="ระบุรายละเอียดเพิ่มเติม" rows="4"></textarea>
           </div>
 
-          {/* ส่วน UI รูปภาพ */}
-          <div className="form-group">
-            <label>เพิ่มรูปภาพ (ไม่เกิน 3 รูป) <span style={{color: 'red'}}>*</span></label>
-            <div className="image-upload-container">
-
-              {/* ซ่อน Input ตัวจริงไว้ แล้วใช้ Ref เรียกแทนเพื่อให้ดีไซน์สวยงาม */}
-              <input 
-                type="file" 
-                multiple 
-                accept="image/*" 
-                onChange={handleImageChange} 
-                ref={fileInputRef} 
-                style={{ display: 'none' }} 
-              />
-              
-              {/* ปุ่มกดเพิ่มรูป (+ รูปภาพ) ซ่อนเมื่อครบ 3 รูป */}
-              {selectedImages.length < 3 && (
-                <button 
-                  type="button"
-                  className="upload-placeholder" 
-                  onClick={() => fileInputRef.current?.click()}
-                  aria-label="เพิ่มรูปภาพ"
-                >
-                  <span>+</span>
-                </button>
-              )}
-
-              {/* แสดงพรีวิวรูปภาพที่ถูกเลือกมา */}
-              {selectedImages.map((img, index) => (
-                <div key={index} className="image-preview-box">
-                  <img src={img.previewUrl} alt={`preview-${index}`} />
-                  <button type="button" className="btn-remove-image" onClick={() => removeImage(index)}>
-                    &times;
-                  </button>
-                </div>
-              ))}             
-
-            </div>
-          </div>
+          {/* ส่วน UI Upload รูปภาพ */}
+          <ImageUploader
+            selectedImages={selectedImages}
+            fileInputRef={fileInputRef}
+            onImageChange={handleImageChange}
+            onRemoveImage={removeImage}
+            maxImages={3}
+          />
 
           <div className="form-actions" style={{ marginTop: '20px' }}>
-            <button type="submit" className="btn-submit" disabled={isEquipmentCategory && equipmentValidation.status !== 'success'}>ยืนยัน</button>
-            <button type="button" className="btn-reset" onClick={() => {
-              setFormData({ categoryId: '', title: '', locationId: '', floorId: '', roomId: '', equipmentCode: '', description: '' });
-              setSelectedImages([]); // รีเซ็ตรูปภาพด้วย
-            }}>รีเซ็ต</button>
+            <button
+              type="submit"
+              className="btn-submit"
+              disabled={loading.isLoading || (isEquipmentCategory && equipmentValidation.status !== 'success')}
+            >
+              {loading.isLoading ? 'กำลังบันทึก...' : 'ยืนยัน'}
+            </button>
+            <button
+              type="button"
+              className="btn-reset"
+              disabled={loading.isLoading}
+              onClick={() => {
+                setFormData({ categoryId: '', title: '', locationId: '', floorId: '', roomId: '', equipmentCode: '', description: '' });
+                clearImages(); // รีเซ็ตรูปภาพด้วย
+              }}
+            >
+              รีเซ็ต
+            </button>
           </div>
         </form>
       </div>
+      <div className="similar-tickets-wrapper">
+        {isSearchingSimilar && <div className="searching-indicator">กำลังค้นหาปัญหาที่คล้ายกัน...</div>}
 
-      {/* ฝั่งขวา: รายการปัญหา */}
-      <div className="suggestion-section">
-        {/* <h3>โปรดตรวจสอบว่าปัญหาที่คุณแจ้งคล้ายคลึงกับผู้อื่นหรือไม่</h3>
-        <div className="ticket-list">
-          {similarTickets.length > 0 ? similarTickets.map(ticket => (
-            <div key={ticket.ticketId} className="ticket-card">
-              
-              <div className="ticket-info">
-                <h4>{ticket.title}</h4>
-                  <p>สถานที่: {ticket.location?.locationName || '-'}</p>
-                  <p>ชั้น: {ticket.floor?.floorLevel || '-'}</p>
-                  <p>ห้อง: {ticket.room?.roomName || '-'}</p>
-
-
-                  {ticket.equipment?.equipmentCode && <p>
-                    รหัสครุภัณฑ์: {ticket.equipment.equipmentCode}</p>}
-                <span className="status-badge pending">สถานะ: {ticket.ticketStatus}</span>
-              </div>
-              <div className="ticket-action">
-                <button className="btn-upvote" onClick={() => handleUpvote(ticket.ticketId)} disabled={ticket.userId === user.userId}>
-                  UPVOTE ({ticket.upvotes?.length || 0})
-                </button>
-              </div>
-            </div>
-          )) : (
-            <p className="no-suggestion">ยังไม่มีปัญหาที่ใกล้เคียงในระบบ</p>
-          )}
-          </div> */}
+        {/* ฝั่งขวา: รายการปัญหา */}
+        <SimilarTickets
+          tickets={similarTickets}
+          onUpvote={handleUpvote}
+          currentUserId={user?.userId}
+        />
       </div>
+
+      {/* Confirm Modal for Form Submission */}
+      <ConfirmButton
+        isOpen={confirmSubmit.isOpen}
+        title="ยืนยันการส่งแจ้งปัญหา"
+        message="คุณแน่ใจหรือไม่ว่าต้องการส่งแจ้งปัญหานี้? โปรดตรวจสอบข้อมูลให้ถูกต้องก่อนยืนยัน"
+        onConfirm={handleConfirmSubmit}
+        onCancel={handleCancelSubmit}
+        confirmText={loading.isLoading ? "กำลังบันทึก..." : "ยืนยัน"}
+        cancelText={loading.isLoading ? "ปิด" : "ยกเลิก"}
+        isLoading={loading.isLoading}
+      />
+
+      {/* Confirm Modal for Upvoting */}
+      <ConfirmButton
+        isOpen={confirmUpvote.isOpen}
+        title="ยืนยันการโหวต"
+        message="คุณต้องการโหวตให้ปัญหานี้หรือไม่? การโหวตของคุณจะช่วยให้ปัญหาได้รับการแก้ไขเร็วขึ้น"
+        onConfirm={handleConfirmUpvote}
+        onCancel={handleCancelUpvote}
+        confirmText={loading.isLoading ? "กำลังโหวต..." : "โหวต"}
+        cancelText={loading.isLoading ? "ปิด" : "ยกเลิก"}
+        isLoading={loading.isLoading}
+      />
     </div>
   );
 }

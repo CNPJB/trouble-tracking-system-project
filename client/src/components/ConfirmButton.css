@@ -85,6 +85,19 @@
     transform: scale(0.96); /* เวลากดให้ปุ่มยุบลงไปนิดนึง */
 }
 
+/* Disabled State */
+/* ...existing code... */
+
+.confirm-btn-submit:disabled,
+.confirm-btn-cancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.confirm-btn-submit:disabled {
+  background-color: #bbb;
+}
+
 /* --- Animations --- */
 @keyframes fadeIn {
     from { opacity: 0; }

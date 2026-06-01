@@ -22,10 +22,16 @@
   justify-content: space-between; /* จัดซ้าย-ขวาแยกกัน */
   align-items: center;
   width: 100%;
-  max-width: 1200px; /* จำกัดความกว้างบนจอใหญ่ */
+  max-width: 1500px; /* จำกัดความกว้างบนจอใหญ่ */
   margin: 0 auto; /* จัดกึ่งกลางก้อนเนื้อหา */
   padding: 0 20px;
   position: relative;
+}
+
+.nav-icon {
+  margin-left: 5px; /* เว้นระยะห่างระหว่างข้อความกับไอคอน */
+  vertical-align: middle; /* จัดให้อยู่ตรงกลางแนวตั้งกับข้อความ */
+  font-size: 18px; /* ขนาดไอคอน */
 }
 
 /* ส่วนโลโก้ซ้าย */

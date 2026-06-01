@@ -1,6 +1,8 @@
 import { OAuth2Client } from 'google-auth-library';
 import prisma from '../config/prismaClient.js';
 import jwt from 'jsonwebtoken';
+// For testing local user registration and login
+import bcrypt from 'bcryptjs';
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const ALLOWED_DOMAIN = 'mail.rmutk.ac.th';
@@ -109,4 +111,75 @@ export const logout = (req, res) => {
 
     res.clearCookie('token', cookieOptions);
     res.json({ message: 'Logged out successfully' });
+};
+
+// ----------------------------------------------------
+//
+// Register & Login local user (for testing purposes)
+//
+// ----------------------------------------------------
+export const localRegister = async (req, res) => {
+    const { email, password, fullName } = req.body;
+
+    try {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        const user = await prisma.user.create({
+            data: {
+                email,
+                password: hashedPassword,
+                fullName
+            }
+        });
+
+        res.status(201).json({ user });
+    } catch (error) {
+        console.error('Error registering local user:', error);
+        res.status(500).json({ message: 'Failed to register user' });
+    }
+};
+
+export const localLogin = async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        const user = await prisma.user.findUnique({
+            where: { email }
+        });
+
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
+
+        // Create JWT token
+        const token = jwt.sign({ userId: user.userId, email: user.email, role: user.role }, 
+            process.env.JWT_SECRET, 
+            { expiresIn: '1d' });
+
+        // Set cookie
+        if (process.env.NODE_ENV === 'production') {
+            res.cookie('token', token, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'none',
+                maxAge: 24 * 60 * 60 * 1000, // 1 day
+            });
+        } else {
+            res.cookie('token', token, {
+                httpOnly: true,
+                sameSite: 'lax',
+                maxAge: 24 * 60 * 60 * 1000, // 1 day
+            });
+        }
+
+        res.status(200).json({ user });
+    } catch (error) {
+        console.error('Error logging in local user:', error);
+        res.status(500).json({ message: 'Failed to log in user' });
+    }
 };

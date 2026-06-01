@@ -60,11 +60,35 @@
     justify-items: center;
     padding: 32px 80px;
 }
-@media (max-width: 1024px) {
-  .ticket-pending-list {
-    grid-template-columns: repeat(2, 1fr); /* เหลือ 2 คอลัมน์ */
-  }
+
+.no-result {
+    grid-column: 1 / -1; /* ให้กล่อง No Result กินพื้นที่เต็มแถว */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: #64748b;
+    font-size: 16px;
+    background-color: #f8fafc;
+    border-radius: 12px;
+    border: 2px dashed #cbd5e1;
+    width: 100%;
 }
+
+.no-result img {
+    width: 120px;
+    opacity: 0.5;
+    margin-bottom: 16px;
+}
+
+@media (max-width: 1024px) {
+    .ticket-pending-list {
+        grid-template-columns: repeat(2, 1fr);
+        /* เหลือ 2 คอลัมน์ */
+    }
+}
+
 @media (max-width: 430px) {
     .card-FinishProblem-grid {
         width: 100%;
@@ -83,7 +107,7 @@
     }
 
     .ticket-pending-list {
-    grid-template-columns: 1fr;           
-    gap: 15px;                             
-  }
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
 }
