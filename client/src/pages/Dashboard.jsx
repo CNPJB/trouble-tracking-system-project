@@ -4,7 +4,7 @@ import "./Dashboard.css"
 import { SearchBar } from '../components/SearchBar.jsx';
 import { CardFinishProblem } from '../components/CardFinishProblem'
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import { CardPendingProblem } from '../components/CardpendingProblem.jsx';
+import { CardPendingProblem, CardPendingSkeleton } from '../components/CardpendingProblem.jsx';
 import { FilterProblem } from '../components/FilterProblem.jsx';
 
 // hook 
@@ -12,12 +12,10 @@ import { useTicketSearch } from '../hooks/useTicketSearch.js';
 import { useTickets } from '../hooks/useTickets.js';
 
 const Dashboard = () => {
-  const { tickets } = useTickets();
+  const { tickets ,isLoading } = useTickets();
   const scrollRef = useRef(null);
-
   // เรียกใช้งาน hook
   const { displayData, handleSearch, filterStatus, setFilterStatus } = useTicketSearch(tickets);
-  
 
   // const displayTickets = useMemo(() => {
   //   let list = isSearching ? searchResult : tickets;
@@ -56,19 +54,29 @@ const Dashboard = () => {
         <div className="searchbar">
           <SearchBar onSearch={handleSearch} />
         </div>
-        <FilterProblem
-          data={tickets}
-          currentFilter={filterStatus}
-          onFilterChange={(status) => {
-            setFilterStatus(status)
-          }}
-        />
+        <div className="filter-container">
+          <FilterProblem
+            data={tickets}
+            currentFilter={filterStatus}
+            onFilterChange={(status) => {
+              setFilterStatus(status)
+            }}
+          />
+        </div>
         <div className="ticket-pending-list">
-          {displayData.map((ticket, index) => (
-            <CardPendingProblem key={index} data={ticket} />
-          ))}
-          {displayData.length === 0 && (
-            <div className="no-result">ไม่พบรายการสถานะนี้</div>
+          {isLoading ? (
+            Array.from({ length: 8 }).map((_, index) => (
+              <CardPendingSkeleton key={`skeleton-${index}`} />
+            ))
+          ) : (
+            <>
+              {displayData?.map((ticket, index) => (
+                <CardPendingProblem key={index} data={ticket} />
+              ))}
+              {displayData?.length === 0 && (
+                <div className="no-result">ไม่พบรายการสถานะนี้</div>
+              )}
+            </>
           )}
         </div>
       </div>

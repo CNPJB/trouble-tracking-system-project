@@ -18,6 +18,9 @@ import Tracking from "./pages/Tracking.jsx";
 // Pages admin
 const AuditIssues = React.lazy(() => import('./pages/adminPage/AuditIssues.jsx'))
 const AssetManagement = React.lazy(() => import('./pages/adminPage/AssetManagement.jsx'))
+const UserManagement = React.lazy(() => import('./pages/adminPage/UserManagement.jsx'))
+const LocationManagement = React.lazy(() => import('./pages/adminPage/LocationManagement.jsx'))
+const Categories = React.lazy(() => import('./pages/adminPage/Categories.jsx'))
 
 
 function App() {
@@ -56,6 +59,15 @@ function App() {
                   } />
                   <Route path="AssetManagement" element={
                     <Suspense fallback={<div>Loading...</div>}><AssetManagement /></Suspense>
+                  } />
+                  <Route path="UserManagement" element={
+                    <Suspense fallback={<div>Loading...</div>}><UserManagement /></Suspense>
+                  } />
+                  <Route path="LocationManagement" element={
+                    <Suspense fallback={<div>Loading...</div>}><LocationManagement /></Suspense>
+                  } />
+                  <Route path="Categories" element={
+                    <Suspense fallback={<div>Loading...</div>}><Categories /></Suspense>
                   } />
                 </Route>
               </Routes>

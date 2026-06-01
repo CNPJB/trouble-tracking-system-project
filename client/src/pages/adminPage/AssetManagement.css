@@ -1,38 +1,44 @@
-.assetManagement-container{
-    padding: 20px;
+.assetManagement-container {
+  padding: 20px;
 }
-.main-equiment-container{
+
+.main-container {
   display: grid;
-  grid-template-columns: 1fr  1fr;
+  grid-template-columns: 1fr 1fr;
 }
-.filter-assetManagement-container{
-    display: flex;
-    justify-content: flex-start;
-    margin-bottom: 30px;
-    padding: 15px;
-    gap: 20px;
+
+.filter-assetManagement-container {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 30px;
+  padding: 15px;
+  gap: 20px;
 }
+
 .audit-issues-searchbar form {
-    gap: 10px;
-    width: 100%;
-    display: flex;
+  gap: 10px;
+  width: 100%;
+  display: flex;
 }
+
 .audit-issues-searchbar input {
   padding: 12px 20px;
   width: 400px;
   max-width: 400px;
   border: 2px solid #e0e0e0;
-  border-radius: 25px; /* ทรงมนสวยงาม */
+  border-radius: 25px;
+  /* ทรงมนสวยงาม */
   outline: none;
   font-size: 16px;
   transition: all 0.3s ease;
   background-color: #ffffff;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 /* เมื่อคลิกที่ช่อง Input */
 .audit-issues-searchbar input:focus {
-  border-color: var(--tbs-green); /* สีฟ้าตามสไตล์ Dashboard */
+  border-color: var(--tbs-green);
+  /* สีฟ้าตามสไตล์ Dashboard */
   box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
 }
 
@@ -47,14 +53,15 @@
   font-weight: 600;
   font-size: 16px;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 /* เมื่อเอาเมาส์วางบนปุ่ม */
 .audit-issues-searchbar button:hover {
   background-color: var(--tbs-green-accent);
-  transform: translateY(-2px); /* ปุ่มลอยขึ้นเล็กน้อย */
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
+  /* ปุ่มลอยขึ้นเล็กน้อย */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* เมื่อกดปุ่ม */
@@ -63,36 +70,192 @@
 }
 
 /* table */
-/* สไตล์ภาพรวมของตาราง */
-.equipment-table {
-  width: 100%;
-  border-collapse: collapse; /* ทำให้เส้นขอบตารางติดกัน */
+/* 1. กล่องครอบตาราง */
+.table-responsive-wrapper {
+  max-height: 600px;
+  overflow-y: auto;
   margin: 1rem 0;
-  font-family: sans-serif;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--tbs-green);
+  border-radius: 8px; /* แนะนำให้เพิ่มมุมโค้งจะสวยขึ้นครับ */
+}
+
+/* 2. ตั้งค่าตัวตาราง */
+.layout-table {
+  width: 100%;
+  border-collapse: collapse;
   font-size: 0.9rem;
 }
 
-/* จัดการส่วนหัวตาราง */
-.equipment-table thead tr {
+/* 3. ส่วนหัวตาราง (Sticky Header) */
+.layout-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background-color: var(--tbs-green);
+  color: var(--text-color-light);
   text-align: center;
   font-weight: bold;
+  border: none;
+  letter-spacing: 0.5px;
+  padding: 12px 10px;
 }
 
-/* จัดการระยะห่างในแต่ละช่อง (Cell) */
-.equipment-table th,
-.equipment-table td {
-  padding: 12px 15px;
-  border: 1px solid; /* ใส่เส้นขอบไว้ให้เห็นโครงสร้างเฉยๆ สามารถเปลี่ยนสีภายหลังได้ */
-}
-
-/* สไตล์สำหรับแถวข้อมูล */
-.data-equipment-row {
-  transition: all 0.2s ease; /* เผื่อไว้สำหรับทำ Hover */
-}
-
-/* กรณีต้องการให้ตัวอักษรอยู่กึ่งกลางในบางคอลัมน์ (เช่น รหัส หรือ สถานะ) */
-.equipment-table td {
+/* 4. ช่องข้อมูลในตาราง */
+.layout-table td {
+  padding: 10px;
   vertical-align: middle;
+  text-align: center;
+  border-bottom: 1px solid var(--tbs-green); /* ใช้แค่เส้นคั่นล่าง จะดูสะอาดตากว่าเส้นล้อมกรอบ */
+}
+
+/* เอาเส้นคั่นล่างของบรรทัดสุดท้ายออก จะได้ไม่ชนกับกรอบโค้งของกล่อง */
+.layout-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.layout-table tbody tr:nth-of-type(even) {
+  background-color: #f8fafc; /* แถวเลขคู่เป็นสีเทาอ่อน */
+}
+.layout-table tbody tr:nth-of-type(odd) {
+  background-color: var(--background-color-white, #ffffff); /* แถวเลขคี่เป็นสีขาว */
+}
+
+.layout-table tbody tr:hover {
+  background-color: #e6f4ea; /* ไฮไลท์สีเขียวอ่อนเวลาเอาเมาส์วาง */
+  transition: background-color 0.2s;
+}
+
+.data-layout-row.selected td {
+  background-color: var(--tbs-green-active) !important; /* บังคับเปลี่ยนสีทับสีสลับแถว */
+}
+
+.manage-container {
+  margin: 1rem;
+  width: 70%;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+
+}
+
+/* ส่วนหัวของฟอร์ม (จัดการครุภัณฑ์) */
+.header-container {
+  padding: 18px 20px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+/* ระยะห่างด้านในฟอร์ม */
+.manage-equipment-container {
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  /* ระยะห่างระหว่างแต่ละช่องกรอกข้อมูล */
+}
+
+/* สไตล์ของข้อความ Label */
+.manage-equipment-container label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #4a5568;
+  font-size: 0.95rem;
+}
+
+/* สไตล์ของ Input และ Select ทั้งหมด */
+.manage-equipment-container input[type="text"],
+.manage-equipment-container select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
+  font-size: 1rem;
+  color: #2d3748;
+  background-color: #f7fafc;
+  box-sizing: border-box;
+  /* สำคัญมาก ป้องกัน input ล้นกรอบ */
+  transition: all 0.3s ease;
+}
+
+/* เอฟเฟกต์ตอนคลิกพิมพ์หรือเลือกข้อมูล */
+.manage-equipment-container input[type="text"]:focus,
+.manage-equipment-container select:focus {
+  outline: none;
+  border-color: var(--tbs-green);
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
+}
+
+/* --- ส่วนของ Dropdown สถานที่ ชั้น และห้อง --- */
+.form-selected {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 5px;
+  padding-top: 20px;
+  border-top: 1px dashed #e2e8f0;
+  /* เส้นประแบ่งโซน */
+}
+
+.form-location {
+  width: 100%;
+}
+
+/* จัดให้ ชั้นและห้อง อยู่บรรทัดเดียวกัน แบ่งพื้นที่ 50/50 */
+.floors-rooms {
+  display: flex;
+  gap: 15px;
+}
+
+.floors-rooms select {
+  flex: 1;
+  /* แบ่งความกว้างให้เท่ากัน */
+}
+
+.update-delete {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-content: center;
+  padding: 20px;
+  gap: 10px;
+}
+
+.update {
+  padding: 12px 0;
+  background-color: var(--tbs-green);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.delete {
+  padding: 12px 0;
+  background-color: var(--button-red-bg);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+/* รองรับหน้าจอมือถือ (Responsive) */
+@media (max-width: 480px) {
+  .floors-rooms {
+    flex-direction: column;
+    /* ถ้าจอมือถือเล็ก ให้เปลี่ยนมาเรียงลงมาแทน */
+    gap: 15px;
+  }
 }
 
 /* Responsive: ถ้าจอเล็กเกินไปให้เลื่อนซ้ายขวาได้ */

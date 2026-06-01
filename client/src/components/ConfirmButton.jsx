@@ -8,7 +8,10 @@ export const ConfirmButton = ({
     onConfirm,
     onCancel,
     confirmText = "ยืนยัน",
-    cancelText = "ยกเลิก"
+    cancelText = "ยกเลิก",
+    type = "button",
+    form,
+    disabled
 }) => {
     // ถ้า isOpen เป็น false จะไม่แสดงอะไรเลย
     if (!isOpen) return null;
@@ -20,10 +23,16 @@ export const ConfirmButton = ({
                 <p className="confirm-modal-message">{message}</p>
 
                 <div className="confirm-modal-actions">
-                    <button className="confirm-btn-cancel" onClick={onCancel}>
+                    <button className="confirm-btn-cancel"
+                        onClick={onCancel}
+                        disabled={disabled}
+                    >
                         {cancelText}
                     </button>
-                    <button className="confirm-btn-submit" onClick={onConfirm}>
+                    <button className="confirm-btn-submit"
+                        onClick={onConfirm}
+                        disabled={disabled}
+                    >
                         {confirmText}
                     </button>
                 </div>

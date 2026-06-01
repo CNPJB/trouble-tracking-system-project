@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { useTickets } from '../hooks/useTickets.js';
 import axios from 'axios';
 import './AddIssue.css';
+import { ConfirmButton } from '../components/ConfirmButton.jsx';
 
 function AddIssue() {
   //  Contexts and Hooks for Authentication and Tickets
@@ -24,6 +25,8 @@ function AddIssue() {
 
   // --- 2. State for Master Data ---
   const [selectedImages, setSelectedImages] = useState([]);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef(null);
 
   const [categories, setCategories] = useState([]);
@@ -51,6 +54,7 @@ function AddIssue() {
         setFloors(floorRes.data);
         setRooms(roomRes.data);
         setEquipments(equipRes.data);
+        console.log(equipRes)
       } catch (error) {
         console.error('Error fetching master data:', error);
       }
@@ -60,7 +64,7 @@ function AddIssue() {
 
   //  --- 4. Ticket categories checker ---
   const selectedCategory = categories.find(c => c.ticketCtgId === parseInt(formData.categoryId));
-  const isEquipmentCategory = selectedCategory?.ticketCtgName === "ด้านอุปกรณ์คอมพิวเตอร์และครุภัณฑ์"; 
+  const isEquipmentCategory = selectedCategory?.ticketCtgName === "ด้านอุปกรณ์คอมพิวเตอร์และครุภัณฑ์";
 
   // --- 5. Logic to handle form input changes ---
   const handleChange = (e) => {
@@ -163,13 +167,14 @@ function AddIssue() {
   // --- 8. Logic to handle submission ---
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     // Equipment code validation before submission
     if (isEquipmentCategory && equipmentValidation.status !== 'success') {
       alert("กรุณาระบุรหัสครุภัณฑ์ให้ถูกต้องตามที่มีในระบบ");
       return;
     }
+    if (isSubmitting) return;
 
+    setIsSubmitting(true);
     // Submit the form data
     try {
       const submitData = new FormData();
@@ -207,8 +212,8 @@ function AddIssue() {
       if (response.data.success) {
         alert("แจ้งปัญหาสำเร็จเรียบร้อยแล้ว!");
         // 5. นำทางไปหน้า Tracking อัตโนมัติ
-        navigate('/tracking'); 
-      } 
+        navigate('/tracking');
+      }
 
     } catch (error) {
       console.error("Error submitting ticket:", error);
@@ -235,25 +240,25 @@ function AddIssue() {
       {/* ฝั่งซ้าย: ฟอร์มแจ้งปัญหา */}
       <div className="form-section">
         <h2>กรุณากรอกแบบฟอร์มแจ้งปัญหาของคุณ</h2>
-        <form onSubmit={handleSubmit}>
+        <form id='add-issue' onSubmit={handleSubmit}>
 
           <div className="form-row">
             <div className="form-group">
-              <label>ประเภทปัญหา <span style={{color: 'red'}}>*</span></label>
+              <label>ประเภทปัญหา <span style={{ color: 'red' }}>*</span></label>
               <select name="categoryId" onChange={handleChange} value={formData.categoryId} required>
                 <option value="">เลือกประเภทปัญหา</option>
                 {categories.map(c => <option key={c.ticketCtgId} value={c.ticketCtgId}>{c.ticketCtgName}</option>)}
               </select>
             </div>
             <div className="form-group">
-              <label>หัวข้อปัญหา <span style={{color: 'red'}}>*</span></label>
+              <label>หัวข้อปัญหา <span style={{ color: 'red' }}>*</span></label>
               <input type="text" name="title" onChange={handleChange} value={formData.title} placeholder="ระบุหัวข้อปัญหา" required />
             </div>
           </div>
 
           <div className="form-row">
             <div className="form-group">
-              <label>สถานที่ <span style={{color: 'red'}}>*</span></label>
+              <label>สถานที่ <span style={{ color: 'red' }}>*</span></label>
               <select name="locationId" onChange={handleChange} value={formData.locationId} required>
                 <option value="">เลือกสถานที่</option>
                 {locations.map(l => <option key={l.locationId} value={l.locationId}>{l.locationName}</option>)}
@@ -310,24 +315,24 @@ function AddIssue() {
 
           {/* ส่วน UI รูปภาพ */}
           <div className="form-group">
-            <label>เพิ่มรูปภาพ (ไม่เกิน 3 รูป) <span style={{color: 'red'}}>*</span></label>
+            <label>เพิ่มรูปภาพ (ไม่เกิน 3 รูป) <span style={{ color: 'red' }}>*</span></label>
             <div className="image-upload-container">
 
               {/* ซ่อน Input ตัวจริงไว้ แล้วใช้ Ref เรียกแทนเพื่อให้ดีไซน์สวยงาม */}
-              <input 
-                type="file" 
-                multiple 
-                accept="image/*" 
-                onChange={handleImageChange} 
-                ref={fileInputRef} 
-                style={{ display: 'none' }} 
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={handleImageChange}
+                ref={fileInputRef}
+                style={{ display: 'none' }}
               />
-              
+
               {/* ปุ่มกดเพิ่มรูป (+ รูปภาพ) ซ่อนเมื่อครบ 3 รูป */}
               {selectedImages.length < 3 && (
-                <button 
+                <button
                   type="button"
-                  className="upload-placeholder" 
+                  className="upload-placeholder"
                   onClick={() => fileInputRef.current?.click()}
                   aria-label="เพิ่มรูปภาพ"
                 >
@@ -343,17 +348,30 @@ function AddIssue() {
                     &times;
                   </button>
                 </div>
-              ))}             
+              ))}
 
             </div>
           </div>
 
           <div className="form-actions" style={{ marginTop: '20px' }}>
-            <button type="submit" className="btn-submit" disabled={isEquipmentCategory && equipmentValidation.status !== 'success'}>ยืนยัน</button>
+            <button type="button" className="btn-submit"
+              disabled={isEquipmentCategory && equipmentValidation.status !== 'success'}
+              onClick={() => setIsConfirmOpen(true)}>ยืนยัน
+            </button>
             <button type="button" className="btn-reset" onClick={() => {
               setFormData({ categoryId: '', title: '', locationId: '', floorId: '', roomId: '', equipmentCode: '', description: '' });
               setSelectedImages([]); // รีเซ็ตรูปภาพด้วย
             }}>รีเซ็ต</button>
+            <ConfirmButton
+              isOpen={isConfirmOpen}
+              title="ยืนยันการแจ้งปัญหา"
+              message={`ยืนยันที่จะแจ้งปัญหาหรือไม่`}
+              confirmText="ยืนยัน"
+              cancelText="ยกเลิก"
+              onConfirm={handleSubmit}
+              onCancel={() => setIsConfirmOpen(false)} // ถ้ากดยกเลิก ให้ปิด Modal
+              disabled={isSubmitting}
+            />
           </div>
         </form>
       </div>

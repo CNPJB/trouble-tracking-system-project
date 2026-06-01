@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { formatDate } from '../utils/formatDate';
 import './CardPendingProblem.css'
 
-export const CardPendingProblem = ({ data, isReadOnly = false, isMergeMode, isSelected, onSelect,handleClick}) => {
+export const CardPendingProblem = ({ data, isReadOnly = false, isMergeMode, isSelected, onSelect, handleClick }) => {
     const navigate = useNavigate();
     const statusLabels = {
         'pending': 'รอรับเรื่อง',
@@ -13,7 +13,7 @@ export const CardPendingProblem = ({ data, isReadOnly = false, isMergeMode, isSe
     const handleCardClick = (e) => {
         if (isMergeMode) {
             if (onSelect) onSelect();
-            return; 
+            return;
         }
         if (isReadOnly) {
             return;
@@ -48,7 +48,8 @@ export const CardPendingProblem = ({ data, isReadOnly = false, isMergeMode, isSe
                     )}
                 </div>
                 <div className="title-card" key={data.id}>
-                    <p style={{color:'gray'}}>{data.ticketId}</p>
+                    <p style={{ color: 'gray' }}>{data.ticketId}</p>
+                    <h3>เรื่อง : {data.title}</h3>
                     <p>แจ้ง : {formatDate(data.createdAt)}</p>
                     <div className={`ticketStatus ${data.ticketStatus}`}>
                         {statusLabels[data.ticketStatus] || data.ticketStatus}
@@ -62,7 +63,28 @@ export const CardPendingProblem = ({ data, isReadOnly = false, isMergeMode, isSe
             </div>
             <div className="description">
                 <p>รายละเอียด : {data.description}</p>
-                <p>ผู้ดำเนินการ : {data.admin}</p>
+                <p>ผู้ดำเนินการ : {data.admin}</p>
+            </div>
+        </div>
+    )
+}
+
+export const CardPendingSkeleton = () => {
+    return (
+        <div className="skleton-card-pending">
+            <div className="header-skleton-card">
+                <div className="skleton-img"></div>
+                <div className="skleton-title-card">
+                    <p className="skleton-text"></p>
+                    <h3 className="skleton-text"></h3>
+                    <p className="skleton-text"></p>
+                    <p className='skleton-text'></p>
+                    <div className="skleton-text"></div>
+                </div>
+            </div>
+            <div className="skleton-description">
+                <p className="skleton-text"></p>
+                <p className="skleton-text"></p>
             </div>
         </div>
     )

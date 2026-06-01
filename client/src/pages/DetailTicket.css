@@ -3,10 +3,9 @@
     padding: 20px;
     margin: auto;
     margin-top: 5rem;
-    background-color: var(--background-color-main);
+    background-color: var(--card-bg);
     border-radius: 20px;
-    box-shadow: 0 0 0, 0 0 10px;
-    border: solid 1px var(--tbs-green);
+    box-shadow: var(--shadow-md);
     height: 300px;
     line-height: 2;
 }
@@ -22,7 +21,7 @@
     border-radius: 20px;
     margin-right: auto;
     font-size: var(--text-size-base);
-    color: var( --bg-main);
+    color: var(--bg-main);
 }
 
 .header-ticket-title {
@@ -55,6 +54,7 @@
 .star {
     margin-right: auto;
 }
+
 .ticket-img {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -68,7 +68,7 @@
     object-fit: cover;
     object-position: center;
     border-radius: 10px;
-    border: solid 1px ;
+    border: solid 1px;
     height: 250px;
 }
 
@@ -80,18 +80,19 @@
     justify-content: center;
     border: solid 2px rgb(189, 189, 189);
 }
-.roadmap-working .main-comment  p{
+
+.roadmap-working .main-comment p {
     line-height: 2;
 }
+
 .roadmap-working {
     max-width: 80%;
     padding: 20px;
     margin: auto;
     margin-top: 1rem;
-    background-color: var(--background-color-main);
+    background-color: var(--card-bg);
     border-radius: 20px;
-    box-shadow: 0 0 0, 0 0 10px;
-    border: solid 1px var(--tbs-green);
+        box-shadow: var(--shadow-md);
 
 }
 
@@ -203,16 +204,20 @@
 }
 
 @media (max-width: 820px) {
- .type-status-ticket,.starRating {
-    display: flex;
-    flex-direction: column;
- }
- .starRating p{
-    margin-left: 0;
-    margin-top: 10px;
- }
- .ticket-status{
-    margin-left: 0;
- }
+
+    .type-status-ticket,
+    .starRating {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .starRating p {
+        margin-left: 0;
+        margin-top: 10px;
+    }
+
+    .ticket-status {
+        margin-left: 0;
+    }
 
 }

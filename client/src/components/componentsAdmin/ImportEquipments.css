@@ -1,0 +1,139 @@
+/* คอนเทนเนอร์หลัก */
+.import-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin: 15px 0;
+    font-family: 'Sarabun', sans-serif;
+}
+
+/* ปุ่มนำเข้า (สีฟ้าตามรูป) */
+.btn-import-custom {
+    background-color: #8db5f0;
+    width: 50%;
+    color: #4a4a4a;
+    border: none;
+    padding: 12px 0;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+    min-width: 180px;
+}
+
+.btn-import-custom:hover {
+    background-color: #7aa5e0;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-import-custom:active {
+    transform: translateY(0);
+}
+
+.btn-import-custom:disabled {
+    background-color: #cbd5e1;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* แถบแสดงชื่อไฟล์ที่เลือก */
+.file-display-badge {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    background-color: #f1f5f9;
+    padding: 6px 14px;
+    padding-right: 35px;
+    /* เว้นที่ว่างด้านขวาไว้ให้ปุ่มกากบาท */
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+}
+
+.file-name-text {
+    font-size: 14px;
+    color: #475569;
+    margin-right: 10px;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ปุ่มกากบาทเอาไฟล์ออก */
+.btn-remove-file {
+    position: absolute;
+    /* วางทับตำแหน่งให้แน่นอน */
+    right: 8px;
+    /* ชิดขวา */
+    background-color: #cbd5e1;
+    color: #ef4444;
+    border: none;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    /* ดันขึ้นมาให้อยู่บนสุด */
+    pointer-events: auto;
+    /* มั่นใจว่ารับแรงคลิกได้ */
+}
+
+.btn-remove-file:hover {
+    background-color: #94a3b8;
+    color: #ffffff;
+}
+
+.confirm-upload-file {
+    padding: 12px 24px;
+    background-color: var(--tbs-green);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.confirm-upload-file:hover {
+    background-color: var(--tbs-green-accent);
+    transform: translateY(-2px);
+    /* ปุ่มลอยขึ้นเล็กน้อย */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* รายการ Error */
+.error-list {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0 0 0;
+    width: 100%;
+}
+
+.error-item {
+    color: #ef4444;
+    font-size: 13px;
+    margin-bottom: 4px;
+    text-align: center;
+}
+
+/* Animation เล็กน้อยตอนโชว์ชื่อไฟล์ */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
