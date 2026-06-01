@@ -146,6 +146,8 @@ model Ticket {
   user                User           @relation("UserTickets", fields: [userId], references: [userId])
   upvotes             Upvote[]
 
+  @@index([title(ops: raw("gin_trgm_ops"))], type: Gin, name: "ticket_title_trgm_idx")
+  @@index([description(ops: raw("gin_trgm_ops"))], type: Gin, name: "ticket_desc_trgm_idx")
   @@map("tickets")
 }
 

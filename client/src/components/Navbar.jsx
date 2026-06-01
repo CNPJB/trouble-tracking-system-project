@@ -7,7 +7,6 @@ import { FaHome, FaPlus, FaMapMarkerAlt , FaChartBar, FaUserCog } from 'react-ic
 const Navbar = () => {
     const { user, logout } = useAuth();
     if (!user) return null; // If no user, don't render the navbar
-    console.log("Current User Role:", user?.role);
     const avatarSrc = user.avatarUrl ? user.avatarUrl : '/default-avatar.png';
 
     return (

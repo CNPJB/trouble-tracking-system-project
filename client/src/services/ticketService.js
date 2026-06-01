@@ -27,6 +27,20 @@ export const ticketService = {
         }
 
     },
+    
+    updateTicket: async (ticketId, formData) => {
+        try {
+            const response = await axios.patch(`/api/tickets/updateTicket/${ticketId}`, formData, {
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
 
     upvoteTicket: async (ticketId) => {
         try {

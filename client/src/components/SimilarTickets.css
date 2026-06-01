@@ -17,9 +17,9 @@
 }
 
 /* หัวข้อด้านบนสุด */
-.suggestion-section h3 {
+.suggestion-section h2 {
   text-align: center;
-  font-size: 15px;
+  font-size: 22px;
   font-weight: 600;
   color: #333333;
   margin-top: 0;

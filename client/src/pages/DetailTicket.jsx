@@ -1,16 +1,26 @@
 import { useTickets } from '../hooks/useTickets.js';
 import { useSearchParams } from 'react-router-dom';
+// Utils
 import { formatDate } from '../utils/formatDate.js';
 import { getTimelineData } from '../utils/timeline.js';
+// Hooks
+import { useTicketDetail } from '../hooks/useTicketDetail.js';
+// Components
 import { StarRating } from '../components/StarRating.jsx';
+// Styles
 import './DetailTicket.css'
 
 const DetailTicket = () => {
-    const { tickets } = useTickets();
     const [searchParams] = useSearchParams();
     const ticketIdFromUrl = searchParams.get('ticketId');
-    const ticket = tickets?.find((t) => String(t.ticketId) === String(ticketIdFromUrl));
+
+    const { ticket, isLoading, error } = useTicketDetail(ticketIdFromUrl);
     const timelineData = getTimelineData(ticket, formatDate);
+    
+    if (isLoading) return <div>กำลังโหลด...</div>;
+    if (error) return <div>❌ {error}</div>;
+    if (!ticket) return <div>ไม่พบข้อมูล</div>;
+
     return (
         <>
             <div className="container-detail">

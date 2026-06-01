@@ -5,7 +5,7 @@ import { FaThumbsUp } from 'react-icons/fa';
 const SimilarTickets = ({ tickets, onUpvote, currentUserId }) => {
     return (
         <div className="suggestion-section">
-            <h3>โปรดตรวจสอบว่าปัญหาที่คุณแจ้งคล้ายคลึงกับผู้อื่นหรือไม่</h3>
+            <h2>โปรดตรวจสอบว่าปัญหาที่คุณแจ้งคล้ายคลึงกับผู้อื่นหรือไม่</h2>
 
             <div className="ticket-list">
                 {tickets.length > 0 ? (

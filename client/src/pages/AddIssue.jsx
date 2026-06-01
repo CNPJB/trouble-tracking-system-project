@@ -2,27 +2,34 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 // Custom Hooks
+import { useLoadingState } from '../hooks/useLoadingState.js';
 import { useTickets } from '../hooks/useTickets.js';
 import { useImageUpload } from '../hooks/useImageUpload.js';
 import { useMasterData } from '../hooks/useMasterData.js';
-import { useLoadingState } from '../hooks/useLoadingState.js';
+import { useSimilarTickets } from '../hooks/useSimilarTickets.js';
+import { useEquipmentValidation } from '../hooks/useEquipmentValidation.js';
 // Components
 import ImageUploader from '../components/ImageUploader.jsx';
 import SimilarTickets from '../components/SimilarTickets.jsx';
 import { ConfirmButton } from '../components/ConfirmButton.jsx';
-import { LoadingSpinner, ErrorAlert } from '../components/LoadingSpinner.jsx';
+import { LoadingSpinner, ToastAlert } from '../components/LoadingSpinner.jsx';
 // Services
 import { ticketService } from '../services/ticketService.js';
 // Styles
 import './AddIssue.css';
 
 function AddIssue() {
+  
   //  Contexts and Hooks for Authentication and Tickets
   const { user } = useAuth();
-  const { tickets, refetch } = useTickets();
+  const { refetch } = useTickets();
   const navigate = useNavigate();
-  // Logic for master data and image upload from custom hooks
-  const { selectedImages, fileInputRef, handleImageChange, removeImage, clearImages } = useImageUpload();
+
+  // --- State and functions for loading and error handling ---
+  const { loading, startLoading, setError, setSuccess, reset, clearError } = useLoadingState();
+
+  // --- State for master data and image upload from custom hooks ---
+  const { selectedImages, fileInputRef, handleImageChange, removeImage, clearImages } = useImageUpload(3, setError);
   const { categories, locations, floors, rooms, equipments } = useMasterData();
 
   // --- State for form data ---
@@ -35,9 +42,6 @@ function AddIssue() {
     equipmentCode: '',
     description: '',
   });
-
-  // --- State to check equipment status ---
-  const [equipmentValidation, setEquipmentValidation] = useState({ status: null, message: '' });
 
   // --- Ticket categories checker ---
   const parsedCategoryId = formData.categoryId ? parseInt(formData.categoryId, 10) : null;
@@ -56,15 +60,10 @@ function AddIssue() {
     isOpen: false,
   });
 
-  // --- State and functions for loading and error handling ---
-  const { loading, startLoading, setError, setSuccess, reset } = useLoadingState();
-  const [dismissError, setDismissError] = useState(false);
-
   // --- State for debouncing input ---
   const [debouncedTitle, setDebouncedTitle] = useState('');
-  const [debouncedEquipmentCode, setDebouncedEquipmentCode] = useState('');
 
-  // --- Logic to Debounce Title and Equipment Code  ---
+  // --- Logic to Debounce Title  ---
   useEffect(() => {
     const timerId = setTimeout(() => {
       setDebouncedTitle(formData.title);
@@ -75,15 +74,23 @@ function AddIssue() {
     };
   }, [formData.title]);
 
-  useEffect(() => {
-    const timerId = setTimeout(() => {
-      setDebouncedEquipmentCode(formData.equipmentCode);
-    }, 500);
+  // --- State for validating equipment code ---
+  const { equipmentValidation } = useEquipmentValidation(
+    isEquipmentCategory,
+    formData.equipmentCode,
+    formData.roomId,
+    equipments
+  );
 
-    return () => {
-      clearTimeout(timerId);
-    };
-  }, [formData.equipmentCode]);
+  // --- State for Searching similar ticket from add issue form ---
+  const { similarTickets, isSearchingSimilar } = useSimilarTickets(
+    formData.categoryId,
+    formData.locationId,
+    formData.roomId,
+    equipmentValidation.status === 'success' ? equipmentValidation.equipmentId : null,
+    debouncedTitle,
+    user?.userId
+  );  
 
   // --- Logic to handle form input changes ---
   const handleChange = (e) => {
@@ -116,32 +123,9 @@ function AddIssue() {
     });
   };
 
-  // --- Logic to validate equipment code ---
-  useEffect(() => {
-    if (!isEquipmentCategory || !debouncedEquipmentCode) {
-      setEquipmentValidation({ status: null, message: '' });
-      return;
-    }
-    if (!formData.roomId) {
-      setEquipmentValidation({ status: 'error', message: 'กรุณาเลือกห้องก่อนระบุรหัสครุภัณฑ์' });
-      return;
-    }
-
-    // Find equipment with user input
-    const foundEquipment = equipments.find(
-      eq => eq.roomId === parseInt(formData.roomId, 10) && eq.equipmentCode === debouncedEquipmentCode
-    );
-
-    if (foundEquipment) {
-      setEquipmentValidation({ status: 'success', message: `พบข้อมูล: ${foundEquipment.equipmentName}` });
-    } else {
-      setEquipmentValidation({ status: 'error', message: 'ไม่พบรหัสครุภัณฑ์นี้ในห้องที่เลือก' });
-    }
-  }, [debouncedEquipmentCode, formData.roomId, equipments, isEquipmentCategory]);
-
-  /*
+  /* ============================================
     --- Logic จัดการตัวเลือก (Cascading Dropdown) ---
-  */
+     ============================================ */
   //    1. กรอง "ชั้น" ให้เหลือเฉพาะที่อยู่ใน "สถานที่" ที่เลือก
   const availableFloors = useMemo(() => {
     if (!formData.locationId) return [];
@@ -162,37 +146,11 @@ function AddIssue() {
     }
   }, [rooms, availableFloors, formData.locationId, formData.floorId]);
 
-  // --- Logic to filter similar tickets based on form input ---
-  const similarTickets = useMemo(() => {
-    let filtered = tickets.filter(t =>
-      t.ticketStatus === 'pending' &&
-      t.user?.userId !== user?.userId &&
-      !(t.upvotes?.some(up => up.userId === user.userId)) // ไม่แสดงตั๋วที่ผู้ใช้คนนี้เคยโหวตไปแล้ว
-    );
-
-    if (formData.categoryId || formData.locationId || debouncedTitle) {
-      filtered = filtered.filter(t => {
-        const matchCategory = formData.categoryId ? t.ticketCtgId === parseInt(formData.categoryId, 10) : false;
-        const matchLocation = formData.locationId ? t.locationId === parseInt(formData.locationId, 10) : false;
-        const matchRoom = formData.roomId ? t.roomId === parseInt(formData.roomId, 10) : false;
-        const matchTitle = debouncedTitle ? t.title.includes(debouncedTitle) : false;
-        return matchCategory || matchLocation || matchRoom || matchTitle;
-      });
-    }
-
-    if (!formData.categoryId && !formData.locationId && !debouncedTitle) {
-      return [];
-    }
-
-    // เรียงลำดับจากที่มี upvote มากที่สุดไปน้อยที่สุด
-    return filtered.sort((a, b) => (b.upvotes?.length || 0) - (a.upvotes?.length || 0));
-  }, [tickets, formData.categoryId, formData.locationId, formData.roomId, debouncedTitle, user?.userId]);
-
   // --- Logic to handle submission trigger ---
   const handleSubmit = (e) => {
     e.preventDefault();
-    setDismissError(false);
 
+    reset();
     // Equipment code validation before submission
     if (isEquipmentCategory && equipmentValidation.status !== 'success') {
       setError("กรุณาระบุรหัสครุภัณฑ์ให้ถูกต้องตามที่มีในระบบ", "warning");
@@ -211,7 +169,6 @@ function AddIssue() {
   // --- Logic to confirm and submit form ---
   const handleConfirmSubmit = async () => {
     startLoading();
-    setDismissError(false);
 
     try {
       const submitData = new FormData();
@@ -242,17 +199,17 @@ function AddIssue() {
       const result = await ticketService.createTicket(submitData);
 
       if (result.success) {
-        setSuccess();
+        setSuccess("แจ้งปัญหาสำเร็จเรียบร้อยแล้ว");
         clearImages(); // เคลียร์รูปภาพหลังจากส่งสำเร็จ
         refetch();
 
         reset();
         setConfirmSubmit({ isOpen: false });
 
-        navigate('/tracking', {
+        navigate('/tracking?tab=mine', {
           state: {
             showToast: true,
-            message: "แจ้งปัญหาสำเร็จ! ขอบคุณที่ช่วยแจ้งปัญหาให้เราทราบ ทีมงานจะดำเนินการแก้ไขโดยเร็วที่สุด"
+            message: "แจ้งปัญหาสำเร็จเรียบร้อยแล้ว!",
           }
         });
       }
@@ -278,22 +235,20 @@ function AddIssue() {
 
   const handleConfirmUpvote = async () => {
     startLoading();
-    setDismissError(false);
     try {
       const result = await ticketService.upvoteTicket(confirmUpvote.ticketId);
 
       if (result.success) {
-        setSuccess();
-        refetch(); // รีเฟรชข้อมูลตั๋วเพื่ออัปเดตจำนวนโหวต
+        setSuccess("โหวตให้ปัญหานี้สำเร็จเรียบร้อยแล้ว");
+        refetch();
 
         reset();
         setConfirmUpvote({ isOpen: false, ticketId: null });
 
-        navigate('/tracking', {
-          // ส่งข้อความแจ้งเตือนผ่าน state ไปยังหน้า Tracking เพื่อแสดง Toast ว่าโหวตสำเร็จ
+        navigate('/tracking?tab=upvoted', {
           state: {
             showToast: true,
-            message: "โหวตสำเร็จ! ขอบคุณที่ช่วยแจ้งปัญหาให้เราทราบ ทีมงานจะดำเนินการแก้ไขโดยเร็วที่สุด"
+            message: "โหวตให้ปัญหานี้สำเร็จเรียบร้อยแล้ว!"
           }
         });
       }
@@ -323,10 +278,10 @@ function AddIssue() {
         message="กำลังประมวลผล..."
       />
       {/* แสดงข้อผิดพลาดเมื่อมีการโหลดไม่สำเร็จ */}
-      <ErrorAlert
-        error={!dismissError ? loading.error?.message : null}
-        severity={loading.error?.severity}
-        onDismiss={() => setDismissError(true)}
+      <ToastAlert
+        error={loading.error}
+        success={loading.success}
+        onDismiss={reset}
       />
       {/* ฝั่งซ้าย: ฟอร์มแจ้งปัญหา */}
       <div className="form-section">
@@ -439,13 +394,16 @@ function AddIssue() {
           </div>
         </form>
       </div>
+      <div className="similar-tickets-wrapper">
+        {isSearchingSimilar && <div className="searching-indicator">กำลังค้นหาปัญหาที่คล้ายกัน...</div>}
 
-      {/* ฝั่งขวา: รายการปัญหา */}
-      <SimilarTickets
-        tickets={similarTickets}
-        onUpvote={handleUpvote}
-        currentUserId={user.userId}
-      />
+        {/* ฝั่งขวา: รายการปัญหา */}
+        <SimilarTickets
+          tickets={similarTickets}
+          onUpvote={handleUpvote}
+          currentUserId={user?.userId}
+        />
+      </div>
 
       {/* Confirm Modal for Form Submission */}
       <ConfirmButton

@@ -29,19 +29,30 @@ export const LoadingButton = ({ isLoading, children, disabled, ...props }) => {
     );
 };
 
-export const ErrorAlert = ({ error, severity = 'error', onDismiss, duration = 5000 }) => {
+export const ToastAlert = ({ error, success, onDismiss, duration = 5000 }) => {
+    // ดักว่ามีอะไรให้โชว์ไหม (มี error หรือมี success)
+    const activeNotification = error || success;
     // ถ้ามีข้อความ error เข้ามา ให้เริ่มนับเวลา
     useEffect(() => {
-        if (error) {
+        if (activeNotification) {
             const timer = setTimeout(() => {
-                onDismiss(); // เรียกฟังก์ชันปิด alert เมื่อครบเวลา
+                onDismiss(); 
             }, duration);
-
-            return () => clearTimeout(timer);// Cleanup function: เคลียร์ timer ทิ้งถ้าผู้ใช้กดปิด (กากบาท) ไปก่อนที่เวลาจะหมด
+            return () => clearTimeout(timer);
         }
-    }, [error, onDismiss, duration]);
+    }, [activeNotification, onDismiss, duration]);
 
-    if (!error) return null;
+    if (!activeNotification) return null;
+    let severity = 'info';
+    let message = '';
+
+    if (error) {
+        severity = error.severity || 'error';
+        message = error.message;
+    } else if (success) {
+        severity = 'success';
+        message = success.message;
+    }
 
     const alertIcons = {
         error: '❌',   // แดง: พัง, เกิดข้อผิดพลาด
@@ -54,7 +65,7 @@ export const ErrorAlert = ({ error, severity = 'error', onDismiss, duration = 50
         <div className={`error-alert alert-${severity}`}>
             <div className="error-content">
                 <span className="error-icon">{alertIcons[severity] || alertIcons.error}</span>
-                <p>{error}</p>
+                <p>{message}</p>
                 <button onClick={onDismiss} className="error-close">✕</button>
             </div>
             <div

@@ -34,26 +34,6 @@ const Dashboard = () => {
   // --- State for ticket status filter
   const [currentStatus, setCurrentStatus] = useState('all');
 
-  // เรียกใช้งาน hook
-  // const { displayData, handleSearch, filterStatus, setFilterStatus } = useTicketSearch(tickets);
-
-
-  // const displayTickets = useMemo(() => {
-  //   let list = isSearching ? searchResult : tickets;
-
-  //   if (filterStatus !== 'all') {
-  //     list = list.filter(t => t.ticketStatus === filterStatus);
-  //   }
-
-  //   // 3. จัดลำดับ (Pending ขึ้นก่อน)
-  //   return [...list].sort((a, b) => {
-  //     if (a.ticketStatus === 'pending' && b.ticketStatus !== 'pending') return -1;
-  //     if (a.ticketStatus !== 'pending' && b.ticketStatus === 'pending') return 1;
-  //     return 0;
-  //   });
-  // }, [isSearching, searchResult, tickets, filterStatus]); // คอยดูตัวแปรเหล่านี้ถ้าเปลี่ยนให้คำนวณใหม่
-
-
   // --- Logic Infinite Scroll ---
   const observerRef = useRef();
   const lastTicketElementRef = useCallback(node => {
@@ -87,7 +67,7 @@ const Dashboard = () => {
       {/* การ์ดแก้ไขสำเร็จด้านบน */}
       <div className="carousel-container">
         <button className="scroll-btn left" onClick={() =>
-          scrollRef.current.scrollBy({ left: -370, behavior: 'smooth' })}>
+          scrollRef.current?.scrollBy({ left: -370, behavior: 'smooth' })}>
           <FaChevronLeft />
         </button>
         {/* ใช้ Hooks เรียกตรงๆจาก Backend ได้เลย ไม่ต้องกรองสถานะเอง */}
@@ -143,7 +123,10 @@ const Dashboard = () => {
 
           {/* ไม่พบข้อมูลเลย */}
           {!isLoading && tickets.length === 0 && (
-            <div className="no-result">ไม่พบรายการสถานะนี้</div>
+            <div className="no-result">
+              <img src="/empty-state.png" alt="empty-state" />
+              <span>ไม่พบรายการสถานะนี้</span>
+            </div>
           )}
 
           {/* สถานะกำลังโหลดหน้าถัดไปมาต่อท้าย */}

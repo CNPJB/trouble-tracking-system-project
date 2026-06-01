@@ -19,31 +19,57 @@ export const useTickets = (initialParams = {}) => {
         ...initialParams
     });
 
-    const fetchTickets = useCallback(async () => {
-        if (queryParams.page === 1) setIsLoading(true);
-        else setIsFetchingNextPage(true);
+    // --- State สำหรับตอนอยากรีเฟรชข้อมูลหน้าเดิม ---
+    const [refetchTrigger, setRefetchTrigger] = useState(0);
 
-        try {
-            const response = await axios.get('/api/tickets/get', { params: queryParams });
-
-            if (queryParams.page === 1) {
-                setTickets(response.data.data);
-            } else {
-                setTickets(prev => [...prev, ...response.data.data]);
-            }
-
-            setPagination(response.data.pagination);
-        } catch (error) {
-            console.error('Error fetching tickets:', error);
-        } finally {
-            setIsLoading(false);
-            setIsFetchingNextPage(false);
-        }
-    }, [queryParams]);
-
+    // Logic get ticket
     useEffect(() => {
+        // สัญญาณบอกว่า "คำสั่งนี้ยังถูกต้องการอยู่ไหม?"
+        let isMounted = true;
+
+        const fetchTickets = async () => {
+            if (queryParams.page === 1) setIsLoading(true);
+            else setIsFetchingNextPage(true);
+
+            try {
+                const response = await axios.get('/api/tickets/get', { params: queryParams });
+                //ถ้าผู้ใช้กดปุ่ม Filter จน queryParams เปลี่ยนไปแล้ว ให้ข้ามการอัปเดต state นี้ไปเลย
+                if (isMounted) {
+                    if (queryParams.page === 1) {
+                        setTickets(response.data.data);
+                    } else {
+                        setTickets(prev => {
+                            // หาข้อมูลตัวใหม่ที่ "ยังไม่มี" ใน prev
+                            const newUniqueTickets = response.data.data.filter(
+                                newTicket => 
+                                    !prev.some(existingTicket => 
+                                        existingTicket.ticketId === newTicket.ticketId)
+                            );
+
+                            // เอาของเก่ามาต่อกับของใหม่(ที่คัดแล้ว)
+                            return [...prev, ...newUniqueTickets];
+                        });
+                    }
+                    setPagination(response.data.pagination);
+                }
+            } catch (error) {
+                if (isMounted) console.error('Error fetching tickets:', error);
+            } finally {
+                // อัปเดต Loading เฉพาะ Request ที่ไม่ถูกยกเลิก
+                if (isMounted) {
+                    setIsLoading(false);
+                    setIsFetchingNextPage(false);
+                }
+            }
+        };
+
         fetchTickets();
-    }, [fetchTickets]);
+
+        // Cleanup Function: ของ React จะทำงานเมื่อ queryParams เปลี่ยน
+        return () => {
+            isMounted = false;
+        };
+    }, [queryParams, refetchTrigger]);
 
     const changePage = (newPage) => {
         if (newPage >= 1 && newPage <= pagination.totalPages) {
@@ -51,16 +77,24 @@ export const useTickets = (initialParams = {}) => {
         }
     };
 
+    // ฟังก์ชันอัปเดตฟิลเตอร์
     const updateFilters = (newFilters) => {
-        // เวลาเปลี่ยน Filter เช่น ค้นหาคำใหม่ ต้องกลับไปหน้า 1 เสมอ
-        setQueryParams(prev => ({ ...prev, ...newFilters, page: 1 })); 
+        setQueryParams(prev => ({ ...prev, ...newFilters, page: 1 }));
     };
+
+    // ฟังก์ชันดึงข้อมูลใหม่
+    const refetch = () => {
+        setRefetchTrigger(prev => prev + 1);
+    };
+
     return {
         tickets,
         pagination,
         isLoading,
         isFetchingNextPage,
-        refetch: fetchTickets, changePage, updateFilters
+        refetch,
+        changePage,
+        updateFilters
     };
 };
 

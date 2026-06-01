@@ -1,8 +1,18 @@
 import { useNavigate } from 'react-router-dom';
 import { formatDate } from '../utils/formatDate';
+// Styles
 import './CardPendingProblem.css'
 
-export const CardPendingProblem = ({ data, isReadOnly = false, isMergeMode, isSelected, onSelect,handleClick}) => {
+export const CardPendingProblem = ({
+    data,
+    isReadOnly = false,
+    isMergeMode,
+    isSelected,
+    onSelect,
+    handleClick,
+    actionSlot
+}) => {
+
     const navigate = useNavigate();
     const statusLabels = {
         'pending': 'รอรับเรื่อง',
@@ -13,7 +23,7 @@ export const CardPendingProblem = ({ data, isReadOnly = false, isMergeMode, isSe
     const handleCardClick = (e) => {
         if (isMergeMode) {
             if (onSelect) onSelect();
-            return; 
+            return;
         }
         if (isReadOnly) {
             return;
@@ -27,7 +37,9 @@ export const CardPendingProblem = ({ data, isReadOnly = false, isMergeMode, isSe
     return (
 
         <div className={`container-pending-card ${isSelected ? 'selected-card' : ''}`}
-            onClick={handleCardClick}>
+            onClick={handleCardClick}
+            style={ { position: 'relative' }}>
+
             {isMergeMode && (
                 <div className="card-checkbox-wrapper"
                     onClick={(e) => e.stopPropagation()}>
@@ -39,6 +51,14 @@ export const CardPendingProblem = ({ data, isReadOnly = false, isMergeMode, isSe
                     />
                 </div>
             )}
+
+            {/* ถ้าส่ง actionSlot มา ก็เรนเดอร์ลงมุมขวาบนเลย */}
+            {actionSlot && (
+                <div className="action-badge-container" >
+                    {actionSlot}
+                </div>
+            )}
+
             <div className="header-card">
                 <div className="img">
                     {data.images && data.images.length > 0 ? (
@@ -48,7 +68,7 @@ export const CardPendingProblem = ({ data, isReadOnly = false, isMergeMode, isSe
                     )}
                 </div>
                 <div className="title-card" key={data.id}>
-                    <p style={{color:'gray'}}>{data.ticketId}</p>
+                    <p style={{ color: 'gray' }}>{data.ticketId}</p>
                     <p>แจ้ง : {formatDate(data.createdAt)}</p>
                     <div className={`ticketStatus ${data.ticketStatus}`}>
                         {statusLabels[data.ticketStatus] || data.ticketStatus}
@@ -66,4 +86,4 @@ export const CardPendingProblem = ({ data, isReadOnly = false, isMergeMode, isSe
             </div>
         </div>
     )
-}
+};

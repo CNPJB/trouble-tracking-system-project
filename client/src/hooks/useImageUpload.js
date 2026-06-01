@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-export const useImageUpload = (maxImages = 3) => {
+export const useImageUpload = (maxImages = 3, setError = null) => {
     const [selectedImages, setSelectedImages] = useState([]);
     const fileInputRef = useRef(null);
 
@@ -15,7 +15,10 @@ export const useImageUpload = (maxImages = 3) => {
         const files = Array.from(e.target.files);
 
         if (selectedImages.length + files.length > maxImages) {
-            alert(`อัปโหลดรูปภาพได้สูงสุด ${maxImages} รูปเท่านั้น`);
+            if (setError) {
+                setError(`อัปโหลดรูปภาพได้สูงสุด ${maxImages} รูปเท่านั้น`, 'error');
+            }
+            e.target.value = null;
             return;
         }
 

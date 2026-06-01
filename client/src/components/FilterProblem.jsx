@@ -35,7 +35,7 @@ export const FilterProblem = ({ summary ,currentFilter, onFilterChange }) => {
                         onClick={() => onFilterChange(btn.id)}
                     >
                         <div className="btn-content">
-                            <span className="label">{btn.label}</span>
+                            <span className="label">{btn.label} </span>
                             <span className="count-badge">
                                 {count} รายการ ({percentage}%)
                             </span>
