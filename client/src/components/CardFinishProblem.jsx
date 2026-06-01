@@ -1,4 +1,4 @@
-import './CardFinishProblem.css'
+import '../components/componentsStyles/CardFinishProblem.css';
 import { useNavigate } from 'react-router-dom';
 import { StarRating } from './StarRating';
 

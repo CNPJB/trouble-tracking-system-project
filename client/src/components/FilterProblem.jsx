@@ -1,7 +1,7 @@
 import React from 'react'
 import './FilterProblem.css'
 
-export const FilterProblem = ({ data=[] ,currentFilter, onFilterChange }) => {
+export const FilterProblem = ({ summary ,currentFilter, onFilterChange }) => {
     const buttons = [
         { id: 'all', label: 'ทั้งหมด' },
         { id: 'pending', label: 'รอรับเรื่อง' },
@@ -9,11 +9,12 @@ export const FilterProblem = ({ data=[] ,currentFilter, onFilterChange }) => {
         { id: 'resolved', label: 'เสร็จสิ้น' },
 
     ];
-    const totalProblem = data ? data.length : 0;
 
-    const getCount = (ticketStatus) => {
-        if (ticketStatus === 'all') return totalProblem;
-        return data.filter(item => item.ticketStatus === ticketStatus).length;
+    // ดึงยอดรวมทั้งหมดจาก summary object
+    const totalProblem = summary?.all || 0;
+
+    const getCount = (statusId) => {
+        return summary?.[statusId] || 0;
     }
 
     const getPercent = (count) => {
@@ -34,7 +35,7 @@ export const FilterProblem = ({ data=[] ,currentFilter, onFilterChange }) => {
                         onClick={() => onFilterChange(btn.id)}
                     >
                         <div className="btn-content">
-                            <span className="label">{btn.label}</span>
+                            <span className="label">{btn.label} </span>
                             <span className="count-badge">
                                 {count} รายการ ({percentage}%)
                             </span>

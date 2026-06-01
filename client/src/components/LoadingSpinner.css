@@ -1,0 +1,168 @@
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.loading-spinner {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+.spinner-small {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #3498db;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  margin-right: 0.5rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* --- อัปเดต .error-alert ให้ลอยเป็น Pop-up --- */
+.error-alert {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  padding: 1rem 1.5rem;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 320px;
+  max-width: 90%;
+  animation: slideDownFade 0.4s ease-out forwards;
+  overflow: hidden;
+}
+
+.error-content {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: #c33;
+  width: 100%;
+}
+
+.error-content p {
+  margin: 0;
+  flex-grow: 1; /* ดันปุ่มกากบาทให้ไปชิดขวาสุดเสมอ */
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.error-icon {
+  font-size: 1.5rem; /* ขยายไอคอนให้ชัดขึ้นนิดนึง */
+}
+
+.error-close {
+  background: none;
+  border: none;
+  color: #c33;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0.5rem; /* เพิ่มพื้นที่ให้กดง่ายขึ้น */
+  margin-left: 1rem;
+  transition: transform 0.2s; /* เอฟเฟกต์ตอนเอาเมาส์ชี้ */
+}
+
+.error-close:hover {
+  transform: scale(1.2); /* ขยายปุ่มกากบาทเล็กน้อยเวลาเอาเมาส์ชี้ */
+}
+
+.error-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  width: 100%;
+  animation-name: shrinkProgress;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+/* =========================================
+   เพิ่ม CSS สีต่างๆ ตาม Severity 
+========================================= */
+.alert-error {
+  background: #fee;
+  border-left: 4px solid #f44;
+  box-shadow: 0 4px 15px rgba(204, 51, 51, 0.2);
+}
+.alert-error .error-content, .alert-error .error-close { color: #c33; }
+.alert-error .error-progress { background-color: rgb(243, 172, 172); }
+
+/* โหมด Warning (สีเหลือง - แจ้งเตือนผู้ใช้ เช่น ตั๋วซ้ำ 409) */
+.alert-warning {
+  background: #fffdf0; /* เหลืองอ่อนๆ นวลๆ */
+  border-left: 4px solid #ffb300;
+  box-shadow: 0 4px 15px rgba(255, 179, 0, 0.2);
+}
+.alert-warning .error-content, .alert-warning .error-close { color: #b07d00; }
+.alert-warning .error-progress { background-color: #f8ecb8; }
+
+/* โหมด Info (สีฟ้า - ข้อมูลทั่วไป) */
+.alert-info {
+  background: #f0f9ff;
+  border-left: 4px solid #008cff;
+  box-shadow: 0 4px 15px rgba(0, 132, 255, 0.2);
+}
+.alert-info .error-content, .alert-info .error-close { color: #0075b0; }
+.alert-info .error-progress { background-color: #a3e3f1; }
+
+/* โหมด Success (สีเขียว - เผื่อไว้ใช้ตอนบันทึกสำเร็จ) */
+.alert-success {
+  background: #f0fdf4;
+  border-left: 4px solid #22c55e;
+  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.2);
+}
+.alert-success .error-content, .alert-success .error-close { color: #15803d; }
+.alert-success .error-progress { background-color: #a6ebbf; }
+
+/* --- เพิ่ม Keyframes สำหรับ Animation ของ Alert --- */
+@keyframes slideDownFade {
+  0% {
+    top: -50px;
+    opacity: 0;
+  }
+  100% {
+    top: 20px;
+    opacity: 1;
+  }
+}
+
+@keyframes shrinkProgress {
+  0% {
+    width: 100%;
+  }
+  100% {
+    width: 0%;
+  }
+}

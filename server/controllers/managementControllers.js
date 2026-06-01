@@ -321,6 +321,75 @@ export const getEquipmentCtgs = async (req, res) => {
     }
 };
 
+/* Equipment Management */
+export const addEquipment = async (req, res) => {
+    try {
+        const {
+            equipmentCode,
+            equipmentName,
+            equipmentImageUrl,
+            equipmentStatus,
+            equipmentCtgId,
+            roomId,
+        } = req.body;
+
+        const equipment = await prisma.equipment.create({
+            data: {
+                equipmentCode,
+                equipmentName,
+                equipmentImageUrl,
+                equipmentStatus,
+                equipmentCtgId,
+                roomId,
+            }
+        });
+        res.status(201).json(equipment);
+
+    } catch (error) {
+        console.error('Error creating equipment:', error);
+        res.status(500).json({ error: 'Failed to create equipment  ' });
+    }
+}
+
+export const getEquipment = async (req, res) => {
+    try {
+        const equipments = await prisma.equipment.findMany({
+            select: {
+                equipmentId: true,
+                equipmentCode: true,
+                equipmentName: true,
+                equipmentStatus: true,
+                roomId: true,
+                category: {
+                    select: {
+                        equipmentCtgName: true,
+                    }
+                },
+                room: {
+                    select: {
+                        roomName: true,
+                        floor: {
+                            select: {
+                                floorLevel: true,
+                                location: {
+                                    select: {
+                                        locationName: true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+            }
+        })
+        res.status(201).json(equipments);
+
+    } catch (error) {
+        console.error('Error creating equipment:', error);
+        res.status(500).json({ error: 'Failed to create equipment  ' });
+    }
+}
+
 export const mergeTickets = async (req, res) => {
     try {
         const { parentId, childIds } = req.body;

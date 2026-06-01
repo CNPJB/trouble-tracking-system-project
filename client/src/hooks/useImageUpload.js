@@ -1,0 +1,59 @@
+import { useState, useEffect, useRef } from "react";
+
+export const useImageUpload = (maxImages = 3, setError = null) => {
+    const [selectedImages, setSelectedImages] = useState([]);
+    const fileInputRef = useRef(null);
+
+    // useEffect(() => {
+    //     return () => {
+    //         // เมื่อปิดหน้าเว็บ ให้ทำลาย URL ทิ้งทั้งหมด
+    //         selectedImages.forEach(img => URL.revokeObjectURL(img.previewUrl));
+    //     };
+    // }, [selectedImages]);
+
+    const handleImageChange = (e) => {
+        const files = Array.from(e.target.files);
+
+        if (selectedImages.length + files.length > maxImages) {
+            if (setError) {
+                setError(`อัปโหลดรูปภาพได้สูงสุด ${maxImages} รูปเท่านั้น`, 'error');
+            }
+            e.target.value = null;
+            return;
+        }
+
+        const newImages = files.map(file => ({
+            file,
+            // สร้าง URL จำลองเพื่อให้โชว์รูปได้ทันที
+            previewUrl: URL.createObjectURL(file)
+        }));
+
+        setSelectedImages(prev => [...prev, ...newImages]); // เพิ่มรูปใหม่เข้าไปใน Array ของรูปที่เลือกไว้
+        // รีเซ็ตค่า input เพื่อให้สามารถเลือกไฟล์เดิมได้อีกครั้งกรณีที่ลบไปแล้วเปลี่ยนใจ
+        e.target.value = null;
+    };
+    const removeImage = (indexToRemove) => {
+        setSelectedImages(prev => {
+            const newImages = [...prev];
+            // คืนหน่วยความจำ
+            URL.revokeObjectURL(newImages[indexToRemove].previewUrl);
+            newImages.splice(indexToRemove, 1);
+            return newImages;
+        });
+
+
+    };
+    const clearImages = () => {
+        // คืนหน่วยความจำก่อนเคลียร์ Array
+        selectedImages.forEach(img => URL.revokeObjectURL(img.previewUrl));
+        setSelectedImages([]);
+    };
+
+    return {
+        selectedImages,
+        fileInputRef,
+        handleImageChange,
+        removeImage,
+        clearImages
+    };
+};

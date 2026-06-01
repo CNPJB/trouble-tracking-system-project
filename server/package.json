@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon -L src/index.js",
     "prod": "node src/index.js",
-    "db:dev": "npx prisma db push && npx prisma generate",
+    "db:dev": "npx prisma migrate deploy && npx prisma generate",
     "db:prod": "npx prisma migrate deploy && npx prisma generate"
   },
   "keywords": [],
@@ -34,7 +34,7 @@
     "streamifier": "^0.1.1"
   },
   "devDependencies": {
-    "@types/node": "^25.5.2",
+    "@types/node": "^25.8.0",
     "nodemon": "^3.1.14",
     "prisma": "^7.6.0"
   }

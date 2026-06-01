@@ -1,0 +1,46 @@
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+
+export const useMasterData = () => {
+    const [categories, setCategories] = useState([]);
+    const [locations, setLocations] = useState([]);
+    const [floors, setFloors] = useState([]);
+    const [rooms, setRooms] = useState([]);
+    const [equipments, setEquipments] = useState([]);
+    const [isLoadingMasterData, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchMasterData = async () => {
+            try {
+                const [catRes, locRes, floorRes, roomRes, equipRes] = await Promise.all([
+                    axios.get('/api/manage/getTicketCategories', { withCredentials: true }),
+                    axios.get('/api/manage/getLocations', { withCredentials: true }),
+                    axios.get('/api/manage/getFloors', { withCredentials: true }),
+                    axios.get('/api/manage/getRooms', { withCredentials: true }),
+                    axios.get('/api/manage/getEquipment', { withCredentials: true }),
+                ]);
+
+                setCategories(catRes.data);
+                setLocations(locRes.data);
+                setFloors(floorRes.data);
+                setRooms(roomRes.data);
+                setEquipments(equipRes.data);
+            } catch (error) {
+                console.error('Error fetching master data:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchMasterData();
+    }, []);
+
+    return {
+        categories,
+        locations,
+        floors,
+        rooms,
+        equipments,
+        isLoadingMasterData
+    };
+}

@@ -5,7 +5,7 @@ COPY package*.json ./
 RUN npm install
 COPY . .
 # Generate Prisma Client ก่อนรัน Server
-# RUN npx prisma generate 
+RUN npx prisma generate 
 EXPOSE 3000
 # ใช้ nodemon เพื่อทำ auto-restart เวลาแก้โค้ด ในโหมด development
 CMD ["sh", "-c", "npm run db:dev && npm run dev"]
