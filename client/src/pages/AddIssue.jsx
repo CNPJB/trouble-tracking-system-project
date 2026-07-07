@@ -16,7 +16,7 @@ import { LoadingSpinner, ToastAlert } from '../components/LoadingSpinner.jsx';
 // Services
 import { ticketService } from '../services/ticketService.js';
 // Styles
-import './AddIssue.css';
+import './pageStyles/AddIssue.css';
 
 function AddIssue() {
   

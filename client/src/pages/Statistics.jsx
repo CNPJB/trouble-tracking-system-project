@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Routes, Route } from 'react-router-dom';
-import './Statistics.css';
+import './pageStyles/Statistics.css';
 
 // Components
 import { StatisticsSidebar } from '../components/StatisticsSidebar.jsx';

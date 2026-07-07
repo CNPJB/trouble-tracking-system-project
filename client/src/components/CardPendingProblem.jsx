@@ -3,7 +3,7 @@ import { formatDate } from '../utils/formatDate';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 // Styles
-import './CardPendingProblem.css'
+import './componentsStyles/CardPendingProblem.css'
 
 export const CardPendingProblem = ({
     data,
