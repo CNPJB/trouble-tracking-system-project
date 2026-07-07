@@ -199,7 +199,7 @@ const AssetManagement = () => {
         });
 
         console.log("Payload แบบ Array ปลอดภัย 100%:", payload);
-        // await equipmentService.updateMultipleEquipments(payload);
+        await equipmentService.updateMultipleEquipments(payload);
         setSuccess(`อัปเดตข้อมูลสำเร็จ ${selectedEquipments.length} รายการ`);
 
       } else {

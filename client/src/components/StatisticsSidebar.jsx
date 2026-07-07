@@ -1,4 +1,4 @@
-import './StatisticsSidebar.css';
+import './componentsStyles/StatisticsSidebar.css';
 import { NavLink } from 'react-router-dom';
 import { FaChartPie, FaListOl, FaMapMarkerAlt, FaThumbsUp } from 'react-icons/fa';
 

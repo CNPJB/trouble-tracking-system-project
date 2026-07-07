@@ -2,7 +2,7 @@ import { useState, useRef,useEffect, useCallback } from 'react'
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 // Styles
-import "./Dashboard.css"
+import "./pageStyles/Dashboard.css"
 // Components
 import { SearchBar } from '../components/SearchBar.jsx';
 import { CardFinishProblem, SkeletonCardFinishProblem } from '../components/CardFinishProblem'

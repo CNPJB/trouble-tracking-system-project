@@ -1,4 +1,4 @@
-import '../components/componentsStyles/CardFinishProblem.css';
+import './componentsStyles/CardFinishProblem.css';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 import { useNavigate } from 'react-router-dom';

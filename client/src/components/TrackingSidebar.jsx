@@ -1,4 +1,4 @@
-import './TrackingSidebar.css';
+import './componentsStyles/TrackingSidebar.css';
 
 export const TrackingSidebar = ({ activeTab, onTabChange }) => {
   const menuItems = [

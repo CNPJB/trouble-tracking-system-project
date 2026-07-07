@@ -18,7 +18,7 @@ import { LoadingSpinner, ToastAlert } from '../components/LoadingSpinner.jsx';
 import { ticketService } from '../services/ticketService.js';
 
 // Styles
-import './EditIssue.css'; // ใช้ CSS แยกสไตล์สำหรับการแก้ไข
+import './pageStyles/EditIssue.css'; // ใช้ CSS แยกสไตล์สำหรับการแก้ไข
 import { FaTrashAlt, FaSave, FaAngleLeft, FaMapMarkerAlt } from 'react-icons/fa';
 
 function EditIssue() {

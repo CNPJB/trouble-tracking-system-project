@@ -18,7 +18,7 @@ import { StarRating } from '../components/StarRating.jsx';
 import { ticketService } from '../services/ticketService.js';
 
 // Styles & Icons
-import './Tracking.css';
+import './pageStyles/Tracking.css';
 import { FaCaretDown, FaEdit, FaThumbsUp } from "react-icons/fa";
 
 const Tracking = () => {

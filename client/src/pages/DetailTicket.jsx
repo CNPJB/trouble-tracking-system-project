@@ -9,7 +9,7 @@ import { useTicketDetail } from '../hooks/useTicketDetail.js';
 // Components
 import { StarRating } from '../components/StarRating.jsx';
 // Styles
-import './DetailTicket.css'
+import './pageStyles/DetailTicket.css'
 
 const DetailTicket = () => {
     const [searchParams] = useSearchParams();
