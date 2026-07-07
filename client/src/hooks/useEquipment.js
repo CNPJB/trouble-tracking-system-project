@@ -4,16 +4,22 @@ import axios from 'axios';
 export const useEquipment = () => {
 
     const [equipment, setEquipment] = useState([]);
+    const [filterCategory, setFilterCategory] = useState("");
+    const [filterLocation, setFilterLocation] = useState("");
 
     const fetchEquipment = useCallback(async () => {
         try {
-            const response = await axios.get('/api/manage/getEquipmentByadmin');
-            console.log("ข้อมูลจาก Backend:", response.data);
+            const response = await axios.get('/api/manage/getEquipmentByadmin', {
+                params: {
+                    categoryId: filterCategory || undefined,
+                    LocationId: filterLocation || undefined
+                }
+            });
             setEquipment(response.data);
         } catch (error) {
             console.error('Error fetching tickets:', error);
         }
-    }, []);
+    }, [filterCategory,filterLocation]);
 
     const addEquipment = useCallback(async (newEquipment) => {
         try {
@@ -24,10 +30,9 @@ export const useEquipment = () => {
         }
     }, [fetchEquipment]);
 
-    const updateEquipment = useCallback(async (id,updatedEquipment) => {
+    const updateEquipment = useCallback(async (id, updatedEquipment) => {
         try {
-            const response = await axios.patch(`/api/manage/updateEquipment/${id}`,updatedEquipment);
-            console.log("ข้อมูลจาก Backend:", response.data);
+            const response = await axios.patch(`/api/manage/updateEquipment/${id}`, updatedEquipment);
             fetchEquipment();
         } catch (error) {
             console.error('Error update equipment:', error);
@@ -37,7 +42,6 @@ export const useEquipment = () => {
     const deleteEquipment = useCallback(async (id) => {
         try {
             const response = await axios.delete(`/api/manage/deleteEquipment/${id}`);
-            console.log("ข้อมูลจาก Backend:", response.data);
             fetchEquipment();
         } catch (error) {
             console.error('Error delete equipment:', error);
@@ -47,5 +51,10 @@ export const useEquipment = () => {
         fetchEquipment();
     }, [fetchEquipment]);
 
-    return { equipment, refetch: fetchEquipment, updateEquipment, deleteEquipment,addEquipment };
+    return {
+        equipment, 
+        filterLocation, setFilterLocation,
+        filterCategory, setFilterCategory, 
+        refetch: fetchEquipment, updateEquipment, deleteEquipment, addEquipment
+    };
 };

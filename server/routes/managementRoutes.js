@@ -5,11 +5,12 @@ import {
         addLocation, getLocations,deleteLocation,updateLocationStatus,
         addFloor, getFloors,deleteFloor,updateFloorStatus,
         addRoom, getRooms,deleteRoom, updateRoomStatus,
-        getUsers,
+        getUsers,updateRoleUsers,
         addEquipmentCtg, getEquipmentCtgs,
         mergeTickets
 } from '../controllers/managementControllers.js';
-import { getEquipment, addEquipment,deleteEquipment, uploadEquipments } from '../controllers/EquipmentControllers.js';
+import { getEquipment, addEquipment,deleteEquipment, uploadEquipments,updateEquipment } from '../controllers/EquipmentControllers.js';
+import { getMostCategoriesOfProblems, MostUpvotedTickets, getTicketStats} from '../controllers/statisticController.js';
 import { verifyToken, requireAdmin } from '../middleware/authMiddleware.js';
 
 const upload = multer({ storage: multer.memoryStorage() });
@@ -35,6 +36,7 @@ router.delete('/deleteRoom/:id', verifyToken, requireAdmin, deleteRoom);
 router.put('/updateRoomStatus', verifyToken, requireAdmin, updateRoomStatus);
 
 router.get('/getUsers', verifyToken, requireAdmin, getUsers);
+router.patch('/updateRoleUser', verifyToken, requireAdmin, updateRoleUsers);
 
 router.post('/addEquipmentCtg', verifyToken, requireAdmin, addEquipmentCtg);
 router.get('/getEquipmentCtgs', verifyToken, getEquipmentCtgs);
@@ -44,8 +46,13 @@ router.get('/getEquipment', verifyToken, getEquipment);
 router.get('/getEquipmentByadmin', verifyToken, requireAdmin, getEquipment);
 router.delete('/deleteEquipment/:id', verifyToken, requireAdmin, deleteEquipment);      
 router.post('/uploadEquipments', verifyToken, requireAdmin, upload.single('file'), uploadEquipments);
+router.put('/updateEquipment', verifyToken, requireAdmin,updateEquipment)
 
 router.patch('/mergeTickets', verifyToken, requireAdmin, mergeTickets);
+
+router.get('/getMostCategoriesOfProblems', verifyToken, getMostCategoriesOfProblems);
+router.get('/getMostUpvotedTickets', verifyToken, MostUpvotedTickets);
+router.get('/getTicket-stats', verifyToken, getTicketStats);
 
 
 

@@ -29,7 +29,7 @@ export const getTimelineData = (ticket,  formatdate) => {
             date: formatDate(ticket?.finishedAt || ticket?.updatedAt),
             time: ticket?.finishedAt ? new Date(ticket.finishedAt).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + " น." : "-",
             color: "green",
-            duration: ""
+            duration: "ดำเนินการเสร็จสิ้น"
         });
     }
 

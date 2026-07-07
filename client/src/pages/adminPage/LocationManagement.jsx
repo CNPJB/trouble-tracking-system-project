@@ -3,11 +3,13 @@ import './LocationManagement.css'
 
 // hook
 import { useLocations } from '../../hooks/useLocations';
+import { useLoadingState } from '../../hooks/useLoadingState';
 
 // components
 import { DropdownWithAdd } from '../../components/componentsAdmin/DropdownAdd';
 import { PopupAlert } from '../../components/componentsAdmin/popupAlert';
-
+import { LoadingSpinner, ToastAlert } from '../../components/LoadingSpinner';
+import { ConfirmButton } from '../../components/ConfirmButton';
 // service
 import { locationService } from '../../services/locationService';
 
@@ -16,6 +18,7 @@ const LocationManagement = () => {
     const [openLocations, setOpenLocations] = useState([]);
     const [openFloors, setOpenFloors] = useState([]);
     const [selectedId, setSelectedId] = useState(null);
+    const { loading, startLoading, setError, setSuccess, reset, clearError } = useLoadingState();
     const [formData, setFormData] = useState({
         location: '',
         locationId: '',
@@ -25,12 +28,39 @@ const LocationManagement = () => {
         floorStatus: '',
         roomStatus: ''
     });
-
+    const [confirmSubmitLocation, setConfirmSubmitLocation] = useState({ isOpen: false, locationName: '' });
+    const [confirmSubmitFloor, setConfirmSubmitFloor] = useState({ isOpen: false, level: '' });
+    const [confirmSubmitRoom, setConfirmSubmitRoom] = useState({ isOpen: false, name: '' });
+    const [confirmSaveStatus, setConfirmSaveStatus] = useState({ isOpen: false, type: '', message: '' });
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
+    const handleStatusChange = (field, value) => {
+        setFormData((prev) => {
+            let newData = { ...prev, [field]: value };
 
+            if (field === 'locationStatus' && value === 'inactive') {
+                newData.floorStatus = 'inactive';
+                newData.roomStatus = 'inactive';
+            }
+            if (field === 'floorStatus' && value === 'inactive') {
+                newData.roomStatus = 'inactive';
+            }
+            if (field === 'roomStatus' && value === 'enable') {
+                if (newData.locationStatus === 'inactive' || newData.floorStatus === 'inactive') {
+                    return prev; // ยกเลิกการเปลี่ยนค่า (return ค่าเดิมกลับไป)
+                }
+            }
+            if (field === 'floorStatus' && value === 'enable') {
+                if (newData.locationStatus === 'inactive') {
+                    return prev;
+                }
+            }
+
+            return newData;
+        });
+    };
     const handleEditClick = (selectedItem) => {
         setFormData({
             location: selectedItem.locationName || '',
@@ -100,116 +130,139 @@ const LocationManagement = () => {
             }
         }
     };
-
-    const handleAddNewRoom = async (floorId, roomName, e) => {
-
-        if (e) {
-            e.stopPropagation();
-        }
-
-        const finalRoomName = formData.room;
-        if (!roomName) {
-            alert("กรุณาระบุชื่อห้องครับ");
+    const handleConfirmAddNewRoom = async (roomName) => {
+        if (!roomName || String(roomName).trim() === '') {
+            setError("กรุณากรอกรายการห้อง", "warning");
             return;
         }
 
-        if (window.confirm("ยืนยันการเพิ่มห้องนี้?")) {
-            try {
-                console.log("เช็คค่า floorId ก่อนส่ง:", floorId, typeof floorId);
-                const payload = {
-                    floorId: Number(floorId),
-                    roomName: String(roomName)
-                };
-                await locationService.addRoomApi(payload);
+        setConfirmSubmitRoom({
+            isOpen: true,
+            name: String(roomName).trim()
+        });
+    }
+    const handleAddNewRoom = async () => {
+        startLoading();
+        try {
+            const payload = {
+                floorId: Number(formData.floor),
+                roomName: confirmSubmitRoom.name,
+            };
+            await locationService.addRoomApi(payload);
 
-                await fetchRooms();
+            await fetchRooms();
 
-                alert("เพิ่มห้องสำเร็จเรียบร้อย!");
+            setConfirmSubmitRoom({ isOpen: false, name: '' });
+            setSuccess("เพิ่มห้องสำเร็จ!");
 
-            } catch (error) {
-                console.error("❌ เพิ่มข้อมูลไม่สำเร็จ:", error);
-                alert(`เกิดข้อผิดพลาด: ${error.response?.data?.error || error.message}`);
-            }
+        } catch (error) {
+            const errorMessage = error.response?.data?.error || "เกิดข้อผิดพลาดในการบันทึกข้อมูล";
+            const severityLevel = error.response?.status === 400 ? 'warning' : 'error';
+
+            setError(errorMessage, severityLevel);
+            setConfirmSubmitRoom({ isOpen: false });
         }
     };
 
-    const handleAddNewfloor = async (locationId, floorLevel, e) => {
+    const handleConfirmAddNewFloor = async (floorLevel) => {
 
-        if (e) {
-            e.stopPropagation();
-        }
-
-        const finalFloorLevel = formData.floor;
-        if (!floorLevel) {
-            alert("กรุณาระบุระดับชั้นครับ");
+        if (!floorLevel || String(floorLevel).trim() === '') {
+            setError("กรุณากรอกรายการชั้น", "warning");
             return;
         }
 
-        if (window.confirm("ยืนยันการเพิ่มชั้นนี้?")) {
-            try {
-                console.log("เช็คค่า locationId ก่อนส่ง:", locationId, typeof locationId);
-                const payload = {
-                    locationId: Number(locationId),
-                    floorLevel: String(floorLevel)
-                };
-                await locationService.addFloorApi(payload);
+        setConfirmSubmitFloor({
+            isOpen: true,
+            level: String(floorLevel).trim()
+        });
+    }
+    const handleAddNewfloor = async () => {
+        startLoading();
+        try {
+            await new Promise(resolve => setTimeout(resolve, 1500));
 
-                await fetchFloors();
+            const payload = {
+                locationId: Number(formData.locationId),
+                floorLevel: confirmSubmitFloor.level
+            };
+            console.log("Payload ที่จะส่งไปหลังบ้าน:", payload);
+            await locationService.addFloorApi(payload);
 
-                triggerAlert('success', 'เพิ่มชั้นสำเร็จเรียบร้อย');
+            await fetchFloors();
 
-            } catch (error) {
-                triggerAlert('error', 'ไม่สามารถเพิ่มชั้นได้ กรุณาลองใหม่');
-                alert(`เกิดข้อผิดพลาด: ${error.response?.data?.error || error.message}`);
-            }
+            setConfirmSubmitFloor({ isOpen: false, level: '' });
+            setSuccess("เพิ่มชั้นสำเร็จ!");
+
+        } catch (error) {
+            const errorMessage = error.response?.data?.error || "เกิดข้อผิดพลาดในการบันทึกข้อมูล";
+            const severityLevel = error.response?.status === 400 ? 'warning' : 'error';
+
+            setError(errorMessage, severityLevel);
+            setConfirmSubmitFloor({ isOpen: false });
         }
     };
+    const handleConfirmAddNewLocation = async (locationName, e) => {
+        if (e) e.stopPropagation();
 
-    const handleAddNewLocation = async (location, e) => {
-
-        if (e) {
-            e.stopPropagation();
-        }
-
-        const finalLocation = formData.location;
-        if (!location) {
-            alert("กรุณากรอกรายการสถานที่");
+        if (!locationName || String(locationName).trim() === '') {
+            setError("กรุณากรอกรายการสถานที่", "warning");
             return;
         }
-        if (window.confirm("ยืนยันการเพิ่มชั้นนี้?")) {
-            try {
-                console.log("เช็คค่า location ก่อนส่ง:", location, typeof location);
-                const payload = {
-                    locationName: String(location),
-                    locationStatus: 'active'
-                };
-                await locationService.addLocationApi(payload);
 
-                await fetchLocations();
+        setConfirmSubmitLocation({
+            isOpen: true,
+            locationName: String(locationName).trim()
+        });
+    }
+    const handleAddNewLocation = async () => {
+        startLoading();
 
-                triggerAlert('success', 'เพิ่มสถานสำเร็จเรียบร้อย');
+        try {
+            await new Promise(resolve => setTimeout(resolve, 1500));
 
-            } catch (error) {
-                triggerAlert('error', 'ไม่สามารถเพิ่มสถานที่ได้ กรุณาลองใหม่');
-                alert(`เกิดข้อผิดพลาด: ${error.response?.data?.error || error.message}`);
-            }
+            const payload = {
+                locationName: confirmSubmitLocation.locationName,
+                locationStatus: 'active'
+            };
+            await locationService.addLocationApi(payload);
+
+            await fetchLocations();
+
+            setConfirmSubmitLocation({ isOpen: false, locationName: '' });
+            setSuccess("เพิ่มสถานที่สำเร็จ!");
+
+        } catch (error) {
+            const errorMessage = error.response?.data?.error || "เกิดข้อผิดพลาดในการบันทึกข้อมูล";
+            const severityLevel = error.response?.status === 400 ? 'warning' : 'error';
+
+            setError(errorMessage, severityLevel);
+            setConfirmSubmitLocation({ isOpen: false });
         }
     }
 
+    const handleCancelSubmit = () => {
+        setConfirmSubmit({ isOpen: false });
+        reset();
+    };
+    const handleConfirmSaveStatus = () => {
+        if (!formData.locationId && !formData.floorId && !formData.roomId) {
+            setError("กรุณาเลือกข้อมูลที่ต้องการแก้ไขทางซ้ายมือก่อนครับ", "warning");
+            return;
+        }
+        setConfirmSaveStatus({ isOpen: true, });
+    }
     const handleSaveStatus = async () => {
+        startLoading();
         try {
             let isUpdated = false;
-            if (!formData.locationId && !formData.floorId && !formData.roomId) {
-                alert("กรุณาเลือกข้อมูลที่ต้องการแก้ไขทางซ้ายมือก่อนครับ");
-                return;
-            }
+            await new Promise(resolve => setTimeout(resolve, 1500));
             if (formData.room) {
                 await locationService.updateRoomStatusApi({
                     roomId: Number(formData.room),
                     status: formData.roomStatus
                 });
                 isUpdated = true;
-                triggerAlert('success', 'อัปเดตสถานะห้องสำเร็จ');
+                setSuccess("อัปเดตสถานะห้องสำเร็จ");
 
             }
             else if (formData.floor) {
@@ -218,7 +271,7 @@ const LocationManagement = () => {
                     status: formData.floorStatus
                 });
                 isUpdated = true;
-                triggerAlert('success', 'อัปเดตสถานะชั้นสำเร็จ');
+                setSuccess("อัปเดตสถานะชั้นสำเร็จ");
 
             }
             else if (formData.locationId) {
@@ -227,9 +280,11 @@ const LocationManagement = () => {
                     status: formData.locationStatus
                 });
                 isUpdated = true;
-                triggerAlert('success', 'อัปเดตสถานะสถานที่สำเร็จ');
+                setSuccess("อัปเดตสถานะสถานที่สำเร็จ");
+
 
             }
+            setConfirmSaveStatus({ isOpen: false });
             console.log("จะเซฟห้อง:", formData.room, "สถานะ:", formData.roomStatus);
             console.log("จะเซฟชั้น:", formData.floor, "สถานะ:", formData.floorStatus);
             console.log("จะเซฟตึก:", formData.locationId, "สถานะ:", formData.locationStatus);
@@ -237,10 +292,18 @@ const LocationManagement = () => {
                 await fetchLocations();
                 await fetchFloors();
                 await fetchRooms();
+                setFormData({
+                    locationStatus: '',
+                    floorStatus: '',
+                    roomStatus: ''
+                });
+                setSelectedId(null);
+                setOpenLocations([]);      
+                setOpenFloors([]);
             }
         } catch (error) {
             console.error("อัปเดตข้อมูลไม่สำเร็จ:", error);
-            triggerAlert('error', 'อัปเดตข้อมูลไมสำเร็จ');
+            setError("อัปเดตข้อมูลไม่สำเร็จ", "error");
         }
     };
 
@@ -251,6 +314,16 @@ const LocationManagement = () => {
 
     return (
         <div className="location-management">
+            <LoadingSpinner
+                isLoading={loading.isLoading}
+                message="กำลังประมวลผล..."
+            />
+            {/* แสดงข้อผิดพลาดเมื่อมีการโหลดไม่สำเร็จ */}
+            <ToastAlert
+                error={loading.error}
+                success={loading.success}
+                onDismiss={reset}
+            />
             <div className="main-container">
                 <div className="location-container">
                     <h3 style={{ textAlign: 'center' }}>รายการสถานที่</h3>
@@ -350,7 +423,7 @@ const LocationManagement = () => {
                         <div className='input-location-button'>
                             <label>สถานที่</label>
                             <DropdownWithAdd
-                                name="location" 
+                                name="location"
                                 value={formData.locationId || ''}
                                 onChange={handleInputChange}
                                 placeholder="เลือกสถานที่"
@@ -367,7 +440,7 @@ const LocationManagement = () => {
                                         return;
                                     }
                                     // เรียกฟังก์ชันเพิ่มสถานที่ใหม่ของคุณ
-                                    handleAddNewLocation(newLocationName);
+                                    handleConfirmAddNewLocation(newLocationName);
                                 }}
                             />
                         </div>
@@ -386,7 +459,7 @@ const LocationManagement = () => {
                                         alert("กรุณาเลือกสถานที่ให้เรียบร้อยก่อนสร้างชั้นใหม่ครับ");
                                         return;
                                     }
-                                    handleAddNewfloor(formData.locationId, newFloorName);
+                                    handleConfirmAddNewFloor(newFloorName);
                                 }}
                             />
                             <DropdownWithAdd
@@ -403,7 +476,7 @@ const LocationManagement = () => {
                                         alert("กรุณาเลือกตึกและชั้นให้เรียบร้อยก่อนสร้างห้องใหม่ครับ");
                                         return;
                                     }
-                                    handleAddNewRoom(formData.floor, newRoomName);
+                                    handleConfirmAddNewRoom(newRoomName);
                                 }}
                             />
                         </div>
@@ -415,6 +488,7 @@ const LocationManagement = () => {
                                     name="locationStatus"
                                     value={formData.locationStatus}
                                     onChange={handleInputChange}
+                                // onChange={(e) => handleStatusChange('locationStatus', e.target.value)}
                                 >
                                     <option value="" disabled>สถานะสถานที่</option>
                                     <option value="active">ใช้งาน</option>
@@ -425,8 +499,13 @@ const LocationManagement = () => {
                                 <label>สถานะชั้น</label>
                                 <select
                                     name="floorStatus"
-                                    onChange={handleInputChange}
+                                    onChange={(e) => {
+                                        handleInputChange(e);
+                                        handleStatusChange('floorStatus', e.target.value);
+                                    }}
                                     value={formData.floorStatus || ""}
+                                    disabled={!formData.floor || formData.locationStatus === 'inactive'}
+                                    style={{ cursor: (!formData.floor || formData.locationStatus === 'inactive') ? 'not-allowed' : 'pointer' }}
                                 >
                                     <option value="" disabled>สถานะชั้น</option>
                                     <option value="active">ใช้งาน</option>
@@ -437,8 +516,13 @@ const LocationManagement = () => {
                                 <label>สถานะห้อง</label>
                                 <select
                                     name="roomStatus"
-                                    onChange={handleInputChange}
+                                    onChange={(e) => {
+                                        handleInputChange(e);
+                                        handleStatusChange('roomStatus', e.target.value);
+                                    }}
                                     value={formData.roomStatus || ""}
+                                    disabled={!formData.room || formData.locationStatus === 'inactive' || formData.floorStatus === 'inactive'}
+                                    style={{ cursor: !formData.room ? 'not-allowed' : 'pointer' }}
                                 >
                                     <option value="" disabled>สถานะห้อง</option>
                                     <option value="active">ใช้งาน</option>
@@ -448,7 +532,7 @@ const LocationManagement = () => {
                         </div>
                     </form>
                     <div className="btn">
-                        <button className="btn-confirm" onClick={handleSaveStatus}>
+                        <button className="btn-confirm" onClick={handleConfirmSaveStatus}>
                             บันทึก
                         </button>
                         <button className="btn-cancel">ยกเลิก</button>
@@ -458,6 +542,50 @@ const LocationManagement = () => {
                         type={alert.type}
                         message={alert.message}
                         onClose={() => setAlert({ ...alert, isOpen: false })}
+                    />
+
+                    {/* Confirm add location */}
+                    <ConfirmButton
+                        isOpen={confirmSubmitLocation.isOpen}
+                        title="ยืนยันการเพิ่มสถานที่"
+                        message="คุณแน่ใจหรือไม่ว่าต้องการเพิ่มสถานที่นี้? โปรดตรวจสอบข้อมูลให้ถูกต้องก่อนยืนยัน"
+                        onConfirm={handleAddNewLocation}
+                        onCancel={() => setConfirmSubmitLocation({ isOpen: false, locationName: '' })}
+                        confirmText={loading.isLoading ? "กำลังบันทึก..." : "ยืนยัน"}
+                        cancelText={loading.isLoading ? "ปิด" : "ยกเลิก"}
+                        isLoading={loading.isLoading}
+                    />
+                    {/* Confirm add floor */}
+                    <ConfirmButton
+                        isOpen={confirmSubmitFloor.isOpen}
+                        title="ยืนยันการเพิ่มชั้น"
+                        message="คุณแน่ใจหรือไม่ว่าต้องการเพิ่มชั้นนี้? โปรดตรวจสอบข้อมูลให้ถูกต้องก่อนยืนยัน"
+                        onConfirm={handleAddNewfloor}
+                        onCancel={() => setConfirmSubmitFloor({ isOpen: false, level: '' })}
+                        confirmText={loading.isLoading ? "กำลังบันทึก..." : "ยืนยัน"}
+                        cancelText={loading.isLoading ? "ปิด" : "ยกเลิก"}
+                        isLoading={loading.isLoading}
+                    />
+                    {/* Confirm add room */}
+                    <ConfirmButton
+                        isOpen={confirmSubmitRoom.isOpen}
+                        title="ยืนยันการเพิ่มห้อง"
+                        message="คุณแน่ใจหรือไม่ว่าต้องการเพิ่มห้องนี้? โปรดตรวจสอบข้อมูลให้ถูกต้องก่อนยืนยัน"
+                        onConfirm={handleAddNewRoom}
+                        onCancel={() => setConfirmSubmitRoom({ isOpen: false, name: '' })}
+                        confirmText={loading.isLoading ? "กำลังบันทึก..." : "ยืนยัน"}
+                        cancelText={loading.isLoading ? "ปิด" : "ยกเลิก"}
+                        isLoading={loading.isLoading}
+                    />
+                    <ConfirmButton
+                        isOpen={confirmSaveStatus.isOpen}
+                        title="ยืนยันการบันทึกสถานะ"
+                        message={confirmSaveStatus.message}
+                        onConfirm={handleSaveStatus}
+                        onCancel={() => setConfirmSaveStatus({ isOpen: false, type: '', message: '' })}
+                        confirmText={loading.isLoading ? "กำลังบันทึก..." : "ยืนยัน"}
+                        cancelText={loading.isLoading ? "ปิด" : "ยกเลิก"}
+                        isLoading={loading.isLoading}
                     />
                 </div>
             </div>

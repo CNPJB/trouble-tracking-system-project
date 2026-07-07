@@ -3,17 +3,21 @@ import './Categories.css'
 
 // hook
 import { useCategories } from '../../hooks/useCategories'
+import { useLoadingState } from '../../hooks/useLoadingState';
 
 // service
 import { IssueCategoryService } from '../../services/IssueCategoryService';
 
 // component
 import { PopupAlert } from '../../components/componentsAdmin/popupAlert';
+import { LoadingSpinner, ToastAlert } from '../../components/LoadingSpinner';
+import { ConfirmButton } from '../../components/ConfirmButton';
 
 const Categories = () => {
     const { categories, fetchCategories } = useCategories();
     const [selectedId, setSelectedId] = useState(null);
-
+    const { loading, startLoading, setError, setSuccess, reset, clearError } = useLoadingState();
+    const [confirmSubmit, setConfirmSubmit] = useState({ "isOpen": false, "message": "" });
     const [formData, setFormData] = useState({
         ticketCtgId: '',
         ticketCtgIdName: '',
@@ -38,22 +42,26 @@ const Categories = () => {
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleSaveCategory = async (e) => {
+    const handleConfirmSaveCategory = (e) => {
         if (e) e.preventDefault();
-
         if (!formData.ticketCtgName || !formData.ticketCtgStatus) {
-            triggerAlert('error', 'กรุณากรอกข้อมูลให้ครบถ้วน');
+            setError('กรุณากรอกข้อมูลให้ครบถ้วน');
             return;
         }
+        setConfirmSubmit({ isOpen: true,});
+    };
 
+    const handleSaveCategory = async () => {
+        startLoading();
         try {
+            await new Promise(resolve => setTimeout(resolve, 1500));
             if (formData.ticketCtgId) {
                 await IssueCategoryService.updateIssueCategoryApi({
                     ticketCtgId: formData.ticketCtgId,
                     ticketCtgName: formData.ticketCtgName,
                     ticketCtgStatus: formData.ticketCtgStatus
                 });
-                triggerAlert('success', 'อัปเดตประเภทปัญหาสำเร็จ');
+                setSuccess('อัปเดตประเภทปัญหาสำเร็จ');
 
             } else {
                 await IssueCategoryService.addIssueCategoryApi({
@@ -61,23 +69,28 @@ const Categories = () => {
                     ticketCtgStatus: formData.ticketCtgStatus
                 });
 
-                triggerAlert('success', 'เพิ่มประเภทปัญหาใหม่สำเร็จ');
+                setSuccess('เพิ่มประเภทปัญหาใหม่สำเร็จ');
             }
             await fetchCategories();
             setFormData({});
-
+            setConfirmSubmit({ isOpen: false, message: '' });
         } catch (error) {
             console.error("บันทึกข้อมูลไม่สำเร็จ:", error);
-            triggerAlert('error', 'เพิ่มข้อมูลไม่สำเร็จ');
+            setError('เพิ่มข้อมูลไม่สำเร็จ', 'error');
         }
-    };
-
-    const [alert, setAlert] = useState({ isOpen: false, type: '', message: '' });
-    const triggerAlert = (type, message) => {
-        setAlert({ isOpen: true, type, message });
     };
     return (
         <div className="Categories-management">
+            <LoadingSpinner
+                isLoading={loading.isLoading}
+                message="กำลังประมวลผล..."
+            />
+            {/* แสดงข้อผิดพลาดเมื่อมีการโหลดไม่สำเร็จ */}
+            <ToastAlert
+                error={loading.error}
+                success={loading.success}
+                onDismiss={reset}
+            />
             <div className="main-container">
                 <div className="table-responsive-wrapper">
                     <table className="layout-table">
@@ -130,16 +143,20 @@ const Categories = () => {
                         </select>
                     </form>
                     <div className="btn">
-                        <button className="btn-confirm" onClick={handleSaveCategory}>
+                        <button className="btn-confirm" onClick={handleConfirmSaveCategory}>
                             บันทึก
                         </button>
                         <button className="btn-cancel" onClick={() => setFormData({})}>ลบ</button>
                     </div>
-                    <PopupAlert
-                        isOpen={alert.isOpen}
-                        type={alert.type}
-                        message={alert.message}
-                        onClose={() => setAlert({ ...alert, isOpen: false })}
+                    <ConfirmButton
+                        isOpen={confirmSubmit.isOpen}
+                        title="ยืนยันการเพิ่มประเภทปัญหา"
+                        message="คุณแน่ใจหรือไม่ว่าต้องการเพิ่มประเภทปัญหาใหม่นี้? โปรดตรวจสอบข้อมูลให้ถูกต้องก่อนยืนยัน"
+                        onConfirm={handleSaveCategory}
+                        onCancel={() => setConfirmSubmit({ isOpen: false, message: '' })}
+                        confirmText={loading.isLoading ? "กำลังบันทึก..." : "ยืนยัน"}
+                        cancelText={loading.isLoading ? "ปิด" : "ยกเลิก"}
+                        isLoading={loading.isLoading}
                     />
                 </div>
             </div>

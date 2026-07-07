@@ -17,7 +17,6 @@ import { LoadingSpinner, ToastAlert } from '../components/LoadingSpinner.jsx';
 import { ticketService } from '../services/ticketService.js';
 // Styles
 import './AddIssue.css';
-import { ConfirmButton } from '../components/ConfirmButton.jsx';
 
 function AddIssue() {
   
@@ -92,7 +91,6 @@ function AddIssue() {
     debouncedTitle,
     user?.userId
   );  
-
   // --- Logic to handle form input changes ---
   const handleChange = (e) => {
     const { name, value } = e.target;

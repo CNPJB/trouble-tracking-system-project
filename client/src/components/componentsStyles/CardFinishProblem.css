@@ -1,9 +1,8 @@
 .container-card {
     display: grid;
     grid-template-columns: 150px 1fr;
-    background-color: var(--background-color-main);
-    box-shadow: 0 0 0, 0 0 10px;
-    border: solid 1px var(--tbs-green);
+    background-color: var(--card-bg);
+    box-shadow: var(--shadow-md);
     padding: 1rem;
     transition: all 0.1s;
     width: 420px;
@@ -16,7 +15,8 @@
     display: grid;
     gap: 1rem;
 }
-.before-img-ticket img{
+
+.before-img-ticket img {
     width: 90%;
     height: auto;
 }
@@ -46,7 +46,6 @@
 }
 
 .container-card:hover {
-    box-shadow: 0 0 0, 0 0 15px var(--tbs-green);
     transform: translateY(-4px);
 }
 
@@ -55,11 +54,12 @@
         display: grid;
         width: 320px;
         flex: 0 0 320px;
-        grid-template-columns: 100px 1fr; 
+        grid-template-columns: 100px 1fr;
         gap: 10px;
-        
+
     }
-    .img-card img{
+
+    .img-card img {
         width: 100px;
         height: 100px;
     }

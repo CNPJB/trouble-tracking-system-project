@@ -11,12 +11,22 @@ export const useUsers = () => {
             setUsers(response.data);
         } catch (error) {
             console.error('Error fetching users:', error);
+            throw error;
         }
     }, []);
 
+    const updateRoleUser = useCallback(async(payload) =>{
+        try{
+            const response = await axios.patch(`/api/manage/updateRoleUser`,payload)
+            return response.data
+        }catch (error){
+            console.error('Error update role users:', error);
+            throw error;
+        }
+    },[fetchUsers]);
     useEffect(() => {
         fetchUsers();
     }, [fetchUsers]);
 
-    return { users };
+    return { users, updateRoleUser,fetchUsers };
 };

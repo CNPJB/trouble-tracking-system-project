@@ -91,6 +91,7 @@ export const useTickets = (initialParams = {}) => {
         tickets,
         pagination,
         isLoading,
+        setIsLoading,
         isFetchingNextPage,
         refetch,
         changePage,

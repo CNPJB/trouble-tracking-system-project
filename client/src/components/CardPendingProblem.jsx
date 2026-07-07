@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { formatDate } from '../utils/formatDate';
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 // Styles
 import './CardPendingProblem.css'
 
@@ -38,7 +40,7 @@ export const CardPendingProblem = ({
 
         <div className={`container-pending-card ${isSelected ? 'selected-card' : ''}`}
             onClick={handleCardClick}
-            style={ { position: 'relative' }}>
+            style={{ position: 'relative' }}>
 
             {isMergeMode && (
                 <div className="card-checkbox-wrapper"
@@ -69,12 +71,12 @@ export const CardPendingProblem = ({
                 </div>
                 <div className="title-card" key={data.id}>
                     <p style={{ color: 'gray' }}>{data.ticketId}</p>
-                    <h3>เรื่อง : {data.title}</h3>
+                    <h3 className="title">เรื่อง : {data.title}</h3>
                     <p>แจ้ง : {formatDate(data.createdAt)}</p>
                     <div className={`ticketStatus ${data.ticketStatus}`}>
                         {statusLabels[data.ticketStatus] || data.ticketStatus}
                     </div>
-                    <p className='location'>{data.location.locationName}</p>
+                    <p className='location-text'>{data.location.locationName}</p>
                     <div className="floor-room">
                         <span>ชั้น {data.floor?.floorLevel || '-'}</span>
                         <span>ห้อง {data.room?.roomName || '-'}</span>
@@ -82,8 +84,8 @@ export const CardPendingProblem = ({
                 </div>
             </div>
             <div className="description">
-                <p>รายละเอียด : {data.description}</p>
-                <p>ผู้ดำเนินการ : {data.admin}</p>
+                <p className='description-text'>รายละเอียด : {data.description}</p>
+                <p className='operator'>ผู้ดำเนินการ : {data.admin}</p>
             </div>
         </div>
     )
@@ -91,21 +93,34 @@ export const CardPendingProblem = ({
 
 export const CardPendingSkeleton = () => {
     return (
-        <div className="skleton-card-pending">
-            <div className="header-skleton-card">
-                <div className="skleton-img"></div>
-                <div className="skleton-title-card">
-                    <p className="skleton-text"></p>
-                    <h3 className="skleton-text"></h3>
-                    <p className="skleton-text"></p>
-                    <p className='skleton-text'></p>
-                    <div className="skleton-text"></div>
+        <SkeletonTheme
+            baseColor="#ebebeb"
+            highlightColor="#ccc7c7"
+            duration={2}
+        >
+            <div className="skleton-card-pending">
+                <div className="header-card">
+                    <div className="img">
+                        <Skeleton width={150} height={160} borderRadius={8} />
+                    </div>
+                    <div className="title-card">
+                        <p className='operator'><Skeleton width="40%" height={16} count={1} /></p>
+                        <h3 className="title"><Skeleton width="60%" height={24} /></h3>
+                        <p className='operator'><Skeleton width="40%" height={16} count={1} /></p>
+                        <div>
+                       
+                        </div>
+                        <p className='location-text'><Skeleton width="100%" height={16} count={1} /></p>
+                        <div className="floor-room">
+                            <Skeleton width="40%" height={16} count={1} />
+                        </div>
+                    </div>
+                </div>
+                <div className="description">
+                    <p className='description-text'><Skeleton width="100%" height={16} count={3} /></p>
+                    <p className='operator'><Skeleton width="100%" height={16} count={1} /></p>
                 </div>
             </div>
-            <div className="skleton-description">
-                <p className="skleton-text"></p>
-                <p className="skleton-text"></p>
-            </div>
-        </div>
+        </SkeletonTheme>
     )
 };
