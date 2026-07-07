@@ -34,7 +34,20 @@ export const addEquipment = async (req, res) => {
 
 export const getEquipment = async (req, res) => {
     try {
+        // console.log("ข้อมูลที่ส่งมาจากหน้าเว็บ (Query):", req.query);
+        const { categoryId, LocationId } = req.query;
+
         const equipments = await prisma.equipment.findMany({
+
+            where: {
+                equipmentCtgId: categoryId ? Number(categoryId) : undefined,
+                room: LocationId ? {
+                    floor: {
+                        locationId: Number(LocationId)
+                    }
+                } : undefined,
+            },
+
             include: {
                 category: true,
                 room: {
@@ -58,7 +71,7 @@ export const getEquipment = async (req, res) => {
 
 export const deleteEquipment = async (req, res) => {
     try {
-       const { id } = req.params;
+        const { id } = req.params;
 
         const equipment = await prisma.equipment.delete({
             where: {
@@ -204,19 +217,54 @@ export const uploadEquipments = async (req, res) => {
             });
         }
 
-        if (errors.length > 0) {
-            return res.status(400).json({ errors });
-        }
-
         if (validDataToInsert.length > 0) {
-            await prisma.equipment.createMany({ 
-                data: validDataToInsert,  
-                skipDuplicates: true });
+            await prisma.equipment.createMany({
+                data: validDataToInsert,
+                skipDuplicates: true
+            });
         }
 
-        return res.status(200).json({ message: `อัปโหลดสำเร็จ ${validDataToInsert.length} รายการ`, errors });
+        if (errors.length > 0) {
+            return res.status(200).json({
+                errors: errors
+            });
+        }
+
+        return res.status(200).json({
+            status: "success",
+            message: `อัปโหลดสำเร็จครบถ้วน ${validDataToInsert.length} รายการ`,
+            errors: []
+        });
     } catch (error) {
         console.error('Error uploading equipment data:', error);
         res.status(500).json({ error: 'Failed to upload equipment data' });
+    }
+}
+
+export const updateEquipment = async (req, res) => {
+    try {
+        const { equipmentId, equipmentStatus, roomId, locationId, floorId } = req.body;
+        if (!equipmentId) {
+            return res.status(400).json({ error: 'ไม่พบ ID ของครุภัณฑ์ที่ต้องการแก้ไข' });
+        }
+
+        const updatedEquipment = await prisma.equipment.update({
+            where: {
+                equipmentId: Number(equipmentId) // ระบุว่าจะแก้ตัวไหน
+            },
+            data: {
+                equipmentStatus: equipmentStatus, // อัปเดตสถานะ
+                roomId: roomId ? Number(roomId) : undefined
+            }
+        });
+
+        res.status(200).json({
+            success: true,
+            message: 'อัปเดตข้อมูลครุภัณฑ์เรียบร้อยแล้ว',
+            data: updatedEquipment
+        });
+    } catch (error) {
+        console.error('Error updating equipment:', error);
+        res.status(500).json({ error: 'Failed to update equipment' });
     }
 }

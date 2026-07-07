@@ -1,7 +1,9 @@
 import React from 'react'
 import './FilterProblem.css'
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 
-export const FilterProblem = ({ summary ,currentFilter, onFilterChange }) => {
+export const FilterProblem = ({ summary, currentFilter, onFilterChange }) => {
     const buttons = [
         { id: 'all', label: 'ทั้งหมด' },
         { id: 'pending', label: 'รอรับเรื่อง' },
@@ -44,5 +46,36 @@ export const FilterProblem = ({ summary ,currentFilter, onFilterChange }) => {
                 );
             })}
         </div>
+    )
+}
+
+export const SkeletonFilterProblem = () => {
+    return (
+        <SkeletonTheme
+            baseColor="#ebebeb"
+            highlightColor="#ccc7c7"
+            duration={2}
+        >
+            {/* โครงสร้างเหมือนตัวจริงเป๊ะ คือมี filter-container แค่ 1 ตัวครอบทั้งหมด */}
+            <div className="filter-container">
+
+                {/* วนลูปสร้างปุ่ม Skeleton 4 อัน ไว้ข้างในนี้เลย */}
+                {Array.from({ length: 4 }).map((_, index) => (
+                    <button
+                        key={`skeleton-btn-${index}`}
+                        className="filter-btn"
+                        disabled
+                        style={{ cursor: 'default' }}
+                    >
+                        <div className="btn-content">
+                            <span className="label">
+                                <Skeleton width={200} />
+                            </span>
+                        </div>
+                    </button>
+                ))}
+
+            </div>
+        </SkeletonTheme>
     )
 }

@@ -105,3 +105,9 @@ svg {
   --text-size-base: 14px;
   --text-size-large: 20px;
 }
+.text-limit {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* จำนวนบรรทัดที่ต้องการแสดง */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
