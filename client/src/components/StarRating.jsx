@@ -22,7 +22,7 @@ export const StarRating = ({rating}) => {
   });
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>
-    <span style={{ marginLeft: '1px', color: '#666' }}>{rating}</span>
+    <span style={{ marginLeft: '1px', marginRight: '5px', color: '#666' }}>{rating}</span>
       {stars}
       {/* (ตัวเลือกเสริม) โชว์ตัวเลขกำกับไว้ข้างหลัง */}
     

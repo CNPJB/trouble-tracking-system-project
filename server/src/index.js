@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import ticketRoutes from '../routes/ticketRoutes.js';  
 import managementRoutes from '../routes/managementRoutes.js';
+import ticketManagementRoutes from '../routes/ticketManagementRoutes.js';
 import cookiesParser from 'cookie-parser';
 import authRoutes from '../routes/authRoutes.js';
 
@@ -19,6 +20,7 @@ app.use(cookiesParser()); // Parse cookies
 app.use('/api/auth', authRoutes);
 app.use('/api/tickets', ticketRoutes);
 app.use('/api/manage', managementRoutes);
+app.use('/api/ticketManagement', ticketManagementRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello from server testest!!');

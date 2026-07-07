@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-import './Navbar.css';
+import './componentStyles/Navbar.css';
 // icons {
 import { FaHome, FaPlus, FaMapMarkerAlt , FaChartBar, FaUserCog } from 'react-icons/fa';
 
@@ -42,7 +42,7 @@ const Navbar = () => {
                                     : "nav-menu-item"      
                             }
                         >
-                            Menu admin <FaUserCog className="nav-icon" />
+                            Menu Admin <FaUserCog className="nav-icon" />
                         </NavLink>
                     )}
                 </div>

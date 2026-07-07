@@ -128,7 +128,7 @@ model Ticket {
   parentTicketId      String?        @map("parent_ticket_id")
   adminId             Int?           @map("admin_id")
   adminNote           String?        @map("admin_note")
-  rating              Int?
+  rating              Float?
   comment             String?
   createdAt           DateTime       @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt           DateTime       @updatedAt @map("updated_at") @db.Timestamp(6)

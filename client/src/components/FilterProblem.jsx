@@ -1,5 +1,5 @@
 import React from 'react'
-import './FilterProblem.css'
+import './componentStyles/FilterProblem.css'
 
 export const FilterProblem = ({ summary ,currentFilter, onFilterChange }) => {
     const buttons = [
@@ -21,6 +21,7 @@ export const FilterProblem = ({ summary ,currentFilter, onFilterChange }) => {
         if (totalProblem === 0) return 0;
         return ((count / totalProblem) * 100).toFixed(1);
     }
+    
     return (
         <div className="filter-container">
             {buttons.map((btn) => {

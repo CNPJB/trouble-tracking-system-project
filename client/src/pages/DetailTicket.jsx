@@ -1,4 +1,3 @@
-import { useTickets } from '../hooks/useTickets.js';
 import { useSearchParams } from 'react-router-dom';
 // Utils
 import { formatDate } from '../utils/formatDate.js';
@@ -8,7 +7,7 @@ import { useTicketDetail } from '../hooks/useTicketDetail.js';
 // Components
 import { StarRating } from '../components/StarRating.jsx';
 // Styles
-import './DetailTicket.css'
+import './pageStyles/DetailTicket.css';
 
 const DetailTicket = () => {
     const [searchParams] = useSearchParams();
@@ -112,8 +111,8 @@ const DetailTicket = () => {
                             {ticket.comment && (
                                 <p>ความคิดเห็น : {ticket.comment}</p>
                             )}
-                            {ticket.admin && (
-                                <p>ผู้ดำเนินการ : {ticket.admin}</p>
+                            {ticket.admin?.fullName && (
+                                <p>ผู้ดำเนินการ : {ticket.admin.fullName}</p>
                             )}
                             {ticket.adminNote && (
                                 <p>ความคิดเห็นผู้ดูแลระบบ : {ticket.adminNote}</p>

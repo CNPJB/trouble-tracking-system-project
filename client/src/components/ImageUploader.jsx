@@ -1,5 +1,5 @@
 import React from 'react';
-import './ImageUploader.css';
+import './componentStyles/ImageUploader.css';
 
 const ImageUploader = ({ 
   selectedImages, 

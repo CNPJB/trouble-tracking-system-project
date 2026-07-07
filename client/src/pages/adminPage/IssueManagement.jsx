@@ -1,0 +1,204 @@
+import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+
+// Styles
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import './IssueManagement.css';
+
+// Custom hooks
+import { useTickets } from '../../hooks/useTickets.js';
+import { useUrgentTickets } from '../../hooks/useUrgentTickets.js';
+
+// Components
+import { CardPendingProblem, CardPendingSkeleton } from '../../components/CardPendingProblem.jsx';
+import { LoadingSpinner } from '../../components/LoadingSpinner.jsx';
+import { FaFire, FaClipboardList, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { SearchBar } from '../../components/SearchBar.jsx'
+import { TicketCategoryFilter } from '../../components/TicketCategoryFilter.jsx';
+import { TicketLocationFilter } from '../../components/TicketLocationFilter.jsx';
+import { TicketStatusFilter } from '../../components/TIcketStatusFilter.jsx';
+
+const IssueManagement = () => {
+    const navigate = useNavigate();
+    const [selectedStatus, setSelectedStatus] = useState('pending,in_progress');
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedLocation, setSelectedLocation] = useState('');
+    const [searchKeyword, setSearchKeyword] = useState('');
+    const { tickets: normalTickets, isLoading, pagination, changePage, updateFilters
+    } = useTickets({ status: selectedStatus, limit: 12 }, 'standard');
+    const { urgentTickets, isLoadingUrgent } = useUrgentTickets();
+
+    const hasActiveFilter = Boolean(
+        searchKeyword || selectedCategory || selectedLocation
+    );
+
+    const handleCardClick = (ticketId) => {
+        navigate(`/adminPage/IssueManagement/${ticketId}`);
+    };
+
+    const handleSearch = (keyword) => {
+        setSearchKeyword(keyword);
+        updateFilters({ search: keyword });
+    };
+
+    const handleCategoryFilter = (categoryId) => {
+        setSelectedCategory(categoryId || '');
+        updateFilters({ categoryId: categoryId || undefined });
+    };
+
+    const handleLocationFilter = (locationId) => {
+        setSelectedLocation(locationId || '');
+        updateFilters({ locationId: locationId || undefined });
+    };
+
+    const handleStatusFilter = (status) => {
+        setSelectedStatus(status || '');
+        updateFilters({ status: status || undefined });
+    };
+
+    const renderPagination = () => {
+        if (!pagination || pagination.totalPages <= 1) return null;
+
+        const pages = [];
+        for (let i = 1; i <= pagination.totalPages; i++) {
+            pages.push(
+                <button
+                    key={i}
+                    className={`page-btn ${pagination.currentPage === i ? 'active' : ''}`}
+                    onClick={() => changePage(i)}
+                >
+                    {i}
+                </button>
+            );
+        }
+
+        return (
+            <div className="pagination-container">
+                <button
+                    className="page-btn nav-btn"
+                    disabled={!pagination.hasPrevPage}
+                    onClick={() => changePage(pagination.currentPage - 1)}
+                >
+                    <FaChevronLeft />
+                </button>
+
+                <div className="page-numbers">
+                    {pages}
+                </div>
+
+                <button
+                    className="page-btn nav-btn"
+                    disabled={!pagination.hasNextPage}
+                    onClick={() => changePage(pagination.currentPage + 1)}
+                >
+                    <FaChevronRight />
+                </button>
+            </div>
+        );
+    };
+
+    // if (isLoading) return <LoadingSpinner isLoading={true} message="กำลังโหลดข้อมูลปัญหา..." />;
+
+    return (
+        <div className="issue-management-container">
+            <div className="issue-management-filter-container">
+                <div className="searchbar">
+                    <SearchBar onSearch={handleSearch} />
+                </div>
+                <TicketCategoryFilter
+                    selectedValue={selectedCategory}
+                    onChange={handleCategoryFilter}
+                />
+                <TicketLocationFilter
+                    selectedValue={selectedLocation}
+                    onChange={handleLocationFilter}
+                />
+                <TicketStatusFilter
+                    selectedValue={selectedStatus}
+                    onChange={handleStatusFilter}
+                />
+            </div>
+
+            {/* Section 1: สไลด์โชว์ปัญหาเร่งด่วน */}
+            {!hasActiveFilter && urgentTickets.length > 0 && pagination?.currentPage === 1 && selectedStatus.includes('pending') && (
+                <div className="urgent-section">
+                    <h2 className="section-title urgent-title">
+                        <FaFire /> ปัญหาเร่งด่วน (Top 5)
+                    </h2>
+                    <Swiper
+                        modules={[Navigation, Pagination, Autoplay]}
+                        spaceBetween={20}
+                        slidesPerView={1}
+                        navigation
+                        pagination={{ clickable: true }}
+                        autoplay={{ delay: 5000, disableOnInteraction: false }}
+                        breakpoints={{
+                            860: { slidesPerView: 2 },
+                            1200: { slidesPerView: 3 },
+                            1536: { slidesPerView: 3 },
+                            1920: { slidesPerView: 4 }
+                        }}
+                        className="urgent-swiper"
+                    >
+                        {urgentTickets.map(ticket => (
+                            <SwiperSlide key={ticket.ticketId}>
+                                <div className="clickable-card-wrapper urgent-card">
+                                    <CardPendingProblem
+                                        data={ticket}
+                                        isMergeMode={false}
+                                        handleClick={() => handleCardClick(ticket.ticketId)}
+                                        showSubTicketBadge={true}
+                                    />
+                                    <div className="urgency-badge">🔥 Score: {ticket.urgencyScore}</div>
+                                </div>
+                            </SwiperSlide>
+                        ))}
+                    </Swiper>
+                </div>
+            )}
+
+            {/* Section 2: รายการปัญหาทั่วไป (Grid) */}
+            <div className="normal-section">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                    <h2 className="section-title" style={{ marginBottom: 0 }}>
+                        <FaClipboardList /> รายการปัญหารอดำเนินการ {pagination?.currentPage > 1 && `(หน้า ${pagination.currentPage})`}
+                    </h2>
+                    <span className="total-items-badge">ทั้งหมด {pagination?.totalItems || 0} รายการ</span>
+                </div>
+
+                {normalTickets.length === 0 ? (
+                    <div className="empty-state-container">
+                        <img src="/empty-state.png" alt="No issues" />
+                        <p>ไม่มีรายการปัญหาทั่วไปในขณะนี้</p>
+                    </div>
+                ) : (
+                    <div className="issue-grid">
+                        {isLoading && normalTickets.length === 0 && (
+                            Array.from({ length: 8 }).map((_, index) => (
+                                <CardPendingSkeleton key={`skeleton-${index}`} />
+                            ))
+                        )}
+
+                        {normalTickets.map(ticket => (
+                            <div key={ticket.ticketId} className="clickable-card-wrapper">
+                                <CardPendingProblem
+                                    data={ticket}
+                                    isMergeMode={false}
+                                    handleClick={() => handleCardClick(ticket.ticketId)}
+                                    showSubTicketBadge={true}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+            {renderPagination()}
+        </div>
+    );
+}
+
+export default IssueManagement;

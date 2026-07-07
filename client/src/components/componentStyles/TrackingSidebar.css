@@ -1,0 +1,92 @@
+/* คอนเทนเนอร์หลักของ Sidebar */
+.tracking-sidebar {
+  width: 240px;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background-color: var(--card-bg); /* ดึงสีขาวจากการ์ดมาใช้ */
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm); /* ใช้เงาบางๆ จากระบบ */
+  box-sizing: border-box;
+}
+
+/* กลุ่มปุ่มเมนู */
+.menu-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px; /* ระยะห่างปุ่มลดลงให้ดูเป็นกลุ่มเดียวกัน */
+}
+
+.personal-count {
+  color: var(--text-light);
+  margin-left: 4px;
+}
+
+/* สไตล์เมนูพื้นฐาน (คลีน เรียบง่าย) */
+.sidebar-menu-btn {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-main); /* สีเทาเข้มอ่านง่าย */
+  background-color: transparent; /* พื้นหลังใส */
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  display: flex;
+  justify-content: space-between; /* ดันข้อความไปซ้าย และ Badge ไปขวาสุด */
+  align-items: center;
+}
+
+/* เอฟเฟกต์ตอน Hover เมาส์ชี้ */
+.sidebar-menu-btn:hover{
+  background-color: var(--tbs-green-light); /* สีเขียวอ่อนสุด */
+  color: var(--tbs-green-dark); /* ตัวอักษรเปลี่ยนเป็นสีเขียวเข้ม */
+}
+
+/* สถานะเปิดใช้งานอยู่ (Active Tab) */
+.sidebar-menu-btn.active{
+  background-color: var(--tbs-green-active); 
+  color: var(--tbs-green-dark); 
+  font-weight: 600;
+}
+
+/* เส้นคั่นกลางแบบเนียนตา */
+.sidebar-divider {
+  border: none;
+  border-top: 1px solid #eef2f6; /* สีเทาอ่อนมากๆ */
+  margin: 4px 0;
+  width: 100%;
+}
+
+/* =========================================
+   ปุ่มรอประเมิน (ฉีกอารมณ์ด้วยโทนเตือนเบาๆ)
+   ========================================= */
+.sidebar-menu-btn.review-btn:hover {
+  background-color: #fff0f0; /* สีแดงอ่อนมากตอน Hover */
+  color: var(--status-red);
+}
+
+.sidebar-menu-btn.review-btn.active {
+  background-color: #ffe4e4; /* สีแดงอ่อนชัดขึ้นตอน Active */
+  color: var(--status-red);
+}
+
+/* ป้าย Badge เครื่องหมายตกใจแบบ Notification Pill */
+.badge-exclamation {
+  background-color: var(--status-red); /* ใช้สีแดงจากระบบ */
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  box-shadow: 0 2px 4px rgba(231, 76, 60, 0.3); /* ใส่เงาสีแดงจางๆ ให้ดูมีมิติ */
+}

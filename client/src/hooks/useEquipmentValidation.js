@@ -34,6 +34,16 @@ export const useEquipmentValidation = (
       });
       return;
     }
+    // Checl if equipment status is not 'active'
+    const equipmentInRoom = equipments.filter(eq => eq.roomId === parseInt(roomId, 10));
+    const inactiveEquipment = equipmentInRoom.find(eq => eq.equipmentCode === debouncedCode && eq.equipmentStatus !== 'active');
+    if (inactiveEquipment) {
+      setEquipmentValidation({ 
+        status: 'error', 
+        message: 'ครุภัณฑ์ไม่พร้อมใช้งาน หรืออยู่ระหว่างซ่อม' 
+      });
+      return;
+    }
 
     const found = equipments.find(
       eq => eq.roomId === parseInt(roomId, 10) && 

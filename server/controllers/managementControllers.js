@@ -390,36 +390,6 @@ export const getEquipment = async (req, res) => {
     }
 }
 
-export const mergeTickets = async (req, res) => {
-    try {
-        const { parentId, childIds } = req.body;
-
-        if (!parentId || !childIds || !Array.isArray(childIds) || childIds.length === 0) {
-            return res.status(400).json({
-                error: 'ข้อมูลไม่ครบถ้วน กรุณาส่งตัวแม่และตัวลูกอย่างน้อย 1 รายการ'
-            });
-        }
-
-        await prisma.ticket.updateMany({
-            where: {
-                ticketId: { in: childIds }
-            },
-            data: {
-                parentTicketId: parentId,
-            }
-        });
-        console.log(`ดำเนินการรวมปัญหา: แม่ = ${parentId}, ลูกๆ =`, childIds);
-
-        res.status(200).json({
-            message: 'รวมปัญหาสำเร็จเรียบร้อยแล้ว',
-            mergedCount: childIds.length
-        });
-    } catch (error) {
-        console.error('Error merging tickets:', error);
-        res.status(500).json({ error: 'Failed to merge tickets' });
-    }
-}
-
 export const getUsers = async (req, res) => {
     try {
         const users = await prisma.user.findMany();
@@ -429,5 +399,4 @@ export const getUsers = async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch users' });
     }
 };
-
 

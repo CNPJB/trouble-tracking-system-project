@@ -2,7 +2,6 @@
   display: flex;
   gap: 12px;
   justify-content: center;
-  margin: 20px 0;
   flex-wrap: wrap; /* ให้ปุ่มลงแถวใหม่ได้ถ้าจอมือถือแคบ */
 }
 
@@ -84,4 +83,10 @@
     font-weight: 600;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+@media (max-width: 1536px) {
+    .filter-btn {
+        padding: 15px 20px;
+    }
 }

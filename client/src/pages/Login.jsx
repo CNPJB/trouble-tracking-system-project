@@ -1,6 +1,6 @@
 import axios from "axios";
 import { GoogleLogin } from "@react-oauth/google";
-import './Login.css';
+import './pageStyles/Login.css';
 import { useState } from "react";
 
 const Login = () => {

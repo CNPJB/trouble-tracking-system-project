@@ -7,7 +7,12 @@ export const useMasterData = () => {
     const [floors, setFloors] = useState([]);
     const [rooms, setRooms] = useState([]);
     const [equipments, setEquipments] = useState([]);
-    const [isLoadingMasterData, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const ticketStatuses = [
+        { value: 'pending', label: 'รอรับเรื่อง' },
+        { value: 'in_progress', label: 'กำลังดำเนินการ' },
+    ];
 
     useEffect(() => {
         const fetchMasterData = async () => {
@@ -41,6 +46,8 @@ export const useMasterData = () => {
         floors,
         rooms,
         equipments,
-        isLoadingMasterData
+        ticketStatuses,
+        isLoading,
+        isLoadingMasterData: isLoading
     };
 }

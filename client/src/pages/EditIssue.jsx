@@ -18,7 +18,7 @@ import { LoadingSpinner, ToastAlert } from '../components/LoadingSpinner.jsx';
 import { ticketService } from '../services/ticketService.js';
 
 // Styles
-import './EditIssue.css'; // ใช้ CSS แยกสไตล์สำหรับการแก้ไข
+import './pageStyles/EditIssue.css';
 import { FaTrashAlt, FaSave, FaAngleLeft, FaMapMarkerAlt } from 'react-icons/fa';
 
 function EditIssue() {
@@ -33,7 +33,6 @@ function EditIssue() {
     const { ticket, isLoading: isTicketLoading, error: ticketError } = useTicketDetail(ticketId);
     const { categories, locations, floors, rooms, equipments } = useMasterData();
     const { loading, startLoading, setError, setSuccess, reset } = useLoadingState();
-    const { selectedImages, fileInputRef, handleImageChange, removeImage, clearImages } = useImageUpload();
 
     // State สำหรับเก็บข้อมูลในฟอร์ม
     const [formData, setFormData] = useState({
@@ -50,6 +49,7 @@ function EditIssue() {
     const [existingImages, setExistingImages] = useState([]);
     const [imagesToDelete, setImagesToDelete] = useState([]); // เก็บ ID ของรูปเก่าที่จะลบ
     const [confirmSubmit, setConfirmSubmit] = useState({ isOpen: false });
+    const { selectedImages, fileInputRef, handleImageChange, removeImage, clearImages } = useImageUpload(3 - existingImages.length, setError);
 
     // ตรวจสอบสิทธิ์ - เฉพาะเจ้าของ หรือ admin เท่านั้นที่สามารถแก้ไขได้
     useEffect(() => {
@@ -341,7 +341,18 @@ function EditIssue() {
                     <button
                         type="submit"
                         className="btn-save-edit"
-                        disabled={loading.isLoading || (isEquipmentCategory && equipmentValidation.status !== 'success')}>
+                        disabled={
+                            loading.isLoading || 
+                            (isEquipmentCategory && equipmentValidation.status !== 'success') || 
+                            // ห้ามส่งถ้าไม่มีการเปลี่ยนแปลงข้อมูลเลย
+                            (formData.categoryId === (ticket.ticketCtgId?.toString() || '') &&
+                            formData.title === (ticket.title || '') &&
+                            formData.locationId === (ticket.locationId?.toString() || '') &&
+                            formData.floorId === (ticket.floorId?.toString() || '') &&
+                            formData.roomId === (ticket.roomId?.toString() || '') &&
+                            formData.description === (ticket.description || '') &&
+                            (imagesToDelete.length === 0 && selectedImages.length === 0))
+                        }>
                         <FaSave style={{ position: 'relative', top: '3.5px' }} /> บันทึกการเแก้ไข
                     </button>
                 </div>

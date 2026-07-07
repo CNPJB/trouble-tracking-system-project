@@ -7,9 +7,8 @@ import {
         addRoom, getRooms,deleteRoom, updateRoomStatus,
         getUsers,
         addEquipmentCtg, getEquipmentCtgs,
-        mergeTickets
 } from '../controllers/managementControllers.js';
-import { getEquipment, addEquipment,deleteEquipment, uploadEquipments } from '../controllers/EquipmentControllers.js';
+import { getEquipment, addEquipment, deleteEquipment, uploadEquipments } from '../controllers/EquipmentControllers.js';
 import { verifyToken, requireAdmin } from '../middleware/authMiddleware.js';
 
 const upload = multer({ storage: multer.memoryStorage() });
@@ -44,9 +43,5 @@ router.get('/getEquipment', verifyToken, getEquipment);
 router.get('/getEquipmentByadmin', verifyToken, requireAdmin, getEquipment);
 router.delete('/deleteEquipment/:id', verifyToken, requireAdmin, deleteEquipment);      
 router.post('/uploadEquipments', verifyToken, requireAdmin, upload.single('file'), uploadEquipments);
-
-router.patch('/mergeTickets', verifyToken, requireAdmin, mergeTickets);
-
-
 
 export default router;

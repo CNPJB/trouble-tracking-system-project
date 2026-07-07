@@ -1,6 +1,7 @@
-import '../components/componentsStyles/CardFinishProblem.css';
+import '../components/componentStyles/CardFinishProblem.css';
 import { useNavigate } from 'react-router-dom';
 import { StarRating } from './StarRating';
+import { formatDate, formatDateTime } from '../utils/formatDate';
 
 export const CardFinishProblem = ({ data }) => {
   const navigate = useNavigate();
@@ -21,8 +22,8 @@ export const CardFinishProblem = ({ data }) => {
         <div className="main-info-card" key={data.id}>
           <div className="info-card">
             <h1 style={{ fontSize: '25px',margin: 0 }}>{data.title}</h1>
-            <p>โดย : {data.admin}</p>
-            <p>เสร็จสิ้น : {data.admin}</p>
+            <p>โดย : {data.admin?.fullName || 'ไม่ระบุ'}</p>
+            <p>เสร็จสิ้น : {formatDateTime(data.timestampFinished) || '-'}</p>
 
           </div>
           <div className="review-card">

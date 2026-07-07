@@ -19,9 +19,9 @@ const AssetManagement = () => {
   const { equipment, deleteEquipment, refetch } = useEquipment();
   const formatStatus = {
     'active': 'ใช้งาน',
-    'awaitingSale': 'รอขาย',
-    'sentForRepair': 'รอส่งซ่อม',
-    'Broken': 'ชำรุด'
+    'awaiting_sale': 'รอขาย',
+    'sent_for_repair': 'รอส่งซ่อม',
+    'broken': 'ชำรุด'
   };
 
   const [formData, setFormData] = useState({

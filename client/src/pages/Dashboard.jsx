@@ -1,7 +1,6 @@
 import { useState, useRef, useCallback } from 'react'
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 // Styles
-import "./Dashboard.css"
+import "./pageStyles/Dashboard.css"
 // Components
 import { SearchBar } from '../components/SearchBar.jsx';
 import { CardFinishProblem } from '../components/CardFinishProblem'
@@ -9,49 +8,34 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { CardPendingProblem, CardPendingSkeleton } from '../components/CardPendingProblem.jsx';
 import { FilterProblem } from '../components/FilterProblem.jsx';
 // Custom Hooks 
-// import { useTicketSearch } from '../hooks/useTicketSearch.js';
 import { useTickets } from '../hooks/useTickets.js';
 import { useTicketSummary } from '../hooks/useTicketSummary.js';
 import { useResolvedTickets } from '../hooks/useResolvedTickets.js';
+import { useInfiniteScroll } from '../hooks/useInfiniteScroll.js';
 
 const Dashboard = () => {
-  // ดึงข้อมูลตั๋วและฟังก์ชันเปลี่ยนหน้า/ค้นหาจาก Backend
+  const [selectedStatus, setSelectedStatus] = useState('pending,in_progress,resolved');
   const {
-    tickets,
-    pagination,
-    isLoading,
-    isFetchingNextPage,
-    changePage,
-    updateFilters
-  } = useTickets();
-  
-  const { displayData, handleSearch, filterStatus, setFilterStatus } = useTicketSearch(tickets);
-  
+    tickets, pagination, isLoading, isFetchingNextPage,
+    changePage, updateFilters, refetch, removeTicket, } = useTickets({ status: selectedStatus });
+
   // ดึงข้อมูลสรุปยอดสำหรับทำ Filter Bar
   const { summary } = useTicketSummary();
 
   const { resolvedTickets, isLoadingResolved } = useResolvedTickets(10);
 
-  const scrollRef = useRef(null); 
+  const scrollRef = useRef(null);
 
   // --- State for ticket status filter
   const [currentStatus, setCurrentStatus] = useState('all');
+  const allowedStatuses = ['pending', 'in_progress', 'resolved'];
 
-  // --- Logic Infinite Scroll ---
-  const observerRef = useRef();
-  const lastTicketElementRef = useCallback(node => {
-    if (isLoading || isFetchingNextPage) return;
-    if (observerRef.current) observerRef.current.disconnect();
-
-    observerRef.current = new IntersectionObserver(entries => {
-      // ถ้าเลื่อนมาถึงใบสุดท้าย และยังมีหน้าถัดไป ให้โหลดเพิ่ม!
-      if (entries[0].isIntersecting && pagination.hasNextPage) {
-        changePage(pagination.currentPage + 1);
-      }
-    });
-
-    if (node) observerRef.current.observe(node);
-  }, [isLoading, isFetchingNextPage, pagination.hasNextPage, pagination.currentPage, changePage]);
+  const lastTicketElementRef = useInfiniteScroll({
+    isLoading: isLoading,
+    isFetchingNextPage: isFetchingNextPage,
+    hasNextPage: pagination?.hasNextPage,
+    onLoadMore: () => changePage(pagination.currentPage + 1)
+  });
 
   // --- Logic ส่งการค้นหาไปให้ Backend ---
   const handleSearch = (keyword) => {
@@ -61,8 +45,11 @@ const Dashboard = () => {
 
   const handleFilterChange = (status) => {
     setCurrentStatus(status);
-    // โยน status ไปให้ Hook เพื่อดึงข้อมูลใหม่จากหน้า 1
-    updateFilters({ status: status === 'all' ? undefined : status });
+    if (status === 'all') {
+      updateFilters({ status: allowedStatuses.join(',') });
+    } else {
+      updateFilters({ status });
+    }
   };
 
   return (
@@ -108,16 +95,18 @@ const Dashboard = () => {
         <div className="ticket-pending-list">
           {/* โหลดครั้งแรก */}
           {isLoading && tickets.length === 0 && (
-             Array.from({ length: 8 }).map((_, index) => (
+            Array.from({ length: 8 }).map((_, index) => (
               <CardPendingSkeleton key={`skeleton-${index}`} />
-            )
+            ))
           )}
 
           {tickets.map((ticket, index) => {
             //  ถ้าเป็นตั๋วใบสุดท้ายของ Array ให้ติดเซ็นเซอร์ไว้ที่มัน!
             if (tickets.length === index + 1) {
               return (
-                <div ref={lastTicketElementRef} key={ticket.ticketId}>
+                <div
+                  ref={lastTicketElementRef}
+                  key={ticket.ticketId}>
                   <CardPendingProblem data={ticket} />
                 </div>
               );

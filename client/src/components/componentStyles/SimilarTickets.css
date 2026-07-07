@@ -4,22 +4,24 @@
 .suggestion-section {
   background-color: #ffffff;
   border-radius: 16px;
-  padding: 30px 24px; /* ปรับ padding ให้สมดุล */
+  padding: 30px 24px;
+  /* ปรับ padding ให้สมดุล */
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-  height: 100%; 
+  height: 100%;
   box-sizing: border-box;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   display: flex;
   flex-direction: column;
   position: sticky;
   top: 90px;
-  max-height: calc(100vh - 120px); /* ปรับให้สูงสุดไม่เกินความสูงหน้าจอ */
+  max-height: calc(100vh - 120px);
+  /* ปรับให้สูงสุดไม่เกินความสูงหน้าจอ */
 }
 
 /* หัวข้อด้านบนสุด */
 .suggestion-section h2 {
   text-align: center;
-  font-size: 22px;
+  font-size: var(--text-size-large);
   font-weight: 600;
   color: #333333;
   margin-top: 0;
@@ -64,11 +66,13 @@
   border-radius: 12px;
   padding: 16px;
   background-color: #ffffff;
-  position: relative; 
+  position: relative;
   display: flex;
   margin: 5px 10px -2px 5px;
-  flex-direction: row; /* 🟢 จัดเรียงรูปซ้าย-ข้อมูลขวา */
-  gap: 16px; /* 🟢 ระยะห่างระหว่างรูปกับข้อความ */
+  flex-direction: row;
+  /* 🟢 จัดเรียงรูปซ้าย-ข้อมูลขวา */
+  gap: 16px;
+  /* 🟢 ระยะห่างระหว่างรูปกับข้อความ */
   min-height: 150px;
   box-shadow: 3px 3px 10px rgba(70, 70, 71, 0.25);
   height: 170px;
@@ -83,14 +87,15 @@
 .ticket-image-container {
   width: 120px;
   height: 120px;
-  flex-shrink: 0; /* ไม่ให้รูปถูกบีบให้เล็กลง */
+  flex-shrink: 0;
+  /* ไม่ให้รูปถูกบีบให้เล็กลง */
   border: 1px solid #cbd5e0;
   border-radius: 8px;
   overflow: hidden;
-  
+
   /* สร้างลายตารางเทา-ขาวแบบใน Mockup */
-  background-image: 
-    repeating-linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0), 
+  background-image:
+    repeating-linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0),
     repeating-linear-gradient(45deg, #f0f0f0 25%, #ffffff 25%, #ffffff 75%, #f0f0f0 75%, #f0f0f0);
   background-position: 0 0, 8px 8px;
   background-size: 16px 16px;
@@ -100,15 +105,18 @@
 .ticket-image {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* ตัดรูปให้เต็มกล่องแบบไม่เสียสัดส่วน */
-  display: block; /* ทับลายตาราง CSS เอาไว้ */
+  object-fit: cover;
+  /* ตัดรูปให้เต็มกล่องแบบไม่เสียสัดส่วน */
+  display: block;
+  /* ทับลายตาราง CSS เอาไว้ */
 }
 
 /* ส่วนเนื้อหาขวาของรูป */
 .ticket-content {
   display: flex;
   flex-direction: column;
-  flex-grow: 1; /* ให้กินพื้นที่ขวามือที่เหลือทั้งหมด */
+  flex-grow: 1;
+  /* ให้กินพื้นที่ขวามือที่เหลือทั้งหมด */
 }
 
 /* ส่วนข้อมูลภายในการ์ด */
@@ -124,7 +132,7 @@
   font-size: 14px;
   font-weight: bold;
   color: #000000;
-  padding-right: 90px; 
+  padding-right: 90px;
   word-break: break-word;
 }
 
@@ -149,7 +157,7 @@
 
 /* สีป้ายสถานะ (สีฟ้าอมม่วงตามรูป) */
 .status-badge.pending {
-  background-color: var(--status-pending-bg); 
+  background-color: var(--status-pending-bg);
   color: #1a202c;
 }
 
@@ -162,9 +170,11 @@
 
 /* ปุ่ม Upvote */
 .btn-upvote {
-  background-color: #8bed6a; /* สีเขียวสว่างตามรูป */
+  background-color: #8bed6a;
+  /* สีเขียวสว่างตามรูป */
   color: #000000;
-  border: 1px solid #74db51; /* เส้นขอบสีเขียวเข้มขึ้นนิดนึง */
+  border: 1px solid #74db51;
+  /* เส้นขอบสีเขียวเข้มขึ้นนิดนึง */
   border-radius: 6px;
   padding: 4px 8px 6px 4px;
   font-size: 11px;
@@ -181,14 +191,17 @@
 }
 
 .btn-upvote .nav-icon {
-  margin-right: 4px; /* เว้นระยะห่างระหว่างข้อความกับไอคอน */
-  font-size: 12px; /* ขนาดไอคอน */
-  vertical-align: middle; /* จัดให้อยู่ตรงกลางแนวตั้งกับข้อความ */
+  margin-right: 4px;
+  /* เว้นระยะห่างระหว่างข้อความกับไอคอน */
+  font-size: 12px;
+  /* ขนาดไอคอน */
+  vertical-align: middle;
+  /* จัดให้อยู่ตรงกลางแนวตั้งกับข้อความ */
 }
 
 /* ปุ่ม Upvote กรณีถูก Disabled (ผู้ใช้แจ้งเอง หรือกดโหวตไปแล้ว) */
 .btn-upvote:disabled {
-  background-color: #d1f2cf; 
+  background-color: #d1f2cf;
   color: #718096;
   border-color: #d1f2cf;
   cursor: not-allowed;
@@ -200,6 +213,16 @@
   color: #a0aec0;
   grid-column: span 2;
   padding: 30px 0;
+}
+
+@media (max-width: 1536px) {
+  .suggestion-section h2 {
+    font-size: 18px;
+  }
+
+  .suggestion-section {
+    padding-top: 25px;
+  }
 }
 
 /* รองรับ Responsive: ถ้าย่อจอให้เปลี่ยนเป็น 1 คอลัมน์ */

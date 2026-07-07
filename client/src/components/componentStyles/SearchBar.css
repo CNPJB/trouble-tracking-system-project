@@ -3,7 +3,6 @@
   display: flex;
   gap: 12px;
   justify-content: center;
-  margin: 20px 0;
   flex-wrap: wrap; /* ให้ปุ่มลงแถวใหม่ได้ถ้าจอมือถือแคบ */
 }
 
@@ -51,4 +50,16 @@
 /* เมื่อกดปุ่ม */
 .searchbar button:active {
   transform: translateY(0);
+}
+
+@media (max-width: 1536px) {
+  .searchbar input {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  .searchbar button {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
 }

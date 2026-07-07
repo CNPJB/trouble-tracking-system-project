@@ -1,7 +1,9 @@
-import { useNavigate } from 'react-router-dom';
-import { formatDate } from '../utils/formatDate';
 // Styles
-import './CardPendingProblem.css'
+import './componentStyles/CardPendingProblem.css';
+import { useNavigate } from 'react-router-dom';
+import { formatDate, formatDateTime } from '../utils/formatDate';
+import { FaLayerGroup } from 'react-icons/fa'
+
 
 export const CardPendingProblem = ({
     data,
@@ -10,14 +12,18 @@ export const CardPendingProblem = ({
     isSelected,
     onSelect,
     handleClick,
-    actionSlot
+    actionSlot,
+    showSubTicketBadge = false
 }) => {
 
     const navigate = useNavigate();
     const statusLabels = {
         'pending': 'รอรับเรื่อง',
         'in_progress': 'กำลังดำเนินการ',
-        'resolved': 'เสร็จสิ้น'
+        'resolved': 'เสร็จสิ้น',
+        'duplicate': 'ถูกรวม',
+        'rejected': 'ปฏิเสธ',
+        'canceled': 'ยกเลิก'
     };
 
     const handleCardClick = (e) => {
@@ -35,11 +41,16 @@ export const CardPendingProblem = ({
         }
     };
     return (
-
         <div className={`container-pending-card ${isSelected ? 'selected-card' : ''}`}
             onClick={handleCardClick}
-            style={ { position: 'relative' }}>
-
+            style={{ position: 'relative' }}>
+            {showSubTicketBadge && data._count?.subTickets > 0 && (
+                <div>
+                    <span className="merged-badge" title="ตั๋วนี้ถูกรวมปัญหาที่คล้ายกันมาแล้ว">
+                        <FaLayerGroup /> Sub {data._count.subTickets}
+                    </span>
+                </div>
+            )}
             {isMergeMode && (
                 <div className="card-checkbox-wrapper"
                     onClick={(e) => e.stopPropagation()}>
@@ -69,21 +80,21 @@ export const CardPendingProblem = ({
                 </div>
                 <div className="title-card" key={data.id}>
                     <p style={{ color: 'gray' }}>{data.ticketId}</p>
-                    <h3>เรื่อง : {data.title}</h3>
-                    <p>แจ้ง : {formatDate(data.createdAt)}</p>
+                    <h3>{data.title}</h3>
+                    <p><b>แจ้ง:</b> {formatDateTime(data.createdAt)}</p>
                     <div className={`ticketStatus ${data.ticketStatus}`}>
                         {statusLabels[data.ticketStatus] || data.ticketStatus}
                     </div>
                     <p className='location'>{data.location.locationName}</p>
                     <div className="floor-room">
-                        <span>ชั้น {data.floor?.floorLevel || '-'}</span>
-                        <span>ห้อง {data.room?.roomName || '-'}</span>
+                        <span><b>ชั้น:</b> {data.floor?.floorLevel || '-'}</span>
+                        <span><b>ห้อง:</b> {data.room?.roomName || '-'}</span>
                     </div>
                 </div>
             </div>
             <div className="description">
-                <p>รายละเอียด : {data.description}</p>
-                <p>ผู้ดำเนินการ : {data.admin}</p>
+                <p>{data.description}</p>
+                <p><b>ผู้ดำเนินการ:</b> {data.admin?.fullName || '-'}</p>
             </div>
         </div>
     )

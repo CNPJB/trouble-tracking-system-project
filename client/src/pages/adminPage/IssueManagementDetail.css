@@ -1,0 +1,291 @@
+.issue-detail-container {
+    padding: 20px;
+    max-width: 1565px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Header */
+.detail-header {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.btn-back {
+    align-self: flex-start;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    color: #64748b;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.btn-back:hover {
+    background-color: #f1f5f9;
+    color: var(--tbs-green);
+}
+
+.title-area {
+    margin-left: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.title-area h1 {
+    margin: 0;
+    color: #1e293b;
+    font-size: 1.8rem;
+}
+
+/* Layout */
+.detail-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    /* ซ้ายกินพื้นที่ 2 ส่วน ขวากิน 1 ส่วน */
+    gap: 25px;
+    align-items: start;
+}
+
+/* Cards */
+.info-card-detail,
+.action-card {
+    background-color: white;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    border: 1px solid #e2e8f0;
+}
+
+.info-card-detail {
+    max-width: 1000px;
+}
+
+.action-card {
+    min-width: 450px;
+}
+
+.info-card-detail h2 {
+    margin-top: 0;
+    color: #0f172a;
+    font-size: 1.4rem;
+}
+
+.ticket-desc {
+    color: #475569;
+    line-height: 1.6;
+    font-size: 1.05rem;
+    white-space: pre-wrap;
+}
+
+/* Images */
+.image-gallery {
+    display: flex;
+    gap: 15px;
+    margin: 20px 0;
+    overflow-x: auto;
+    padding-bottom: 10px;
+}
+
+.ticket-img-admin {
+    height: 200px;
+    width: 350px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.frame-no-images {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    color: #94a3b8;
+    font-size: 14px;
+    font-weight: 500;
+    margin: 20px 0;
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+}
+
+.divider {
+    border: 0;
+    border-top: 1px dashed #cbd5e1;
+    margin: 25px 0;
+}
+
+/* Meta Grid */
+.meta-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.meta-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.meta-icon {
+    color: var(--tbs-green);
+    font-size: 20px;
+    margin-top: 3px;
+}
+
+.meta-label {
+    display: block;
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 600;
+    margin-bottom: 3px;
+}
+
+.meta-value {
+    display: block;
+    color: #334155;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Action Placeholder */
+.action-card h3 {
+    margin-top: 0;
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 15px;
+}
+
+.action-placeholder {
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8fafc;
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    color: #94a3b8;
+    font-weight: bold;
+}
+
+/* =========================================
+   Sub Tickets Section (รายการปัญหาที่ถูกรวม)
+   ========================================= */
+.sub-tickets-section {
+    margin-top: 35px;
+    padding-top: 25px;
+    border-top: 1px dashed #cbd5e1;
+}
+
+.sub-tickets-section h3 {
+    font-size: 1.15rem;
+    color: #334155;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.sub-tickets-section h3 svg {
+    color: var(--tbs-green);
+}
+
+.sub-tickets-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.sub-ticket-card {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.2s ease;
+}
+
+.sub-ticket-card:hover {
+    background-color: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+.sub-ticket-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.sub-ticket-id {
+    background-color: #e2e8f0;
+    color: #475569;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.sub-ticket-date {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.sub-ticket-title {
+    margin: 0 0 5px 0;
+    font-size: 15px;
+    color: #0f172a;
+}
+
+.sub-ticket-desc {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #475569;
+    line-height: 1.5;
+}
+
+.sub-ticket-footer {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.meta-icon-small {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .detail-layout {
+        grid-template-columns: 1fr;
+        /* ยุบเป็นแถวเดียวเมื่อจอเล็ก */
+    }
+
+    .meta-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 1536px) {
+    .info-card-detail {
+        max-width: 760px;
+    }
+
+    .detail-layout {
+        gap: 15px;
+    }
+}

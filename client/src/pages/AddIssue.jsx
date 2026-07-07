@@ -16,8 +16,7 @@ import { LoadingSpinner, ToastAlert } from '../components/LoadingSpinner.jsx';
 // Services
 import { ticketService } from '../services/ticketService.js';
 // Styles
-import './AddIssue.css';
-import { ConfirmButton } from '../components/ConfirmButton.jsx';
+import './pageStyles/AddIssue.css';
 
 function AddIssue() {
   
@@ -200,9 +199,8 @@ function AddIssue() {
       const result = await ticketService.createTicket(submitData);
 
       if (result.success) {
-        setSuccess("แจ้งปัญหาสำเร็จเรียบร้อยแล้ว");
         clearImages(); // เคลียร์รูปภาพหลังจากส่งสำเร็จ
-        refetch();
+        await refetch(); 
 
         reset();
         setConfirmSubmit({ isOpen: false });
@@ -240,8 +238,7 @@ function AddIssue() {
       const result = await ticketService.upvoteTicket(confirmUpvote.ticketId);
 
       if (result.success) {
-        setSuccess("โหวตให้ปัญหานี้สำเร็จเรียบร้อยแล้ว");
-        refetch();
+        await refetch();
 
         reset();
         setConfirmUpvote({ isOpen: false, ticketId: null });
@@ -373,14 +370,7 @@ function AddIssue() {
             maxImages={3}
           />
 
-          <div className="form-actions" style={{ marginTop: '20px' }}>
-            <button
-              type="submit"
-              className="btn-submit"
-              disabled={loading.isLoading || (isEquipmentCategory && equipmentValidation.status !== 'success')}
-            >
-              {loading.isLoading ? 'กำลังบันทึก...' : 'ยืนยัน'}
-            </button>
+          <div className="form-actions" style={{ marginTop: '20px' }}> 
             <button
               type="button"
               className="btn-reset"
@@ -391,6 +381,13 @@ function AddIssue() {
               }}
             >
               รีเซ็ต
+            </button>
+            <button
+              type="submit"
+              className="btn-submit"
+              disabled={loading.isLoading || (isEquipmentCategory && equipmentValidation.status !== 'success')}
+            >
+              {loading.isLoading ? 'กำลังบันทึก...' : 'ยืนยัน'}
             </button>
           </div>
         </form>

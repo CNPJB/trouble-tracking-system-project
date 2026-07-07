@@ -1,5 +1,5 @@
 import React from 'react';
-import './SimilarTickets.css';
+import './componentStyles/SimilarTickets.css';
 import { FaThumbsUp } from 'react-icons/fa';
 
 const SimilarTickets = ({ tickets, onUpvote, currentUserId }) => {

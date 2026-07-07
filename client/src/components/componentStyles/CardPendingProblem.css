@@ -1,0 +1,222 @@
+p,
+span {}
+
+.container-pending-card {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    padding: 1rem;
+    background-color: var(--card-bg);
+    box-shadow: var(--shadow-md);
+}
+
+.header-card {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 5px;
+}
+
+.img-card,
+img {
+    object-fit: cover;
+    object-position: center;
+    width: 150px;
+    height: 150px;
+}
+
+.ticketStatus {
+    background-color: var(--status-yellow);
+    width: 120px;
+    padding: 2px;
+    margin: 5px;
+    text-align: center;
+    border-radius: 10px;
+    font-size: var(--text-size-base);
+}
+
+.ticketStatus.pending {
+    background-color: var(--status-pending-bg);
+    color: #000;
+}
+
+.ticketStatus.in_progress {
+    background-color: var(--status-in-progress-bg);
+    color: #000;
+}
+
+.ticketStatus.resolved {
+    background-color: var(--status-resolved-bg);
+    color: #000000;
+}
+
+.ticketStatus.duplicate {
+    background-color: var(--status-duplicate-bg);
+    color: #000000;
+}
+
+.ticketStatus.rejected {
+    background-color: var(--status-reject-bg);
+    color: #000000;
+}
+
+.ticketStatus.canceled {
+    background-color: var(--status-canceled-bg);
+    color: #000000;
+}
+
+.location {
+    color: var(--text-color-muted);
+}
+
+.floor-room {
+    display: flex;
+    gap: 50px;
+}
+
+.description p {
+    padding-top: 40px;
+}
+
+/* skleton-card */
+.skleton-card-pending {
+    width: 100%;
+    border-radius: 10px;
+    padding: 1rem;
+    background-color: var(--card-bg, #ffffff);
+    /* ใส่สีขาวสำรองไว้เผื่อตัวแปรไม่ทำงาน */
+    box-shadow: var(--shadow-md);
+}
+
+.header-skleton-card {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 15px;
+    /* ปรับ gap ให้ห่างกันนิดนึงจะได้สวยๆ */
+}
+
+.skleton-img {
+    background-color: #e5e7eb;
+    /* 💡 เปลี่ยนจากเงา เป็นสีเทาอ่อน */
+    width: 150px;
+    height: 150px;
+    border-radius: 8px;
+    /* เพิ่มมุมมนให้รูป */
+}
+
+.skleton-text {
+    background-color: #e5e7eb;
+    /* สีเทาอ่อน */
+    border-radius: 4px;
+    height: 16px;
+    /* ❗ สำคัญมาก: ต้องมี height กล่องถึงจะโผล่ */
+    margin-bottom: 10px;
+    /* ระยะห่างระหว่างบรรทัด */
+    width: 80%;
+    /* ความยาวเส้นจำลอง */
+}
+
+/* ปรับความยาวให้แต่ละเส้นดูสมจริง */
+.skleton-title-card h3.skleton-text {
+    height: 20px;
+    width: 60%;
+    background-color: #d1d5db;
+    /* หัวข้อสีเข้มหน่อย */
+}
+
+.skleton-status {
+    background-color: #fef08a;
+    /* จำลองสีป้ายสถานะ */
+    border-radius: 20px;
+    height: 26px;
+    /* ❗ ต้องมี height */
+    width: 90px;
+    margin-bottom: 10px;
+}
+
+.skleton-description {
+    margin-top: 15px;
+}
+
+.skleton-description .skleton-text {
+    width: 100%;
+    /* เส้นรายละเอียดด้านล่างให้ยาวเต็มกรอบ */
+}
+
+.action-badge-container,
+.card-checkbox-wrapper {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+}
+
+.card-checkbox-wrapper input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+}
+
+.merged-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background-color: #fff7ed; /* พื้นหลังสีส้มอ่อนมาก */
+    color: #ea580c; /* สีส้มเข้ม */
+    border: 1px solid #fed7aa; /* ขอบส้ม */
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(234, 88, 12, 0.1);
+}
+
+.merged-badge svg {
+    font-size: 12px;
+}
+
+
+@media (max-width: 1536px) {
+    .container-pending-card {
+
+    }
+    .header-card {
+        height: 200px;
+        gap: 10px;
+    }
+    .title-card {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        align-content: flex-end;
+    }
+
+    .title-card h3 {
+        font-size: var(--text-size-normal);
+        padding: 5px 0 5px 0;
+        width: auto;
+    }
+
+    .title-card p {
+        font-size: var(--text-size-base);
+        color: var(--text-color-muted);
+    }
+
+    .floor-room {
+        color: var(--text-color-muted);
+        margin-top: auto;
+        gap: 30px;
+    }
+    .description p {
+        padding-top: 10px;
+    }
+
+    .floor-room,
+    .description {
+        font-size: var(--text-size-base);
+    }
+}

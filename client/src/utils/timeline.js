@@ -15,8 +15,8 @@ export const getTimelineData = (ticket,  formatdate) => {
     if (ticket?.ticketStatus !== "pending") {
         timeline.push({
             status: "กำลังดำเนินการ",
-            date: formatDate(ticket?.updatedAt), // หรือเวลาที่เริ่มดำเนินการจริง
-            time: ticket?.updatedAt ? new Date(ticket.updatedAt).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + " น." : "-",
+            date: formatDate(ticket?.timestampInprogress),
+            time: ticket?.timestampInprogress ? new Date(ticket.timestampInprogress).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + " น." : "-",
             color: "yellow",
             duration: "กำลังแก้ไขปัญหา..."
         });
@@ -26,8 +26,8 @@ export const getTimelineData = (ticket,  formatdate) => {
     if (ticket?.ticketStatus === "resolved") {
         timeline.push({
             status: "เสร็จสิ้น",
-            date: formatDate(ticket?.finishedAt || ticket?.updatedAt),
-            time: ticket?.finishedAt ? new Date(ticket.finishedAt).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + " น." : "-",
+            date: formatDate(ticket?.timestampFinished),
+            time: ticket?.timestampFinished ? new Date(ticket.timestampFinished).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + " น." : "-",
             color: "green",
             duration: ""
         });

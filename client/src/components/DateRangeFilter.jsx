@@ -1,7 +1,7 @@
 import React, { forwardRef } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import './DateRangeFilter.css'
+import './componentStyles/DateRangeFilter.css';
 
 export const DateRangeFilter = ({ startDate, endDate, onChange }) => {
 

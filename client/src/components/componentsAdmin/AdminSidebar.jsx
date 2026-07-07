@@ -25,7 +25,7 @@ export const AdminSidebar = () => {
           <span>Audit Issues</span>
         </NavLink>
 
-        <NavLink to="/" className="nav-item" end>
+        <NavLink to="/adminPage/IssueManagement" className="nav-item" end>
           <FaTools className="nav-icon" />
           <span>Issue Management</span>
         </NavLink>
