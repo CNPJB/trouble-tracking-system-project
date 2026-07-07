@@ -1,5 +1,5 @@
 // Styles
-import './componentStyles/CardPendingProblem.css';
+import './componentsStyles/CardPendingProblem.css';
 import { useNavigate } from 'react-router-dom';
 import { formatDate, formatDateTime } from '../utils/formatDate';
 import { FaLayerGroup } from 'react-icons/fa'

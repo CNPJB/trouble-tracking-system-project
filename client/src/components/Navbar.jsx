@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-import './componentStyles/Navbar.css';
+import './componentsStyles/Navbar.css';
 // icons {
 import { FaHome, FaPlus, FaMapMarkerAlt , FaChartBar, FaUserCog } from 'react-icons/fa';
 

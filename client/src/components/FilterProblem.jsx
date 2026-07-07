@@ -1,5 +1,5 @@
 import React from 'react'
-import './componentStyles/FilterProblem.css'
+import './componentsStyles/FilterProblem.css'
 
 export const FilterProblem = ({ summary ,currentFilter, onFilterChange }) => {
     const buttons = [

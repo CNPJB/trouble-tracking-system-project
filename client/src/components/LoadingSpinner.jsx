@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import './componentStyles/LoadingSpinner.css';
+import './componentsStyles/LoadingSpinner.css';
 
 export const LoadingSpinner = ({ isLoading, message = "กำลังโหลด..." }) => {
     if (!isLoading) return null;

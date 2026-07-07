@@ -1,4 +1,4 @@
-import '../components/componentStyles/CardFinishProblem.css';
+import './componentsStyles/CardFinishProblem.css';
 import { useNavigate } from 'react-router-dom';
 import { StarRating } from './StarRating';
 import { formatDate, formatDateTime } from '../utils/formatDate';

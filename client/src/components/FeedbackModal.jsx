@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaStar, FaStarHalfAlt, FaRegStar, FaTimes } from 'react-icons/fa';
 import { ConfirmButton } from './ConfirmButton.jsx';
-import './componentStyles/FeedbackModal.css';
+import './componentsStyles/FeedbackModal.css';
 
 export const FeedbackModal = ({ isOpen, onClose, onSubmit, ticketId, isLoading }) => {
     // --- States ---

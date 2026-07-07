@@ -1,5 +1,5 @@
 import React from 'react';
-import './componentStyles/ConfirmButton.css';
+import './componentsStyles/ConfirmButton.css';
 
 export const ConfirmButton = ({
     isOpen,
