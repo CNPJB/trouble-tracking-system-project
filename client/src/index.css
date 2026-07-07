@@ -72,6 +72,18 @@ svg {
     --status-resolved-text:#ffffff;
     --text-color-main: #166534;
 
+    /*  duplicate - สีเทาอ่อน */
+    --status-duplicate-bg: #cccccc;
+    --status-duplicate-text: #ffffff;
+
+    /*  canceled - สีเทา */
+    --status-canceled-bg: #8b8b8b;
+    --status-canceled-text: #000000;
+
+   /*  reject - สีแดง */
+   --status-reject-bg: #e74c3c;
+   --status-reject-text: #ffffff;
+
   /* ยกเลิก/ด่วนมาก (Emergency/Cancel) */
   --status-red: #e74c3c;
 
@@ -83,6 +95,7 @@ svg {
   --card-hover: #ff0000;
   --text-main: #2d3436;          /* เทาเกือบดำ อ่านง่ายกว่าดำสนิท */
   --text-muted: #636e72;         /* สำหรับรายละเอียดงานที่สำคัญรองลงมา */
+  --text-light: #b2bec3;         /* สำหรับรายละเอียดงานที่ไม่สำคัญ */
   
   /* Shadow - เพิ่มมิติให้ปุ่มและหน้าจอไม่แบน */
   --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
@@ -102,7 +115,9 @@ svg {
   /* =========================================
      6. แบบอักษรและขนาด (Typography - เผื่อไว้)
      ========================================= */
+  --text-size-small: 12px;
   --text-size-base: 14px;
+  --text-size-normal: 16px;
   --text-size-large: 20px;
 }
 .text-limit {

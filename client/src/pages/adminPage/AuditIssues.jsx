@@ -1,101 +1,202 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext.jsx';
+
+// styles
 import './AuditIssues.css'
+
 // components
 import { SearchBar } from '../../components/SearchBar.jsx'
 import { DateRangeFilter } from '../../components/DateRangeFilter.jsx'
 import { CardPendingProblem } from '../../components/CardPendingProblem.jsx'
 import { ConfirmButton } from '../../components/ConfirmButton.jsx'
+import { MergeManagementPanel } from '../../components/componentsAdmin/MergeManagementPanel.jsx'
+import { LoadingSpinner, ToastAlert } from '../../components/LoadingSpinner.jsx';
+import { TicketCategoryFilter } from '../../components/TicketCategoryFilter.jsx';
+import { TicketLocationFilter } from '../../components/TicketLocationFilter.jsx';
+
 // hooks 
-import { useTicketSearch } from '../../hooks/useTicketSearch.js'
 import { useTickets } from '../../hooks/useTickets.js'
 import { useFilterDate } from '../../hooks/useFilterDate.js'
+import { useLoadingState } from '../../hooks/useLoadingState.js'
+import { useTicketGroups } from '../../hooks/useTicketGroups.js';
+import { useInfiniteScroll } from '../../hooks/useInfiniteScroll.js';
 
 // service
 import { ticketService } from '../../services/ticketService.js'
 
 const AuditIssues = () => {
-
-    const { tickets } = useTickets();
-    const { displayData, searchResult, isSearching, handleSearch } = useTicketSearch(tickets, true);
-    const [dateRange, setDateRange] = useState([null, null]);
-    const [startDate, endDate] = dateRange;
-    const filteredByDateData = useFilterDate(displayData, startDate, endDate, 'createdAt');
-    const [isMergeMode, setIsMergeMode] = useState(false);
-    const [selectedTickets, setSelectedTickets] = useState([]);
-    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-    const [isMerging, setIsMerging] = useState(false);
-
-    const toggleMergeMode = () => {
-        setIsMergeMode(!isMergeMode);
-        if (isMergeMode) {
-            setSelectedTickets([]);
-        }
-    };
+    const { user } = useAuth();
+    const { tickets, isLoading, isFetchingNextPage, pagination,
+        changePage, updateFilters, refetch, removeTicket, updateTicketStatus
+    } = useTickets({ status: 'pending' });
+    const { loading, startLoading, setError, setSuccess, reset } = useLoadingState();
+    const [selectedMergeTickets, setSelectedMergeTickets] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedLocation, setSelectedLocation] = useState('');
+    const [confirmMergeModal, setConfirmMergeModal] = useState({ isOpen: false });
+    const [activePanelTab, setActivePanelTab] = useState('merge');
+    const { ticketGroups, isLoadingGroups, refetchGroups } = useTicketGroups();
+    const [confirmUnmergeModal, setConfirmUnmergeModal] = useState({
+        isOpen: false,
+        payload: null,
+        type: null
+    });
+    const lastTicketElementRef = useInfiniteScroll({
+        isLoading: isLoading,
+        isFetchingNextPage: isFetchingNextPage,
+        hasNextPage: pagination?.hasNextPage,
+        onLoadMore: () => changePage(pagination.currentPage + 1)
+    });
 
     const handleSelectTicket = (ticket) => {
-        const currentTicketId = ticket.ticketId || ticket.id;
-
-        setSelectedTickets((prevSelected) => {
-            const isAlreadySelected = prevSelected.find(t => (t.ticketId || t.id) === currentTicketId);
+        setSelectedMergeTickets(prevSelected => {
+            // เช็คว่าตั๋วใบนี้ถูกเลือกไว้แล้วหรือยัง?
+            const isAlreadySelected = prevSelected.some(t => t.ticketId === ticket.ticketId);
 
             if (isAlreadySelected) {
-                const parentTicket = prevSelected[0];
-                const parentId = parentTicket ? (parentTicket.ticketId || parentTicket.id) : null;
+                // ลอจิกเอาออก: ใช้ filter กรองใบนี้ทิ้ง 
+                // (ถ้าใบที่เอาออกคือ index 0 ใบถัดไปจะขยับขึ้นมาเป็น Main อัตโนมัติ)
+                return prevSelected.filter(t => t.ticketId !== ticket.ticketId);
+            }
+            else {
+                // // ลอจิกเพิ่มเข้า: เช็คก่อนว่าหมวดหมู่ตรงกับ Main Ticket ไหม?
+                // if (prevSelected.length > 0) {
+                //     const mainTicket = prevSelected[0];
+                //     if (mainTicket.ticketCtgId !== ticket.ticketCtgId) {
+                //         // ถ้าคนละหมวดหมู่ ให้เด้งแจ้งเตือนและ "ไม่เพิ่ม" เข้า Array
+                //         setError("ไม่สามารถรวมปัญหาข้ามหมวดหมู่ได้ กรุณาเลือกปัญหาประเภทเดียวกัน", "warning");
+                //         return prevSelected;
+                //     }
+                // }
 
-                if (currentTicketId === parentId) {
-                    return [];
-                } else {
-                    return prevSelected.filter(t => (t.ticketId || t.id) !== currentTicketId);
-                }
-            } else {
-                return [...prevSelected, ticket];
+                // reset(); // เคลียร์แจ้งเตือนเก่าทิ้ง
+                return [...prevSelected, ticket]; //
             }
         });
     };
 
-    const handleConfirmMerge = async () => {
-        setIsConfirmOpen(false);
-        console.log("จำนวนที่เลือก:", selectedTickets.length);
-        if (selectedTickets.length < 2) {
-            alert("กรุณาเลือกปัญหาอย่างน้อย 2 รายการ");
-            return;
-        }
-        setIsMerging(true);
+    const handleRemoveSelectedTicket = (ticketId) => {
+        setSelectedMergeTickets(prev => prev.filter(t => t.ticketId !== ticketId));
+        reset();
+    };
 
-        const parentId = selectedTickets[0].ticketId || selectedTickets[0].id;
-        const childIds = selectedTickets.slice(1).map(t => t.ticketId || t.id);
-        const payload = { parentId, childIds };
+    const handleResetSelection = () => {
+        setSelectedMergeTickets([]);
+        reset();
+    };
+
+    const handleConfirmMerge = () => {
+        if (selectedMergeTickets.length < 2) return;
+        setConfirmMergeModal({ isOpen: true });
+    };
+
+    const submitMerge = async () => {
+        startLoading(); // แสดงหน้าจอโหลด
 
         try {
-            console.log("ไอดี", parentId, childIds)
-            await ticketService.mergeTickets(payload);
-            alert("รวมปัญหาสำเร็จแล้ว!");
-            setSelectedTickets([]);
-            setIsMergeMode(false);
-            window.location.reload();
+            // A. เตรียม Payload ส่งให้ Backend
+            // ใบแรก (index 0) คือ Main Ticket
+            const primaryTicketId = selectedMergeTickets[0]?.ticketId;
+            // ใบที่เหลือ (ตั้งแต่ index 1 เป็นต้นไป) คือ Sub Tickets ที่จะถูกยุบรวม
+            const duplicateTicketIds = selectedMergeTickets.slice(1).map(t => t.ticketId);
 
+            const payload = {
+                primaryTicketId,
+                duplicateTicketIds
+            };
 
+            // B. ยิง API ผ่าน Service
+            const result = await ticketService.mergeTickets(payload);
+
+            if (result.success) {
+                // C. เมื่อสำเร็จ: แจ้งเตือน -> ปิด Modal -> ล้างค่าที่เลือก -> รีเฟรชกระดาน
+                setSuccess(`รวมกลุ่มปัญหาสำเร็จ! ข้อมูลถูกโอนย้ายไปยังตั๋วหลัก ${primaryTicketId} เรียบร้อยแล้ว`);
+                setConfirmMergeModal({ isOpen: false });
+                setSelectedMergeTickets([]);
+                await Promise.all([refetch(), refetchGroups()]);
+            }
         } catch (error) {
-            alert("เกิดข้อผิดพลาดในการรวมปัญหา โปรดลองอีกครั้ง");
-        } finally {
-            setIsMerging(false);
+            console.error("Error merging tickets:", error);
+            setError(error.response?.data?.message || "เกิดข้อผิดพลาดในการรวมกลุ่มปัญหา", "error");
+            setConfirmMergeModal({ isOpen: false });
         }
     };
 
+    const handleUnmergeAction = (payload) => {
+        const type = payload.subTicketId ? 'single' : 'group';
+        setConfirmUnmergeModal({ isOpen: true, payload, type });
+    };
+
+    const submitUnmerge = async () => {
+        if (!confirmUnmergeModal.payload) return;
+        startLoading(); // แสดงหน้าจอโหลด
+
+        try {
+            const result = await ticketService.unmergeTickets(confirmUnmergeModal.payload);
+
+            if (result.success) {
+                setSuccess(result.message || "ดำเนินการแยกกลุ่มปัญหาสำเร็จ");
+                setConfirmUnmergeModal({ isOpen: false, payload: null, type: null });
+            
+                await Promise.all([refetch(), refetchGroups()]);
+            }
+        } catch (error) {
+            console.error("Error unmerging tickets:", error);
+            setError(error.response?.data?.message || "เกิดข้อผิดพลาดในการแยกกลุ่มปัญหา", "error");
+            setConfirmUnmergeModal({ isOpen: false, payload: null, type: null });
+        }
+    };
+
+    const handleSearch = (keyword) => {
+        updateFilters({ search: keyword });
+        if (selectedMergeTickets.length > 0) {
+            handleResetSelection();
+        }
+    };
+
+    const handleCategoryFilter = (categoryId) => {
+        setSelectedCategory(categoryId);
+        // โยนเข้า Hook useTickets ให้ไปยิง API ใหม่ (ถ้าไม่มีค่า ให้ส่ง undefined ไปเพื่อเคลียร์ filter)
+        updateFilters({ categoryId: categoryId || undefined });
+
+        if (selectedMergeTickets.length > 0) {
+            handleResetSelection();
+        }
+    };
+
+    const handleLocationFilter = (locationId) => {
+        setSelectedLocation(locationId);
+        // โยนเข้า Hook useTickets ให้ไปยิง API ใหม่ (ถ้าไม่มีค่า ให้ส่ง undefined ไปเพื่อเคลียร์ filter)
+        updateFilters({ locationId: locationId || undefined });
+
+        if (selectedMergeTickets.length > 0) {
+            handleResetSelection();
+        }
+    };
+
+    // if (isLoading) return <LoadingSpinner isLoading={true} message="กำลังโหลดข้อมูลปัญหา..." />;
 
     return (
         <div className="audit-issues-container">
+            <ToastAlert
+                error={loading.error}
+                success={loading.success}
+                onDismiss={reset}
+            />
             <div className="audit-issues-filter-container">
-                <div className="audit-issues-searchbar">
+                <div className="searchbar">
                     <SearchBar onSearch={handleSearch} />
                 </div>
-                <button
-                    className={`mearge-btn ${isMergeMode ? 'active-merge' : ''}`}
-                    onClick={toggleMergeMode}
-                >
-                    {isMergeMode ? 'ยกเลิกรวมปัญหา' : 'รวมปัญหา'}
-                </button>
-                <DateRangeFilter
+
+                <TicketCategoryFilter
+                    selectedValue={selectedCategory}
+                    onChange={handleCategoryFilter}
+                />
+                <TicketLocationFilter
+                    selectedValue={selectedLocation}
+                    onChange={handleLocationFilter}
+                />
+                {/* <DateRangeFilter
                     startDate={startDate}
                     endDate={endDate}
                     onChange={(update) => {
@@ -105,71 +206,94 @@ const AuditIssues = () => {
                             setDateRange(update);
                         }
                     }}
-                />
+                /> */}
             </div>
-            <div className="audit-issues-problem">
-                <div className={`audit-issues-selected ${isMergeMode ? 'shrink' : ''}`}>
-                    {filteredByDateData.map((ticket, index) => {
-                        const currentTicketId = ticket.ticketId || ticket.id;
+            <div className="audit-issues-content">
+                <div className="audit-issues-card-list">
+                    {tickets.map((ticket, index) => {
+
+                        const isSelected = selectedMergeTickets.some(t => t.ticketId === ticket.ticketId);
 
                         return (
-                            <CardPendingProblem
-                                key={currentTicketId}
-                                data={ticket}
-                                isReadOnly={true}
-                                isMergeMode={isMergeMode}
-                                isSelected={selectedTickets.some(t => (t.ticketId || t.id) === currentTicketId)}
-                                onSelect={() => handleSelectTicket(ticket)}
-                            />
+                            <div
+                                ref={tickets.length === index + 1 ? lastTicketElementRef : null}
+                                key={ticket.ticketId}
+                                className={`audit-card-wrapper ${activePanelTab === 'manage' ? 'disabled-card' : ''}`}
+                            >
+                                <CardPendingProblem
+                                    data={ticket}
+                                    isMergeMode={activePanelTab === 'merge'}
+                                    isSelected={isSelected}
+                                    onSelect={() => handleSelectTicket(ticket)}
+                                    showSubTicketBadge={true}
+                                />
+                            </div>
                         );
                     })}
-                    {filteredByDateData.length === 0 && (
-                        <div className="no-result">ไม่พบรายการสถานะนี้</div>
+
+                    {!isLoading && tickets.length === 0 && (
+                        <div className="no-result">
+                            <img src="/empty-state.png" alt="empty-state" />
+                            <span>ไม่พบรายการสถานะนี้</span>
+                        </div>
+                    )}
+
+                    {isFetchingNextPage && (
+                        <div style={{ textAlign: 'center', padding: '20px' }}>
+                            กำลังโหลดปัญหาเพิ่มเติม... ⏳
+                        </div>
                     )}
                 </div>
-                {isMergeMode && (
-                    <div className="show-audit-issues-selected">
-                        <h3>รายการที่เลือก ({selectedTickets.length})</h3>
 
-                        <div className="selected-list">
-                            {selectedTickets.map((ticket, index) => (
-                                <div key={ticket.ticketId} className={`merge-item ${index === 0 ? 'parent' : 'child'}`}>
-                                    <span className="badge">
-                                        {index === 0 ? `ปัญหา (หลัก) ID : ${ticket.ticketId}`: `ปัญหา (ย่อย ${index} ID : ${ticket.ticketId})`}
-                                    </span>
-                                    <div className="merge-detail">
-                                        <p>{ticket.description || 'ไม่มีหัวข้อ'}</p>
-                                        <small>สถานที่: {ticket.location?.locationName || 'ไม่มีสถานที่'}</small>
-                                        <small>ชั้น: {ticket.floor?.floorLevel || '-'} ห้อง: {ticket.room?.roomName || '-'}</small>
-                                    </div>
-                                </div>
-                            ))}
-
-                            {selectedTickets.length === 0 && (
-                                <p className="empty-text">กรุณาเลือกปัญหาที่ต้องการรวม</p>
-                            )}
-                        </div>
-
-                        {selectedTickets.length > 1 && (
-                            <button className="btn-confirm-merge"
-                                onClick={() => setIsConfirmOpen(true)}
-                                disabled={isMerging}
-                            >
-                                ยืนยันการรวมปัญหา
-                            </button>
-                        )}
-                        <ConfirmButton
-                            isOpen={isConfirmOpen}
-                            title="ยืนยันการรวมปัญหา"
-                            message={`คุณแน่ใจหรือไม่ที่จะรวมปัญหาทั้ง ${selectedTickets.length} รายการนี้เข้าด้วยกัน? การกระทำนี้ไม่สามารถย้อนกลับได้`}
-                            confirmText="ยืนยัน"
-                            cancelText="ยกเลิก"
-                            onConfirm={handleConfirmMerge} // ถ้ากดยืนยัน ให้เรียกฟังก์ชันนี้
-                            onCancel={() => setIsConfirmOpen(false)} // ถ้ากดยกเลิก ให้ปิด Modal
-                        />
-                    </div>
-                )}
+                <aside className="audit-right-panel">
+                    <MergeManagementPanel
+                        activeTab={activePanelTab}
+                        onTabChange={setActivePanelTab}
+                        allTickets={tickets}
+                        selectedTickets={selectedMergeTickets}
+                        groupedTicketsFromApi={ticketGroups}
+                        isLoadingGroups={isLoadingGroups}
+                        onUnmergeAction={handleUnmergeAction}
+                        onReset={handleResetSelection}
+                        onConfirm={handleConfirmMerge}
+                        onRemoveTicket={handleRemoveSelectedTicket}
+                        isLoading={false}
+                    />
+                </aside>
             </div>
+            <ConfirmButton
+                isOpen={confirmMergeModal.isOpen}
+                title="ยืนยันการรวมกลุ่มปัญหา"
+                message={`คุณแน่ใจหรือไม่ว่าต้องการนำปัญหาจำนวน ${selectedMergeTickets.length - 1} รายการ ไปรวมกับตั๋วหลัก (Main Ticket: ${selectedMergeTickets[0]?.ticketId})? ระบบจะทำการย้ายผู้โหวตทั้งหมดไปที่ตั๋วหลักอัตโนมัติ`}
+                onConfirm={submitMerge}
+                onCancel={() => setConfirmMergeModal({ isOpen: false })}
+                confirmText={loading.isLoading ? "กำลังประมวลผล..." : "ยืนยันการรวมตั๋ว"}
+                cancelText="ปิด"
+                isLoading={loading.isLoading}
+            />
+
+            <ConfirmButton
+                isOpen={confirmUnmergeModal.isOpen}
+                title={
+                    confirmUnmergeModal.type === 'single' 
+                    ? "ยืนยันการแยกรายการปัญหา" 
+                    : "ยืนยันการยุบกลุ่มปัญหา (Disband Group)"
+                }
+                message={
+                    confirmUnmergeModal.type === 'single'
+                    ? `คุณแน่ใจหรือไม่ว่าต้องการแยกรายการปัญหา ${confirmUnmergeModal.payload?.subTicketId} ออกจากกลุ่มนี้? ปัญหานี้จะกลับไปแสดงที่หน้ากระดานรอดำเนินการตามปกติ`
+                    : `คุณแน่ใจหรือไม่ว่าต้องการ "ยุบกลุ่ม" ปัญหาหลัก ${confirmUnmergeModal.payload?.mainTicketId}? รายการปัญหาย่อยทั้งหมดในกลุ่มนี้จะถูกแยกตัวออก และกลับไปแสดงบนหน้ากระดานตามปกติ`
+                }
+                onConfirm={submitUnmerge}
+                onCancel={() => setConfirmUnmergeModal({ isOpen: false, payload: null, type: null })}
+                confirmText={
+                    loading.isLoading 
+                    ? "กำลังประมวลผล..." 
+                    : (confirmUnmergeModal.type === 'single' ? "ยืนยันการแยก" : "ยืนยันการยุบกลุ่ม")
+                }
+                cancelText="ปิด"
+                isLoading={loading.isLoading}
+            />
         </div>
     )
 }

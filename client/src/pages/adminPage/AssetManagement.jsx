@@ -29,8 +29,8 @@ const AssetManagement = () => {
   const [selectedDetails, setSelectedDetails] = useState([]);
   const formatStatus = {
     'active': 'ใช้งาน',
-    'awaitingSale': 'รอขาย',
-    'sentForRepair': 'รอส่งซ่อม',
+    'awaiting_sale': 'รอขาย',
+    'sent_for_repair': 'รอส่งซ่อม',
     'broken': 'ชำรุด'
   };
   console.log('ssss',EquipmentCtgs)

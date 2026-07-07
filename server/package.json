@@ -17,6 +17,7 @@
   "dependencies": {
     "@prisma/adapter-pg": "^7.6.0",
     "@prisma/client": "^7.6.0",
+    "@tanstack/react-query": "^5.101.1",
     "bcryptjs": "^3.0.3",
     "body-parser": "^2.2.2",
     "cloudinary": "^2.9.0",

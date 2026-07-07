@@ -7,7 +7,6 @@ import {
         addRoom, getRooms,deleteRoom, updateRoomStatus,
         getUsers,updateRoleUsers,
         addEquipmentCtg, getEquipmentCtgs,
-        mergeTickets
 } from '../controllers/managementControllers.js';
 import { getEquipment, addEquipment,deleteEquipment, uploadEquipments,updateEquipment } from '../controllers/EquipmentControllers.js';
 import { getMostCategoriesOfProblems, MostUpvotedTickets, getTicketStats} from '../controllers/statisticController.js';

@@ -1,10 +1,10 @@
 import './componentsStyles/TrackingSidebar.css';
 
-export const TrackingSidebar = ({ activeTab, onTabChange }) => {
+export const TrackingSidebar = ({ activeTab, onTabChange, counts = {} }) => {
   const menuItems = [
-    { id: 'all', label: 'ทั้งหมด' },
-    { id: 'mine', label: 'แจ้งโดยคุณ' },
-    { id: 'upvoted', label: 'ติดตาม Upvote' },
+    { id: 'all', label: 'ทั้งหมด', count: counts.all ?? 0 },
+    { id: 'mine', label: 'แจ้งโดยคุณ', count: counts.mine ?? 0 },
+    { id: 'upvoted', label: 'ติดตาม Upvote', count: counts.upvoted ?? 0 },
   ];
 
   return (
@@ -16,7 +16,7 @@ export const TrackingSidebar = ({ activeTab, onTabChange }) => {
             className={`sidebar-menu-btn ${activeTab === item.id ? 'active' : ''}`}
             onClick={() => onTabChange(item.id)}
           >
-            {item.label}
+            <label>{item.label}<span className="personal-count"> ({item.count}) </span></label>
           </button>
         ))}
       </div>
@@ -30,7 +30,8 @@ export const TrackingSidebar = ({ activeTab, onTabChange }) => {
           className={`sidebar-menu-btn review-btn ${activeTab === 'review' ? 'active' : ''}`}
           onClick={() => onTabChange('review')}
         >
-          รอประเมิน <span className="badge-exclamation">!</span>
+          <label>รอประเมิน<span className="personal-count"> ({counts.review ?? 0}) </span></label>
+          <span className="badge-exclamation">!</span>
         </button>
         
       </div>

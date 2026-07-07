@@ -9,7 +9,7 @@ import { useTicketDetail } from '../hooks/useTicketDetail.js';
 // Components
 import { StarRating } from '../components/StarRating.jsx';
 // Styles
-import './pageStyles/DetailTicket.css'
+import './pageStyles/DetailTicket.css';
 
 const DetailTicket = () => {
     const [searchParams] = useSearchParams();
@@ -182,8 +182,8 @@ const DetailTicket = () => {
                             {ticket.comment && (
                                 <p>ความคิดเห็น : {ticket.comment}</p>
                             )}
-                            {ticket.admin && (
-                                <p>ผู้ดำเนินการ : {ticket.admin}</p>
+                            {ticket.admin?.fullName && (
+                                <p>ผู้ดำเนินการ : {ticket.admin.fullName}</p>
                             )}
                             {ticket.adminNote && (
                                 <p>ความคิดเห็นผู้ดูแลระบบ : {ticket.adminNote}</p>

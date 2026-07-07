@@ -1,4 +1,4 @@
-import { useState, useRef,useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 // Styles
@@ -10,24 +10,16 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { CardPendingProblem, CardPendingSkeleton } from '../components/CardPendingProblem.jsx';
 import { FilterProblem, SkeletonFilterProblem } from '../components/FilterProblem.jsx';
 // Custom Hooks 
-import { useTicketSearch } from '../hooks/useTicketSearch.js';
 import { useTickets } from '../hooks/useTickets.js';
 import { useTicketSummary } from '../hooks/useTicketSummary.js';
 import { useResolvedTickets } from '../hooks/useResolvedTickets.js';
+import { useInfiniteScroll } from '../hooks/useInfiniteScroll.js';
 
 const Dashboard = () => {
-  // ดึงข้อมูลตั๋วและฟังก์ชันเปลี่ยนหน้า/ค้นหาจาก Backend
+  const [selectedStatus, setSelectedStatus] = useState('pending,in_progress,resolved');
   const {
-    tickets,
-    pagination,
-    isLoading,
-    setIsLoading,
-    isFetchingNextPage,
-    changePage,
-    updateFilters
-  } = useTickets();
-
-  const { displayData, filterStatus, setFilterStatus } = useTicketSearch(tickets);
+    tickets, pagination, isLoading, isFetchingNextPage,
+    changePage, updateFilters, refetch, removeTicket, } = useTickets({ status: selectedStatus });
 
   // ดึงข้อมูลสรุปยอดสำหรับทำ Filter Bar
   const { summary } = useTicketSummary();
@@ -38,23 +30,15 @@ const Dashboard = () => {
 
   // --- State for ticket status filter
   const [currentStatus, setCurrentStatus] = useState('all');
+  const allowedStatuses = ['pending', 'in_progress', 'resolved'];
 
-  // --- Logic Infinite Scroll ---
-  const observerRef = useRef();
-  const lastTicketElementRef = useCallback(node => {
-    if (isLoading || isFetchingNextPage) return;
-    if (observerRef.current) observerRef.current.disconnect();
+  const lastTicketElementRef = useInfiniteScroll({
+    isLoading: isLoading,
+    isFetchingNextPage: isFetchingNextPage,
+    hasNextPage: pagination?.hasNextPage,
+    onLoadMore: () => changePage(pagination.currentPage + 1)
+  });
 
-    observerRef.current = new IntersectionObserver(entries => {
-      // ถ้าเลื่อนมาถึงใบสุดท้าย และยังมีหน้าถัดไป ให้โหลดเพิ่ม!
-      if (entries[0].isIntersecting && pagination.hasNextPage) {
-        changePage(pagination.currentPage + 1);
-      }
-    });
-
-    if (node) observerRef.current.observe(node);
-  }, [isLoading, isFetchingNextPage, pagination.hasNextPage, pagination.currentPage, changePage]);
-  
   // --- Logic ส่งการค้นหาไปให้ Backend ---
   const handleSearch = (keyword) => {
     // โยนคำค้นหาไปให้ Hook
@@ -63,8 +47,11 @@ const Dashboard = () => {
 
   const handleFilterChange = (status) => {
     setCurrentStatus(status);
-    // โยน status ไปให้ Hook เพื่อดึงข้อมูลใหม่จากหน้า 1
-    updateFilters({ status: status === 'all' ? undefined : status });
+    if (status === 'all') {
+      updateFilters({ status: allowedStatuses.join(',') });
+    } else {
+      updateFilters({ status });
+    }
   };
 
   return (
@@ -126,7 +113,9 @@ const Dashboard = () => {
           {tickets.map((ticket, index) => {
             if (tickets.length === index + 1) {
               return (
-                <div ref={lastTicketElementRef} key={ticket.ticketId}>
+                <div
+                  ref={lastTicketElementRef}
+                  key={ticket.ticketId}>
                   <CardPendingProblem data={ticket} />
                 </div>
               );

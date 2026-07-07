@@ -1,14 +1,21 @@
 import express from 'express';
-import { 
-    addTicket, updateTicket, cancelTicket,
-    getAllTickets, getSimilarTickets, getTicketSummary,
-    upvoteTicket, getTicketById
-   /*, updateTicketByadmin*/ } from '../controllers/ticketControllers.js';
+import { addTicket, updateTicket, cancelTicket, upvoteTicket, submitFeedback } from '../controllers/ticketControllers.js';
+import { getAllTickets, getSimilarTickets, getTicketSummary, getTicketById } from '../controllers/getTicketControllers.js';
 import { verifyToken, requireAdmin } from '../middleware/authMiddleware.js';
 import { checkTicketExists, checkTicketOwner, checkTicketStatus } from '../middleware/ticketMiddleware.js';
 import { upload } from '../config/cloudinaryConfig.js';
 
 const router = express.Router();
+
+router.get('/get', verifyToken, getAllTickets);
+router.get('/summary', verifyToken, getTicketSummary)
+router.get('/similar', verifyToken, getSimilarTickets)
+
+router.get('/get/:id', 
+    verifyToken,
+    checkTicketExists,
+    getTicketById
+);
 
 router.post('/add',
     verifyToken, 
@@ -36,15 +43,10 @@ router.patch('/cancelTicket/:id',
     cancelTicket
 );
 
-router.get('/get', verifyToken, getAllTickets);
-router.get('/summary', verifyToken, getTicketSummary)
-router.get('/similar', verifyToken, getSimilarTickets)
-
-router.get('/get/:id', 
+router.post('/submitFeedback/:id',
     verifyToken,
-    checkTicketExists,
-    getTicketById
+    checkTicketExists, checkTicketOwner, checkTicketStatus('resolved'),
+    submitFeedback
 );
-//router.patch('/admin/updateticket/:id', upload.array('images', 3), updateTicketByadmin);
 
 export default router;

@@ -42,7 +42,7 @@ const Navbar = () => {
                                     : "nav-menu-item"      
                             }
                         >
-                            Menu admin <FaUserCog className="nav-icon" />
+                            Menu Admin <FaUserCog className="nav-icon" />
                         </NavLink>
                     )}
                 </div>

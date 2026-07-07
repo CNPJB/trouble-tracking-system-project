@@ -2,6 +2,7 @@ p,
 span {}
 
 .container-pending-card {
+    width: 100%;
     height: 100%;
     border-radius: 10px;
     padding: 1rem;
@@ -49,6 +50,27 @@ img {
     background-color: var(--status-resolved-bg);
     color: #000000;
 }
+
+.ticketStatus.duplicate {
+    background-color: var(--status-duplicate-bg);
+    color: #000000;
+}
+
+.ticketStatus.rejected {
+    background-color: var(--status-reject-bg);
+    color: #000000;
+}
+
+.ticketStatus.canceled {
+    background-color: var(--status-canceled-bg);
+    color: #000000;
+}
+
+.location {
+    color: var(--text-color-muted);
+}
+
+.floor-room {
 .title{
     display: -webkit-box;
     -webkit-line-clamp: 1;
@@ -150,9 +172,81 @@ img {
     /* เส้นรายละเอียดด้านล่างให้ยาวเต็มกรอบ */
 }
 
-.action-badge-container {
+.action-badge-container,
+.card-checkbox-wrapper {
     position: absolute;
     top: 10px;
     right: 10px;
     z-index: 10;
+}
+
+.card-checkbox-wrapper input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+}
+
+.merged-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background-color: #fff7ed; /* พื้นหลังสีส้มอ่อนมาก */
+    color: #ea580c; /* สีส้มเข้ม */
+    border: 1px solid #fed7aa; /* ขอบส้ม */
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(234, 88, 12, 0.1);
+}
+
+.merged-badge svg {
+    font-size: 12px;
+}
+
+
+@media (max-width: 1536px) {
+    .container-pending-card {
+
+    }
+    .header-card {
+        height: 200px;
+        gap: 10px;
+    }
+    .title-card {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        align-content: flex-end;
+    }
+
+    .title-card h3 {
+        font-size: var(--text-size-normal);
+        padding: 5px 0 5px 0;
+        width: auto;
+    }
+
+    .title-card p {
+        font-size: var(--text-size-base);
+        color: var(--text-color-muted);
+    }
+
+    .floor-room {
+        color: var(--text-color-muted);
+        margin-top: auto;
+        gap: 30px;
+    }
+    .description p {
+        padding-top: 10px;
+    }
+
+    .floor-room,
+    .description {
+        font-size: var(--text-size-base);
+    }
 }

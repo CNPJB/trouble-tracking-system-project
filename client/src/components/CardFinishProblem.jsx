@@ -3,6 +3,7 @@ import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 import { useNavigate } from 'react-router-dom';
 import { StarRating } from './StarRating';
+import { formatDate, formatDateTime } from '../utils/formatDate';
 
 import { formatDate } from '../utils/formatDate';
 
@@ -21,11 +22,11 @@ export const CardFinishProblem = ({ data }) => {
           <div className="no-image">ไม่มีรูปภาพประกอบ</div>
         )}
       </div>
-      <div className="main-info-card" key={data.id}>
-        <div className="info-card">
-          <h1 style={{ fontSize: '25px', margin: 0 }}>{data.title}</h1>
-          <p>โดย : {data.admin}</p>
-          <p>เสร็จสิ้น : {formatDate(data.updatedAt)}</p>
+        <div className="main-info-card" key={data.id}>
+          <div className="info-card">
+            <h1 style={{ fontSize: '25px',margin: 0 }}>{data.title}</h1>
+            <p>โดย : {data.admin?.fullName || 'ไม่ระบุ'}</p>
+            <p>เสร็จสิ้น : {formatDateTime(data.timestampFinished) || '-'}</p>
 
         </div>
         <div className="review-card">

@@ -20,10 +20,11 @@ import Statistics from "./pages/Statistics.jsx";
 // Pages admin
 const AuditIssues = React.lazy(() => import('./pages/adminPage/AuditIssues.jsx'))
 const AssetManagement = React.lazy(() => import('./pages/adminPage/AssetManagement.jsx'))
+const IssueManagement = React.lazy(() => import('./pages/adminPage/IssueManagement.jsx'))
 const UserManagement = React.lazy(() => import('./pages/adminPage/UserManagement.jsx'))
 const LocationManagement = React.lazy(() => import('./pages/adminPage/LocationManagement.jsx'))
 const Categories = React.lazy(() => import('./pages/adminPage/Categories.jsx'))
-
+const IssueManagementDetail = React.lazy(() => import('./pages/adminPage/IssueManagementDetail.jsx'))
 
 function App() {
   const { user, loading } = useAuth();
@@ -58,6 +59,12 @@ function App() {
                   } />
                   <Route path="AuditIssues" element={
                     <Suspense fallback={<div>Loading...</div>}><AuditIssues /></Suspense>
+                  } />
+                  <Route path="IssueManagement" element={
+                    <Suspense fallback={<div>Loading...</div>}><IssueManagement /></Suspense>
+                  } />
+                  <Route path="IssueManagement/:ticketId" element={
+                    <Suspense fallback={<div>Loading...</div>}><IssueManagementDetail /></Suspense>
                   } />
                   <Route path="AssetManagement" element={
                     <Suspense fallback={<div>Loading...</div>}><AssetManagement /></Suspense>

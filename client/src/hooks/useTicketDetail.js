@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+// Services
+import { ticketService } from '../services/ticketService';
 
 export const useTicketDetail = (ticketId) => {
     const [ticket, setTicket] = useState(null);
@@ -18,10 +19,10 @@ export const useTicketDetail = (ticketId) => {
         setError(null);
 
         try {
-            const response = await axios.get(`/api/tickets/get/${ticketId}`);
+            const response = await ticketService.getTicketById(ticketId);
             
-            if (response.data.success) {
-                setTicket(response.data.data);
+            if (response.success) {
+                setTicket(response.data);
             }
         } catch (err) {
             console.error("Error fetching ticket detail:", err);
