@@ -91,7 +91,6 @@ function AddIssue() {
     debouncedTitle,
     user?.userId
   );  
-
   // --- Logic to handle form input changes ---
   const handleChange = (e) => {
     const { name, value } = e.target;

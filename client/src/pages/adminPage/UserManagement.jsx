@@ -2,11 +2,17 @@ import { useState } from 'react'
 import './UserManagement.css'
 import './AssetManagement.css'
 
+// component
+import { LoadingSpinner, ToastAlert } from '../../components/LoadingSpinner';
+import { ConfirmButton } from '../../components/ConfirmButton';
 // hook
 import { useUsers } from '../../hooks/useUsers';
+import { useLoadingState } from '../../hooks/useLoadingState'
 
 const UserManagement = () => {
-    const { users } = useUsers();
+    const { users, updateRoleUser, fetchUsers } = useUsers();
+    const { loading, startLoading, setError, setSuccess, reset, clearError } = useLoadingState();
+    const [confirmSubmit, setConfirmSubmit] = useState({ "isOpen": false, "message": "" })
     const [selectedId, setSelectedId] = useState(null);
 
     const [formData, setFormData] = useState({
@@ -32,8 +38,48 @@ const UserManagement = () => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
+
+    const handleConfirmUpdateRole = () => {
+
+        if (!formData.userRole) {
+            setError('กรุณาเลือกข้อมูลที่ต้องการจะอัพเดท')
+            return;
+        }
+        setConfirmSubmit({ isOpen: true, })
+    }
+
+    const handleUpdateRole = async () => {
+        startLoading()
+        try {
+            const payload = ({
+                userId: selectedId,
+                userRole: formData.userRole
+            })
+            await updateRoleUser(payload);
+            setSuccess('อัปเดทRoleสำเร็จ')
+            await fetchUsers();
+            setFormData({ userRole: "", fullName: "", email: "" });
+            setConfirmSubmit({ isOpen: false, message: '' });
+        } catch (error) {
+            console.error("บันทึกข้อมูลไม่สำเร็จ:", error);
+            const errorMessage = error.response?.data?.error || 'อัปเดตข้อมูลไม่สำเร็จ';
+            setError(errorMessage, 'error');
+            setConfirmSubmit({ isOpen: false, message: '' });
+            setFormData({ userRole: "", fullName: "", email: "" });
+        }
+    }
     return (
         <div className="user-management">
+            <LoadingSpinner
+                isLoading={loading.isLoading}
+                message="กำลังประมวลผล..."
+            />
+            {/* แสดงข้อผิดพลาดเมื่อมีการโหลดไม่สำเร็จ */}
+            <ToastAlert
+                error={loading.error}
+                success={loading.success}
+                onDismiss={reset}
+            />
             <div className="main-container">
                 <div className="table-responsive-wrapper">
                     <table className="layout-table">
@@ -73,6 +119,7 @@ const UserManagement = () => {
                                 name='email'
                                 value={formData.email}
                                 onChange={handleInputChange}
+                                disabled
                             />
                         </div>
                         <div>
@@ -82,6 +129,7 @@ const UserManagement = () => {
                                 name='fullName'
                                 value={formData.fullName}
                                 onChange={handleInputChange}
+                                disabled
                             />
                         </div>
                         <select
@@ -96,9 +144,19 @@ const UserManagement = () => {
                         </select>
                     </form>
                     <div className="btn">
-                        <button className="btn-confirm">บันทึก</button>
+                        <button className="btn-confirm" onClick={handleConfirmUpdateRole}>บันทึก</button>
                         <button className="btn-cancel">ลบ</button>
                     </div>
+                    <ConfirmButton
+                        isOpen={confirmSubmit.isOpen}
+                        title="ยืนยันการอัปเดทRole?"
+                        message="คุณแน่ใจหรือไม่ว่าต้องการการอัปเดทRole?"
+                        onConfirm={handleUpdateRole}
+                        onCancel={() => setConfirmSubmit({ isOpen: false, message: '' })}
+                        confirmText={loading.isLoading ? "กำลังบันทึก..." : "ยืนยัน"}
+                        cancelText={loading.isLoading ? "ปิด" : "ยกเลิก"}
+                        isLoading={loading.isLoading}
+                    />
                 </div>
             </div>
         </div>

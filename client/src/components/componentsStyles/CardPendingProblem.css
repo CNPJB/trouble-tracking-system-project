@@ -15,13 +15,15 @@ span {}
     grid-template-columns: 150px 1fr;
     gap: 5px;
 }
-
+.title-card{
+    width: 233px;
+}
 .img-card,
 img {
     object-fit: cover;
     object-position: center;
     width: 150px;
-    height: 150px;
+    height: 160px;
 }
 
 .ticketStatus {
@@ -69,12 +71,40 @@ img {
 }
 
 .floor-room {
+.title{
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.location-text {
+    color: var(--text-color-muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    /* จำนวนบรรทัดที่ต้องการแสดง */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.floor-room {
+    padding-top: 20px;
     display: flex;
     gap: 50px;
 }
 
-.description p {
-    padding-top: 40px;
+.description-text {
+    line-height: 1.5em;
+    height: 4.5em;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.operator {
+    /* จัดการสไตล์ของบรรทัดผู้ดำเนินการ (ถ้ามี) */
+    font-weight: bold;
 }
 
 /* skleton-card */

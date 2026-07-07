@@ -30,7 +30,6 @@
 
 .ticket-status {
     margin-left: auto;
-
 }
 
 .detail-ticket {
@@ -55,30 +54,185 @@
     margin-right: auto;
 }
 
+/* =========================================
+   1. ส่วนแสดงผลรูปภาพหลัก (Thumbnail)
+ ======================================== */
 .ticket-img {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    gap: 15px;
+    /* ระยะห่างระหว่างส่วนก่อนซ่อมและหลังซ่อม */
+    margin-top: 10px;
     height: 250px;
+    /* กำหนดความสูงของกล่องรูปภาพ */
 }
 
-.ticket-img img {
+.img-group {
     width: 100%;
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
-    object-position: center;
-    border-radius: 10px;
-    border: solid 1px;
+    display: flex;
     height: 250px;
+
+    /* กำหนดความสูงของกลุ่มรูปภาพ */
 }
 
-.no-image {
-    display: flex;
-    flex-direction: column;
-    text-align: center;
+/* ปรับแต่งรูปแรกที่จะโชว์ให้เป็นสี่เหลี่ยมสวยๆ */
+.clickable-img {
+    width: 100%;
+    /* ความกว้างรูป (ปรับให้ใหญ่หรือเล็กลงได้ตามชอบ) */
     height: 100%;
+    /* ความสูงรูป */
+    flex: 1;
+    object-fit: cover;
+    /* ครอปรูปให้เต็มกรอบพอดี ไม่ให้ภาพเบี้ยว */
+    border-radius: 8px;
+    /* ทำมุมให้โค้งมน */
+    border: 2px solid #e0e0e0;
+    cursor: pointer;
+    /* เปลี่ยนเมาส์เป็นรูปมือเวลากด */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* เอฟเฟกต์ตอนเอาเมาส์ไปชี้ที่รูป */
+.clickable-img:hover {
+    transform: scale(1.03);
+    /* ขยายรูปนิดนึง */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    /* เพิ่มเงา */
+}
+
+/* ข้อความ "+ ดูรูปเพิ่มเติม" */
+.see-more-text {
+    display: inline-block;
+    cursor: pointer;
+    color: #007bff;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 8px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.see-more-text:hover {
+    background-color: #f0f8ff;
+    /* สีพื้นหลังอ่อนๆ ตอนเอาเมาส์ชี้ */
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+/* ข้อความกรณีไม่มีรูป */
+.no-image-text,
+.no-image {
+    border-radius: 8px;
+    /* ทำมุมให้โค้งมน */
+    border: 2px solid #e0e0e0;
+    height: 250px;
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+    font-style: italic;
+}
+.ticketStatus.pending {
+    background-color: var(--status-pending-bg);
+    color: #000;
+}
+
+.ticketStatus.in_progress {
+    background-color: var(--status-in-progress-bg);
+    color: #000;
+}
+
+.ticketStatus.resolved {
+    background-color: var(--status-resolved-bg);
+    color: #000000;
+}
+
+/* =========================================
+   2. ส่วนของหน้าต่าง Popup (Modal Gallery)
+==========================================*/
+/* ฉากหลังสีดำโปร่งแสง */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.75);
+    /* สีดำโปร่งแสง 75% */
+    display: flex;
     justify-content: center;
-    border: solid 2px rgb(189, 189, 189);
+    align-items: center;
+    z-index: 1000;
+    /* ดันให้อยู่หน้าสุดของเว็บ */
+}
+
+/* กล่องเนื้อหาสีขาวตรงกลางจอ */
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    width: 70%;
+    /* ขนาดความกว้างสูงสุดของ Popup */
+    max-height: 80vh;
+    /* ความสูงไม่เกิน 80% ของหน้าจอ */
+    overflow-y: auto;
+    /* ถ้ามีรูปเยอะให้เลื่อน scroll ขึ้นลงได้ */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+/* หัวข้อใน Popup */
+.modal-content h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    font-size: 18px;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    text-align: center;
+}
+
+/* กลุ่มรูปภาพที่อยู่ใน Popup */
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    /* บังคับให้แบ่งเป็น 3 คอลัมน์ขนาดเท่ากันเป๊ะ */
+    gap: 15px;
+    /* ระยะห่างระหว่างรูป */
+    width: 100%;
+}
+
+/* บังคับขนาดรูปภาพทุกรูปให้ออกมาเป็นบล็อกเท่ากัน */
+.gallery img {
+    width: 100%;
+    /* กว้างเต็มกรอบคอลัมน์ที่ Grid แบ่งไว้ */
+    height: 300px;
+    object-fit: cover;
+    border-radius: 8px;
+    /* ขอบมนสวยงาม */
+    border: 1px solid #ddd;
+}
+
+/* ปุ่มปิด Popup */
+.modal-content button {
+    margin-top: 20px;
+    padding: 10px 16px;
+    background-color: #dc3545;
+    /* สีแดง */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    /* ปุ่มกว้างเต็มบรรทัด */
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+.modal-content button:hover {
+    background-color: #c82333;
+    /* แดงเข้มขึ้นตอนชี้ */
 }
 
 .roadmap-working .main-comment p {
@@ -92,7 +246,7 @@
     margin-top: 1rem;
     background-color: var(--card-bg);
     border-radius: 20px;
-        box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-md);
 
 }
 

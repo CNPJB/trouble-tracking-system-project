@@ -25,7 +25,8 @@ router.post('/add',
 
 router.patch('/updateTicket/:id',
     verifyToken,
-    checkTicketExists, checkTicketOwner, checkTicketStatus('pending'),
+    checkTicketExists, checkTicketOwner, 
+    // checkTicketStatus('pending'),
     upload.array('images', 3),
     updateTicket
 );

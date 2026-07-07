@@ -21,17 +21,17 @@ export const addTicketCategory = async (req, res) => {
     }
 };
 
-export const updateTicketCategories  = async (req, res) => {
-    const { ticketCtgId,ticketCtgName,ticketCtgStatus } = req.body;
+export const updateTicketCategories = async (req, res) => {
+    const { ticketCtgId, ticketCtgName, ticketCtgStatus } = req.body;
     try {
-       await prisma.ticketCategory.update({
-        where: { ticketCtgId:  Number(ticketCtgId)},
-        data: { 
-            ticketCtgName: String(ticketCtgName),
-            ticketCtgStatus: ticketCtgStatus
-        }
-       })
-       res.status(200).json({ message: 'อัปเดตประเภทปัญหาสำเร็จเรียบร้อย' });
+        await prisma.ticketCategory.update({
+            where: { ticketCtgId: Number(ticketCtgId) },
+            data: {
+                ticketCtgName: String(ticketCtgName),
+                ticketCtgStatus: ticketCtgStatus
+            }
+        })
+        res.status(200).json({ message: 'อัปเดตประเภทปัญหาสำเร็จเรียบร้อย' });
     } catch (error) {
         console.error('Error update ticket categories:', error);
         res.status(500).json({ error: 'Failed to update ticket categories' });
@@ -56,9 +56,25 @@ export const addLocation = async (req, res) => {
             locationStatus,
         } = req.body;
 
+        if (!locationName || locationName.trim() === '') {
+            return res.status(400).json({ error: 'กรุณาระบุชื่อสถานที่' });
+        }
+
+        const cleanLocationName = locationName.trim();
+
+        const findLocation = await prisma.location.findFirst({
+            where: {
+                locationName: cleanLocationName
+            }
+        });
+
+        if (findLocation) {
+            return res.status(400).json({ error: 'สถานที่นี้มีอยู่แล้วในระบบ' });
+        }
+
         const location = await prisma.location.create({
             data: {
-                locationName,
+                locationName: cleanLocationName,
                 locationStatus,
             }
         });
@@ -87,12 +103,12 @@ export const deleteLocation = async (req, res) => {
         }
         const deletedLocation = await prisma.location.delete({
             where: {
-                locationId: Number(id), 
+                locationId: Number(id),
             }
         });
-        res.status(200).json({ 
-            message: 'ลบสถานที่สำเร็จ', 
-            deletedLocation 
+        res.status(200).json({
+            message: 'ลบสถานที่สำเร็จ',
+            deletedLocation
         });
     } catch (error) {
         console.error('Error deleting location:', error);
@@ -147,12 +163,12 @@ export const deleteFloor = async (req, res) => {
         }
         const deletedFloor = await prisma.floor.delete({
             where: {
-                floorId: Number(id), 
+                floorId: Number(id),
             }
         });
-        res.status(200).json({ 
-            message: 'ลบชั้นสำเร็จ', 
-            deletedFloor 
+        res.status(200).json({
+            message: 'ลบชั้นสำเร็จ',
+            deletedFloor
         });
     } catch (error) {
         console.error('Error deleting floor:', error);
@@ -208,12 +224,12 @@ export const deleteRoom = async (req, res) => {
         }
         const deletedRoom = await prisma.room.delete({
             where: {
-                roomId: Number(id), 
+                roomId: Number(id),
             }
         });
-        res.status(200).json({ 
-            message: 'ลบห้องสำเร็จ', 
-            deletedRoom 
+        res.status(200).json({
+            message: 'ลบห้องสำเร็จ',
+            deletedRoom
         });
     } catch (error) {
         console.error('Error deleting room:', error);
@@ -235,7 +251,7 @@ export const updateLocationStatus = async (req, res) => {
 
         await prisma.floor.updateMany({
             where: { locationId: Number(locationId) },
-            data: { floorStatus: status } 
+            data: { floorStatus: status }
         });
 
         const floorsInLocation = await prisma.floor.findMany({
@@ -260,7 +276,7 @@ export const updateLocationStatus = async (req, res) => {
 export const updateFloorStatus = async (req, res) => {
     const { floorId, status } = req.body;
     try {
-        
+
         await prisma.floor.update({
             where: { floorId: Number(floorId) },
             data: { floorStatus: status }
@@ -268,7 +284,7 @@ export const updateFloorStatus = async (req, res) => {
 
         await prisma.room.updateMany({
             where: { floorId: Number(floorId) },
-            data: { roomStatus: status } 
+            data: { roomStatus: status }
         });
 
         res.json({ message: "อัปเดตชั้นและห้อง เรียบร้อย" });
@@ -397,6 +413,30 @@ export const getUsers = async (req, res) => {
     } catch (error) {
         console.error('Error fetching users:', error);
         res.status(500).json({ error: 'Failed to fetch users' });
+    }
+};
+
+export const updateRoleUsers = async (req, res) => {
+    try {
+        const { userId, userRole } = req.body;
+
+        const myUserId = req.user.userId;
+        console.log("ID จากหน้าบ้าน:", userId);
+        console.log("ข้อมูลใน Token ของฉัน:", req.user);
+        if (String(userId) === String(myUserId)) {
+            return res.status(400).json({ error: "ไม่อนุญาตให้แก้ไขสิทธิ์ของตัวเอง" });
+        }
+        const users = await prisma.user.update({
+            where: {
+                userId: Number(userId)
+            }, data: {
+                role: userRole
+            }
+        });
+        res.status(200).json(users);
+    } catch (error) {
+        console.error('Error update users:', error);
+        res.status(500).json({ error: 'เกิดข้อผิดพลาดในการอัปเดตสิทธิ์ผู้ใช้งาน' });
     }
 };
 

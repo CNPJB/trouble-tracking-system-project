@@ -1,14 +1,19 @@
 import { useState } from 'react';
 import axios from 'axios';
+// hooks
+import { useEquipment } from '../hooks/useEquipment'
+import { useLoadingState } from '../hooks/useLoadingState'
 
 export const useImportEquipments = (url) => {
+  const { loading, reset } = useLoadingState();
+  const { refetch } = useEquipment();
   const [file, setFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorList, setErrorList] = useState([]);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
-    setErrorList([]); 
+    setErrorList([]);
   };
 
   const uploadFile = async () => {
@@ -25,29 +30,46 @@ export const useImportEquipments = (url) => {
 
     try {
       const response = await axios.post(url, formData);
-      window.location.reload();
-      alert(response.data.message);
-      setFile(null); 
-      return true;
-    } catch (error) {
-      console.error(error);
-      if (error.response && error.response.data.errors) {
-        setErrorList(error.response.data.errors);
-      } else {
-        alert("เกิดข้อผิดพลาดในการอัปโหลด");
+
+      if (refetch) {
+        await refetch();
       }
+      if (response.data.errors && response.data.errors.length > 0) {
+        setErrorList(response.data.errors); // เอาไปโชว์ในเว็บให้ผู้ใช้ดูว่าพังบรรทัดไหน
+      } else {
+        setFile(null); // ถ้าไม่มี Error เลย ค่อยล้างไฟล์ทิ้ง
+      }
+
+      return true;
+
+    } catch (error) {
+      console.error("Upload Error:", error);
+
+      if (error.response && error.response.data) {
+        if (error.response.data.errors) {
+          setErrorList(error.response.data.errors);
+        } else if (error.response.data.message) {
+          alert(error.response.data.message);
+        }
+      } else {
+        alert("เกิดข้อผิดพลาดในการรับส่งข้อมูลกับเซิร์ฟเวอร์");
+      }
+
       return false;
+
     } finally {
       setIsSubmitting(false);
     }
   };
-
   return {
     file,
     setFile,
     isSubmitting,
     errorList,
+    setErrorList,
     handleFileChange,
-    uploadFile
+    uploadFile,
+    loading, 
+    reset  
   };
 };

@@ -10,7 +10,6 @@
 .filter-assetManagement-container {
   display: flex;
   justify-content: flex-start;
-  margin-bottom: 30px;
   padding: 15px;
   gap: 20px;
 }
@@ -56,6 +55,68 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+.audit-issues-searchbar button:hover {
+  background-color: var(--tbs-green-accent);
+  transform: translateY(-2px);
+  /* ปุ่มลอยขึ้นเล็กน้อย */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* 🌟 1. จัดกลุ่มให้ปุ่มเรียงต่อกันสวยงาม (ถ้ามีหลายปุ่ม) */
+.filter-category-group {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+/* 🌟 2. ตัวปุ่ม Select (อิงสีเดิมของคุณเลยครับ) */
+.filter-category-group select {
+  /* ลบลูกศรเดิมๆ ที่ดูเชยทิ้งไปก่อน */
+  appearance: none;
+  -webkit-appearance: none;
+  height: 49px;
+  /* เพิ่ม padding ขวาให้กว้างขึ้นอีกนิด เพื่อเว้นที่ให้ลูกศรใหม่ */
+  padding: 12px 40px 12px 24px;
+  background-color: var(--tbs-green);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+  /* ใส่ลูกศรสีขาวมินิมอล ลงไปทางขวาของปุ่ม */
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px top 50%;
+  background-size: 12px auto;
+}
+
+/* 🌟 3. เอฟเฟกต์ตอนชี้เมาส์ (โค้ดเดิมของคุณ) */
+.filter-category-group select:hover {
+  background-color: var(--tbs-green-accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* 🌟 4. เอฟเฟกต์ตอนกดใช้งาน (คลิกแล้วมีขอบเรืองแสงเบาๆ) */
+.filter-category-group select:focus {
+  outline: none;
+  /* ใส่เงาสีเขียวจางๆ ให้รู้ว่ากำลังโฟกัสปุ่มนี้อยู่ */
+  box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.3);
+}
+
+/* 🌟 5. ป้องกันปัญหาตัวหนังสือ <option> ข้างในกลืนกับพื้นหลัง */
+.filter-category-group select option {
+  background-color: #ffffff;
+  /* เปลี่ยนพื้นหลังตัวเลือกให้เป็นสีขาว */
+  color: #333333;
+  /* ตัวหนังสือข้างในเป็นสีเทาเข้ม จะได้อ่านง่ายๆ */
+  font-weight: normal;
+}
+
 /* เมื่อเอาเมาส์วางบนปุ่ม */
 .audit-issues-searchbar button:hover {
   background-color: var(--tbs-green-accent);
@@ -72,12 +133,19 @@
 /* table */
 /* 1. กล่องครอบตาราง */
 .table-responsive-wrapper {
-  max-height: 600px;
+  -ms-overflow-style: none;
+  /* ซ่อนใน IE และ Edge */
+  scrollbar-width: none;
+  /* ซ่อนใน Firefox */
+  max-height: 665px;
   overflow-y: auto;
   margin: 1rem 0;
   box-shadow: var(--shadow-md);
-  border: 1px solid var(--tbs-green);
-  border-radius: 8px; /* แนะนำให้เพิ่มมุมโค้งจะสวยขึ้นครับ */
+  border-radius: 8px;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  background-color: #ffffff;
+  /* แนะนำให้เพิ่มมุมโค้งจะสวยขึ้นครับ */
 }
 
 /* 2. ตั้งค่าตัวตาราง */
@@ -87,16 +155,37 @@
   font-size: 0.9rem;
 }
 
+.btn-toggle-all {
+  padding: 4px 8px;
+  font-size: 12px;
+  color: #ffffff;
+  background-color: var(--tbs-green-accent);
+  width: 90px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-toggle-all:hover {
+  background-color: var(--tbs-green-active);
+  /* สีเข้มขึ้นตอนชี้เมาส์ */
+}
+
+.layout-table {
+  background-color: #ffffff;
+}
+
 /* 3. ส่วนหัวตาราง (Sticky Header) */
 .layout-table thead th {
   position: sticky;
   top: 0;
+  background-color: #ffffff;
   z-index: 2;
-  background-color: var(--tbs-green);
-  color: var(--text-color-light);
+  color: black;
   text-align: center;
   font-weight: bold;
-  border: none;
+  box-shadow: inset 0 -1px 0 rgb(133, 133, 133);
   letter-spacing: 0.5px;
   padding: 12px 10px;
 }
@@ -106,7 +195,8 @@
   padding: 10px;
   vertical-align: middle;
   text-align: center;
-  border-bottom: 1px solid var(--tbs-green); /* ใช้แค่เส้นคั่นล่าง จะดูสะอาดตากว่าเส้นล้อมกรอบ */
+  border-bottom: 1px solid rgb(204, 204, 204);
+  /* ใช้แค่เส้นคั่นล่าง จะดูสะอาดตากว่าเส้นล้อมกรอบ */
 }
 
 /* เอาเส้นคั่นล่างของบรรทัดสุดท้ายออก จะได้ไม่ชนกับกรอบโค้งของกล่อง */
@@ -114,20 +204,15 @@
   border-bottom: none;
 }
 
-.layout-table tbody tr:nth-of-type(even) {
-  background-color: #f8fafc; /* แถวเลขคู่เป็นสีเทาอ่อน */
-}
-.layout-table tbody tr:nth-of-type(odd) {
-  background-color: var(--background-color-white, #ffffff); /* แถวเลขคี่เป็นสีขาว */
-}
-
 .layout-table tbody tr:hover {
-  background-color: #e6f4ea; /* ไฮไลท์สีเขียวอ่อนเวลาเอาเมาส์วาง */
+  background-color: #e6f4ea;
+  /* ไฮไลท์สีเขียวอ่อนเวลาเอาเมาส์วาง */
   transition: background-color 0.2s;
 }
 
 .data-layout-row.selected td {
-  background-color: var(--tbs-green-active) !important; /* บังคับเปลี่ยนสีทับสีสลับแถว */
+  background-color: var(--tbs-green-active) !important;
+  /* บังคับเปลี่ยนสีทับสีสลับแถว */
 }
 
 .manage-container {

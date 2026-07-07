@@ -137,3 +137,75 @@
         transform: translateY(0);
     }
 }
+
+.custom-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* ดันให้อยู่หน้าสุดของเว็บ */
+}
+
+/* กล่องข้อความสีขาวตรงกลางจอ */
+.custom-modal-content {
+    background-color: #ffffff;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px; /* ไม่ให้กล่องกว้างเกินไป */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    animation: popIn 0.3s ease-out forwards; /* เพิ่มลูกเล่นแอนิเมชันเด้งเข้ามา */
+}
+
+.modal-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eeeeee;
+    background-color: #ffebee; /* พื้นหลังสีแดงอ่อนๆ */
+    border-radius: 8px 8px 0 0;
+}
+
+.modal-body {
+    padding: 20px;
+    max-height: 60vh; /* ถ้า Error เยอะเกินไป ให้เลื่อนสกอร์บาร์แค่ในกล่องนี้ */
+    overflow-y: auto;
+}
+
+.error-popup-list {
+    color: #c62828;
+    padding-left: 20px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #eeeeee;
+    text-align: right;
+}
+
+/* ปุ่มปิดหน้าต่าง */
+.btn-close-modal {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.btn-close-modal:hover {
+    background-color: #d32f2f;
+}
+
+/* ลูกเล่นแอนิเมชันเด้ง */
+@keyframes popIn {
+    0% { transform: scale(0.9); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}

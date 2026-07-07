@@ -1,9 +1,10 @@
-// Styles
-import './componentsStyles/CardPendingProblem.css';
 import { useNavigate } from 'react-router-dom';
 import { formatDate, formatDateTime } from '../utils/formatDate';
 import { FaLayerGroup } from 'react-icons/fa'
-
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
+// Styles
+import './componentsStyles/CardPendingProblem.css'
 
 export const CardPendingProblem = ({
     data,
@@ -85,7 +86,7 @@ export const CardPendingProblem = ({
                     <div className={`ticketStatus ${data.ticketStatus}`}>
                         {statusLabels[data.ticketStatus] || data.ticketStatus}
                     </div>
-                    <p className='location'>{data.location.locationName}</p>
+                    <p className='location-text'>{data.location.locationName}</p>
                     <div className="floor-room">
                         <span><b>ชั้น:</b> {data.floor?.floorLevel || '-'}</span>
                         <span><b>ห้อง:</b> {data.room?.roomName || '-'}</span>
@@ -102,21 +103,34 @@ export const CardPendingProblem = ({
 
 export const CardPendingSkeleton = () => {
     return (
-        <div className="skleton-card-pending">
-            <div className="header-skleton-card">
-                <div className="skleton-img"></div>
-                <div className="skleton-title-card">
-                    <p className="skleton-text"></p>
-                    <h3 className="skleton-text"></h3>
-                    <p className="skleton-text"></p>
-                    <p className='skleton-text'></p>
-                    <div className="skleton-text"></div>
+        <SkeletonTheme
+            baseColor="#ebebeb"
+            highlightColor="#ccc7c7"
+            duration={2}
+        >
+            <div className="skleton-card-pending">
+                <div className="header-card">
+                    <div className="img">
+                        <Skeleton width={150} height={160} borderRadius={8} />
+                    </div>
+                    <div className="title-card">
+                        <p className='operator'><Skeleton width="40%" height={16} count={1} /></p>
+                        <h3 className="title"><Skeleton width="60%" height={24} /></h3>
+                        <p className='operator'><Skeleton width="40%" height={16} count={1} /></p>
+                        <div>
+                       
+                        </div>
+                        <p className='location-text'><Skeleton width="100%" height={16} count={1} /></p>
+                        <div className="floor-room">
+                            <Skeleton width="40%" height={16} count={1} />
+                        </div>
+                    </div>
+                </div>
+                <div className="description">
+                    <p className='description-text'><Skeleton width="100%" height={16} count={3} /></p>
+                    <p className='operator'><Skeleton width="100%" height={16} count={1} /></p>
                 </div>
             </div>
-            <div className="skleton-description">
-                <p className="skleton-text"></p>
-                <p className="skleton-text"></p>
-            </div>
-        </div>
+        </SkeletonTheme>
     )
 };

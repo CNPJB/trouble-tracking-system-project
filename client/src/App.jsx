@@ -15,6 +15,7 @@ import AddIssue from "./pages/AddIssue.jsx";
 import DetailTicket from './pages/DetailTicket.jsx';
 import Tracking from "./pages/Tracking.jsx";
 import EditIssue from './pages/EditIssue';
+import Statistics from "./pages/Statistics.jsx";
 
 // Pages admin
 const AuditIssues = React.lazy(() => import('./pages/adminPage/AuditIssues.jsx'))
@@ -47,7 +48,7 @@ function App() {
 
                 <Route path="/ticketDetail" element={<DetailTicket />} />
                 <Route path="/edit-issue" element={<EditIssue />} />
-                <Route path="*" element={<Navigate to="/" />} />
+                <Route path="/statistics/*" element={<Statistics />} />
 
                 <Route path="/adminPage" element={
                   user.role === 'admin' ? <AdminLayout /> : <Navigate to="/" />

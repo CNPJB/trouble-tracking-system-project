@@ -139,13 +139,13 @@ export const updateTicket = async (req, res) => {
 
     try {
         const { id } = req.params;
-
+        console.log(req.body)
         const {
             ticketCtgId, locationId, floorId, roomId, equipmentId,
-            title, description,
+            title, description,ticketStatus, // เพิ่ม ticketStatus เข้ามาเพื่อให้แอดมินสามารถแก้ไขสถานะได้ในกรณีที่ต้องการเปลี่ยนจาก pending เป็น in_progress หรือ resolved ได้เลย
             imagesToDelete // หน้าบ้านจะส่งเป็น Array String มา เช่น "[12, 15]" (ID ของ TicketImage ที่จะลบ)
         } = req.body;
-
+        
         const files = req.files;
         const existingTicket = req.ticket;
 
@@ -154,7 +154,7 @@ export const updateTicket = async (req, res) => {
                 where: {
                     equipmentId: parseInt(equipmentId),
                     ticketStatus: {
-                        in: ['pending', 'in_progress']
+                        in: ['pending', 'in_progress',]
                     }
                 }
             });
@@ -213,6 +213,7 @@ export const updateTicket = async (req, res) => {
         const dataToUpdate = {
             title: title || existingTicket.title,
             description: description || existingTicket.description,
+            ticketStatus: ticketStatus || existingTicket.ticketStatus,// อัปเดตสถานะถ้ามีการส่งมา ถ้าไม่ส่งมาจะคงสถานะเดิมไว้
         };
 
         // 2. จัดการฟิลด์บังคับ (ใช้วิธี connect เข้ากับ ID เดิมหรือ ID ใหม่)
