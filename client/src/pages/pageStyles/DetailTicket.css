@@ -121,8 +121,8 @@
 }
 
 /* ข้อความกรณีไม่มีรูป */
-.no-image-text,
-.no-image {
+.no-image-detail-text,
+.no-image-detail {
     border-radius: 8px;
     /* ทำมุมให้โค้งมน */
     border: 2px solid #e0e0e0;

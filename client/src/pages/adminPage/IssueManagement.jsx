@@ -139,7 +139,7 @@ const IssueManagement = () => {
                         breakpoints={{
                             860: { slidesPerView: 2 },
                             1200: { slidesPerView: 3 },
-                            1536: { slidesPerView: 3 },
+                            1536: { slidesPerView: 2 },
                             1920: { slidesPerView: 4 }
                         }}
                         className="urgent-swiper"

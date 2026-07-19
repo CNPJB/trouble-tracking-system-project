@@ -5,8 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { StarRating } from './StarRating';
 import { formatDate, formatDateTime } from '../utils/formatDate';
 
-import { formatDate } from '../utils/formatDate';
-
 export const CardFinishProblem = ({ data }) => {
   const navigate = useNavigate();
   const handleClick = () => {

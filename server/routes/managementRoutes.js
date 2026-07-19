@@ -47,8 +47,6 @@ router.delete('/deleteEquipment/:id', verifyToken, requireAdmin, deleteEquipment
 router.post('/uploadEquipments', verifyToken, requireAdmin, upload.single('file'), uploadEquipments);
 router.put('/updateEquipment', verifyToken, requireAdmin,updateEquipment)
 
-router.patch('/mergeTickets', verifyToken, requireAdmin, mergeTickets);
-
 router.get('/getMostCategoriesOfProblems', verifyToken, getMostCategoriesOfProblems);
 router.get('/getMostUpvotedTickets', verifyToken, MostUpvotedTickets);
 router.get('/getTicket-stats', verifyToken, getTicketStats);

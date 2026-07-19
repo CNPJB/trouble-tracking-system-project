@@ -74,11 +74,12 @@ function AddIssue() {
     };
   }, [formData.title]);
 
+  const normalizeEquipmentCode = (value) => value?.toString().trim().toUpperCase();
+
   // --- State for validating equipment code ---
   const { equipmentValidation } = useEquipmentValidation(
     isEquipmentCategory,
     formData.equipmentCode,
-    formData.roomId,
     equipments
   );
 
@@ -91,6 +92,42 @@ function AddIssue() {
     debouncedTitle,
     user?.userId
   );  
+
+  // Logic Auto-fill สถานที่
+  useEffect(() => {
+    // ถ้าหมวดหมู่ถูกต้อง หาครุภัณฑ์เจอ
+    if (isEquipmentCategory && equipmentValidation.status === 'success' && equipmentValidation.roomId) {
+        const eqRoomId = equipmentValidation.roomId;
+        
+        // ย้อนรอยหาชั้นและสถานที่จาก Master Data
+        const foundRoom = rooms.find(r => r.roomId === eqRoomId);
+        if (foundRoom) {
+            const eqFloorId = foundRoom.floorId;
+            const foundFloor = floors.find(f => f.floorId === eqFloorId);
+            
+            if (foundFloor) {
+                const eqLocationId = foundFloor.locationId;
+
+                setFormData(prev => {
+                    // เช็คก่อนว่าเปลี่ยนจริงไหม เพื่อไม่ให้ State อัปเดตรัวๆ รบกวนผู้ใช้
+                    if (prev.locationId === eqLocationId.toString() &&
+                        prev.floorId === eqFloorId.toString() &&
+                        prev.roomId === eqRoomId.toString()) {
+                        return prev;
+                    }
+                    
+                    return {
+                        ...prev,
+                        locationId: eqLocationId.toString(),
+                        floorId: eqFloorId.toString(),
+                        roomId: eqRoomId.toString()
+                    };
+                });
+            }
+        }
+    }
+  }, [equipmentValidation.status, equipmentValidation.equipmentId, rooms, floors, isEquipmentCategory]);
+
   // --- Logic to handle form input changes ---
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -110,12 +147,10 @@ function AddIssue() {
       if (name === 'locationId') {
         newData.floorId = '';
         newData.roomId = '';
-        newData.equipmentCode = '';
       }
 
       if (name === 'floorId') {
         newData.roomId = '';
-        newData.equipmentCode = '';
       }
 
       return newData;
@@ -145,14 +180,24 @@ function AddIssue() {
     }
   }, [rooms, availableFloors, formData.locationId, formData.floorId]);
 
+  const availableEquipmentOptions = useMemo(() => {
+    if (!isEquipmentCategory) return [];
+
+    return (equipments || [])
+      .filter(eq => eq.equipmentStatus === 'active')
+      .sort((a, b) => (a.equipmentCode || '').localeCompare(b.equipmentCode || ''));
+  }, [equipments, isEquipmentCategory]);
+
   // --- Logic to handle submission trigger ---
   const handleSubmit = (e) => {
     e.preventDefault();
 
     reset();
+    const hasEquipmentSelection = Boolean(formData.equipmentCode && formData.equipmentCode.trim());
+
     // Equipment code validation before submission
-    if (isEquipmentCategory && equipmentValidation.status !== 'success') {
-      setError("กรุณาระบุรหัสครุภัณฑ์ให้ถูกต้องตามที่มีในระบบ", "warning");
+    if (isEquipmentCategory && hasEquipmentSelection && equipmentValidation.status !== 'success') {
+      setError(equipmentValidation.message || "กรุณาเลือกรหัสครุภัณฑ์ที่มีในระบบหรือเลือก 'ไม่ระบุ'", "warning");
       return;
     }
 
@@ -184,7 +229,7 @@ function AddIssue() {
       // ถ้าเป็นหมวดอุปกรณ์และมีรหัสครุภัณฑ์ที่ถูกต้อง ให้ส่ง equipmentId ไปด้วย
       if (isEquipmentCategory && formData.equipmentCode) {
         const foundEq = equipments.find(
-          eq => eq.roomId === parseInt(formData.roomId, 10) && eq.equipmentCode === formData.equipmentCode
+          eq => normalizeEquipmentCode(eq.equipmentCode) === normalizeEquipmentCode(formData.equipmentCode)
         );
         if (foundEq) {
           submitData.append('equipmentId', foundEq.equipmentId);
@@ -263,6 +308,9 @@ function AddIssue() {
     reset();
   }
 
+  const hasEquipmentInput = Boolean(formData.equipmentCode && formData.equipmentCode.trim());
+  const isEquipmentInvalid = isEquipmentCategory && hasEquipmentInput && equipmentValidation.status !== 'success';
+
   if (!user) {
     return <div style={{ textAlign: 'center', marginTop: '50px' }}>Loading...</div>;
   }
@@ -310,16 +358,20 @@ function AddIssue() {
 
             {isEquipmentCategory && (
               <div className="form-group highlight-field">
-                <label>รหัสครุภัณฑ์ <span style={{ color: 'red' }}>*</span></label>
+                <label>รหัสครุภัณฑ์</label>
                 <input
                   type="text"
+                  list={`equipment-codes-${formData.roomId || 'none'}`}
                   name="equipmentCode"
                   onChange={handleChange}
                   value={formData.equipmentCode}
-                  placeholder="XXXX-XXX-XXXX/XX"
-                  required
-                  disabled={!formData.roomId} // บังคับเลือกห้องก่อน
+                  placeholder="พิมพ์รหัสครุภัณฑ์"
                 />
+                <datalist id={`equipment-codes-${formData.roomId || 'none'}`}>
+                  {availableEquipmentOptions.map(eq => (
+                    <option key={eq.equipmentId} value={eq.equipmentCode} />
+                  ))}
+                </datalist>
                 {/* แสดงผลลัพธ์การตรวจสอบ */}
                 {equipmentValidation.message && (
                   <small style={{ color: equipmentValidation.status === 'success' ? 'green' : 'red', marginTop: '5px' }}>
@@ -384,7 +436,7 @@ function AddIssue() {
             <button
               type="submit"
               className="btn-submit"
-              disabled={loading.isLoading || (isEquipmentCategory && equipmentValidation.status !== 'success')}
+              disabled={loading.isLoading || isEquipmentInvalid}
             >
               {loading.isLoading ? 'กำลังบันทึก...' : 'ยืนยัน'}
             </button>

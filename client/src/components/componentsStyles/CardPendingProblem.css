@@ -15,9 +15,11 @@ span {}
     grid-template-columns: 150px 1fr;
     gap: 5px;
 }
-.title-card{
+
+.title-card {
     width: 233px;
 }
+
 .img-card,
 img {
     object-fit: cover;
@@ -70,13 +72,13 @@ img {
     color: var(--text-color-muted);
 }
 
-.floor-room {
-.title{
+.title {
     display: -webkit-box;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+
 .location-text {
     color: var(--text-color-muted);
     display: -webkit-box;
@@ -194,9 +196,9 @@ img {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    background-color: #fff7ed; /* พื้นหลังสีส้มอ่อนมาก */
-    color: #ea580c; /* สีส้มเข้ม */
-    border: 1px solid #fed7aa; /* ขอบส้ม */
+    background-color: #fff7ed;
+    color: #ea580c;
+    border: 1px solid #fed7aa;
     padding: 4px 10px;
     border-radius: 20px;
     font-size: 11px;
@@ -211,13 +213,13 @@ img {
 
 
 @media (max-width: 1536px) {
-    .container-pending-card {
+    .container-pending-card {}
 
-    }
     .header-card {
         height: 200px;
         gap: 10px;
     }
+
     .title-card {
         display: flex;
         flex-direction: column;
@@ -241,6 +243,7 @@ img {
         margin-top: auto;
         gap: 30px;
     }
+
     .description p {
         padding-top: 10px;
     }

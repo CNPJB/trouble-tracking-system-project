@@ -102,11 +102,11 @@ const DetailTicket = () => {
                                             )}
                                         </>
                                     ) : (
-                                        <p className="no-image-text">ไม่มีรูปประกอบ</p>
+                                        <p className="no-image-detail-text">ไม่มีรูปประกอบ</p>
                                     )}
                                 </div>
                             ) : (
-                                <div className="no-image">ไม่มีรูปภาพประกอบ</div>
+                                <div className="no-image-detail">ไม่มีรูปภาพประกอบ</div>
                             )}
 
                             {/* ---------------- รูปหลังแจ้ง ---------------- */}
@@ -135,7 +135,7 @@ const DetailTicket = () => {
                                         )}
                                     </>
                                 ) : (
-                                    <p className="no-image">รอแอดมินอัปโหลดหลักฐาน</p>
+                                    <p className="no-image-detail">รอแอดมินอัปโหลดหลักฐาน</p>
                                 )}
                             </div>
 

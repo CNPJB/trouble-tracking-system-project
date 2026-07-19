@@ -1,15 +1,19 @@
 // hooks/useEquipmentValidation.js
 import { useState, useEffect } from 'react';
 
+const normalizeEquipmentCode = (value) => value?.toString().trim().toUpperCase();
+
 export const useEquipmentValidation = (
   isEquipmentCategory,
   equipmentCode,
-  roomId,
   equipments
 ) => {
-  const [equipmentValidation, setEquipmentValidation] = useState({ 
-    status: null, 
-    message: '' 
+  const [equipmentValidation, setEquipmentValidation] = useState({
+    status: null,
+    message: '',
+    equipmentId: null,
+    equipmentName: '',
+    roomId: null
   });
   const [debouncedCode, setDebouncedCode] = useState('');
 
@@ -23,45 +27,51 @@ export const useEquipmentValidation = (
 
   // Validate equipment
   useEffect(() => {
-    if (!isEquipmentCategory || !debouncedCode) {
-      setEquipmentValidation({ status: null, message: '' });
-      return;
-    }
-    if (!roomId) {
-      setEquipmentValidation({ 
-        status: 'error', 
-        message: 'กรุณาเลือกห้องก่อนระบุรหัสครุภัณฑ์' 
-      });
-      return;
-    }
-    // Checl if equipment status is not 'active'
-    const equipmentInRoom = equipments.filter(eq => eq.roomId === parseInt(roomId, 10));
-    const inactiveEquipment = equipmentInRoom.find(eq => eq.equipmentCode === debouncedCode && eq.equipmentStatus !== 'active');
-    if (inactiveEquipment) {
-      setEquipmentValidation({ 
-        status: 'error', 
-        message: 'ครุภัณฑ์ไม่พร้อมใช้งาน หรืออยู่ระหว่างซ่อม' 
-      });
+    if (!isEquipmentCategory) {
+      setEquipmentValidation({ status: null, message: '', equipmentId: null, equipmentName: '' });
       return;
     }
 
-    const found = equipments.find(
-      eq => eq.roomId === parseInt(roomId, 10) && 
-            eq.equipmentCode === debouncedCode
+    if (!debouncedCode?.trim()) {
+      setEquipmentValidation({ status: null, message: '', equipmentId: null, equipmentName: '' });
+      return;
+    }
+
+    const normalizedCode = normalizeEquipmentCode(debouncedCode);
+    const matchingEquipment = (equipments || []).find(
+      eq => normalizeEquipmentCode(eq.equipmentCode) === normalizedCode
     );
 
-    if (found) {
-      setEquipmentValidation({ 
-        status: 'success', 
-        message: `พบข้อมูล: ${found.equipmentName}` 
+    if (!matchingEquipment) {
+      setEquipmentValidation({
+        status: 'not_found',
+        message: 'ไม่พบรหัสครุภัณฑ์ในระบบ',
+        equipmentId: null,
+        equipmentName: '',
+        roomId: null
       });
-    } else {
-      setEquipmentValidation({ 
-        status: 'error', 
-        message: 'ไม่พบรหัสครุภัณฑ์นี้ในห้องที่เลือก' 
-      });
+      return;
     }
-  }, [debouncedCode, roomId, equipments, isEquipmentCategory]);
+
+    if (matchingEquipment.equipmentStatus !== 'active') {
+      setEquipmentValidation({
+        status: 'inactive',
+        message: 'ครุภัณฑ์ไม่พร้อมใช้งาน หรืออยู่ระหว่างซ่อม',
+        equipmentId: null,
+        equipmentName: '',
+        roomId: null
+      });
+      return;
+    }
+
+    setEquipmentValidation({
+      status: 'success',
+      message: `พบข้อมูล: ${matchingEquipment.equipmentName}`,
+      equipmentId: matchingEquipment.equipmentId,
+      equipmentName: matchingEquipment.equipmentName,
+      roomId: matchingEquipment.roomId
+    });
+  }, [debouncedCode, equipments, isEquipmentCategory]);
 
   return { equipmentValidation };
 };

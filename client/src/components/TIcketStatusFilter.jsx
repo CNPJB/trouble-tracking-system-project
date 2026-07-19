@@ -1,7 +1,7 @@
 import React from 'react';
 import { useMasterData } from '../hooks/useMasterData.js';
 import { FaFilter } from 'react-icons/fa';
-import '../components/componentStyles/TicketStatusFilter.css';
+import '../components/componentsStyles/TicketStatusFilter.css';
 
 export const TicketStatusFilter = ({ selectedValue, onChange, disabled }) => {
     const { ticketStatuses, isLoading } = useMasterData();
