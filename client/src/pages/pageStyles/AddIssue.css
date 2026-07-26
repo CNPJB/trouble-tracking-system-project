@@ -45,11 +45,6 @@
   color: #444;
 }
 
-/* ใส่สีแดงให้ดอกจัน (*) */
-.form-group label span {
-  color: red;
-}
-
 .form-group textarea {
   resize: vertical;
   /* ให้ปรับขนาดได้เฉพาะแนวตั้ง */
@@ -85,6 +80,10 @@
   background-color: #eee;
   cursor: not-allowed;
   color: #999;
+}
+
+.secondary-label {
+  color: var(--text-color-muted);
 }
 
 .searching-indicator {

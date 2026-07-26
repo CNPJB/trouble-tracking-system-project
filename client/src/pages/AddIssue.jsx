@@ -19,7 +19,7 @@ import { ticketService } from '../services/ticketService.js';
 import './pageStyles/AddIssue.css';
 
 function AddIssue() {
-  
+
   //  Contexts and Hooks for Authentication and Tickets
   const { user } = useAuth();
   const { refetch } = useTickets();
@@ -91,40 +91,40 @@ function AddIssue() {
     equipmentValidation.status === 'success' ? equipmentValidation.equipmentId : null,
     debouncedTitle,
     user?.userId
-  );  
+  );
 
   // Logic Auto-fill สถานที่
   useEffect(() => {
     // ถ้าหมวดหมู่ถูกต้อง หาครุภัณฑ์เจอ
     if (isEquipmentCategory && equipmentValidation.status === 'success' && equipmentValidation.roomId) {
-        const eqRoomId = equipmentValidation.roomId;
-        
-        // ย้อนรอยหาชั้นและสถานที่จาก Master Data
-        const foundRoom = rooms.find(r => r.roomId === eqRoomId);
-        if (foundRoom) {
-            const eqFloorId = foundRoom.floorId;
-            const foundFloor = floors.find(f => f.floorId === eqFloorId);
-            
-            if (foundFloor) {
-                const eqLocationId = foundFloor.locationId;
+      const eqRoomId = equipmentValidation.roomId;
 
-                setFormData(prev => {
-                    // เช็คก่อนว่าเปลี่ยนจริงไหม เพื่อไม่ให้ State อัปเดตรัวๆ รบกวนผู้ใช้
-                    if (prev.locationId === eqLocationId.toString() &&
-                        prev.floorId === eqFloorId.toString() &&
-                        prev.roomId === eqRoomId.toString()) {
-                        return prev;
-                    }
-                    
-                    return {
-                        ...prev,
-                        locationId: eqLocationId.toString(),
-                        floorId: eqFloorId.toString(),
-                        roomId: eqRoomId.toString()
-                    };
-                });
+      // ย้อนรอยหาชั้นและสถานที่จาก Master Data
+      const foundRoom = rooms.find(r => r.roomId === eqRoomId);
+      if (foundRoom) {
+        const eqFloorId = foundRoom.floorId;
+        const foundFloor = floors.find(f => f.floorId === eqFloorId);
+
+        if (foundFloor) {
+          const eqLocationId = foundFloor.locationId;
+
+          setFormData(prev => {
+            // เช็คก่อนว่าเปลี่ยนจริงไหม เพื่อไม่ให้ State อัปเดตรัวๆ รบกวนผู้ใช้
+            if (prev.locationId === eqLocationId.toString() &&
+              prev.floorId === eqFloorId.toString() &&
+              prev.roomId === eqRoomId.toString()) {
+              return prev;
             }
+
+            return {
+              ...prev,
+              locationId: eqLocationId.toString(),
+              floorId: eqFloorId.toString(),
+              roomId: eqRoomId.toString()
+            };
+          });
         }
+      }
     }
   }, [equipmentValidation.status, equipmentValidation.equipmentId, rooms, floors, isEquipmentCategory]);
 
@@ -160,23 +160,35 @@ function AddIssue() {
   /* ============================================
     --- Logic จัดการตัวเลือก (Cascading Dropdown) ---
      ============================================ */
+  const activeCategories = useMemo(() => {
+    return categories.filter(c => c.ticketCtgStatus === 'enable');
+  }, [categories]);
+
+  const activeLocations = useMemo(() => {
+    return locations.filter(l => l.locationStatus === 'active');
+  }, [locations]);
+
   //    1. กรอง "ชั้น" ให้เหลือเฉพาะที่อยู่ใน "สถานที่" ที่เลือก
   const availableFloors = useMemo(() => {
     if (!formData.locationId) return [];
-    return floors.filter(f => f.locationId === parseInt(formData.locationId, 10));
+    return floors.filter(f =>
+      f.locationId === parseInt(formData.locationId, 10) &&
+      f.floorStatus === 'active'
+    );
   }, [floors, formData.locationId]);
 
   //    2. กรอง "ห้อง" ให้สัมพันธ์กับสถานที่และชั้น
   const availableRooms = useMemo(() => {
     if (!formData.locationId) return []; // ถ้ายังไม่เลือกสถานที่ ไม่ต้องโชว์ห้อง
+    const activeRoomsOnly = rooms.filter(r => r.roomStatus === 'active');
 
     if (formData.floorId) {
       // กรณี 2.1: เลือกชั้นแล้ว -> โชว์เฉพาะห้องที่อยู่ในชั้นนั้นเป๊ะๆ
-      return rooms.filter(r => r.floorId === parseInt(formData.floorId, 10));
+      return activeRoomsOnly.filter(r => r.floorId === parseInt(formData.floorId, 10));
     } else {
       // กรณี 2.2: เลือกสถานที่ แต่ข้ามการเลือกชั้น -> ดึงห้อง "ทั้งหมด" ที่อยู่ในสถานที่นั้นมาโชว์
       const validFloorIds = availableFloors.map(f => f.floorId);
-      return rooms.filter(r => validFloorIds.includes(r.floorId));
+      return activeRoomsOnly.filter(r => validFloorIds.includes(r.floorId));
     }
   }, [rooms, availableFloors, formData.locationId, formData.floorId]);
 
@@ -206,12 +218,23 @@ function AddIssue() {
       return;
     }
 
+    if (selectedImages.length === 0) {
+      setError("กรุณาอัปโหลดหรือถ่ายรูปอย่างน้อย 1 รูปก่อนส่งคำร้อง", "warning");
+      return;
+    }
+
     // Open confirmation modal instead of submitting directly
     setConfirmSubmit({ isOpen: true });
   };
 
   // --- Logic to confirm and submit form ---
   const handleConfirmSubmit = async () => {
+    if (selectedImages.length === 0) {
+      setError("กรุณาอัปโหลดหรือถ่ายรูปอย่างน้อย 1 รูปก่อนส่งคำร้อง", "warning");
+      setConfirmSubmit({ isOpen: false });
+      return;
+    }
+
     startLoading();
 
     try {
@@ -244,7 +267,7 @@ function AddIssue() {
 
       if (result.success) {
         clearImages(); // เคลียร์รูปภาพหลังจากส่งสำเร็จ
-        await refetch(); 
+        await refetch();
 
         reset();
         setConfirmSubmit({ isOpen: false });
@@ -338,7 +361,7 @@ function AddIssue() {
               <label>ประเภทปัญหา <span style={{ color: 'red' }}>*</span></label>
               <select name="categoryId" onChange={handleChange} value={formData.categoryId} required>
                 <option value="">เลือกประเภทปัญหา</option>
-                {categories.map(c => <option key={c.ticketCtgId} value={c.ticketCtgId}>{c.ticketCtgName}</option>)}
+                {activeCategories.map(c => <option key={c.ticketCtgId} value={c.ticketCtgId}>{c.ticketCtgName}</option>)}
               </select>
             </div>
             <div className="form-group">
@@ -352,13 +375,13 @@ function AddIssue() {
               <label>สถานที่ <span style={{ color: 'red' }}>*</span></label>
               <select name="locationId" onChange={handleChange} value={formData.locationId} required>
                 <option value="">เลือกสถานที่</option>
-                {locations.map(l => <option key={l.locationId} value={l.locationId}>{l.locationName}</option>)}
+                {activeLocations.map(l => <option key={l.locationId} value={l.locationId}>{l.locationName}</option>)}
               </select>
             </div>
 
             {isEquipmentCategory && (
               <div className="form-group highlight-field">
-                <label>รหัสครุภัณฑ์</label>
+                <label>รหัสครุภัณฑ์ <span className='secondary-label'> (ถ้ามี)</span> </label>
                 <input
                   type="text"
                   list={`equipment-codes-${formData.roomId || 'none'}`}
@@ -421,7 +444,7 @@ function AddIssue() {
             maxImages={3}
           />
 
-          <div className="form-actions" style={{ marginTop: '20px' }}> 
+          <div className="form-actions" style={{ marginTop: '20px' }}>
             <button
               type="button"
               className="btn-reset"

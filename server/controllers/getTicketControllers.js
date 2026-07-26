@@ -21,6 +21,11 @@ export const getAllTickets = async (req, res) => {
             ];
         }
 
+        // กรองเฉพาะตั๋วหลัก (ไม่เอา Sub-Tickets) ในกรณีที่ต้องการแสดงเฉพาะตั๋วหลัก
+        if (req.query.excludeSubTickets === 'true') {
+            whereClause.parentTicketId = null;
+        }
+
         // กรองตามสถานะ (Status)
         if (req.query.status && req.query.status !== 'all') {
             if (req.query.status.includes(',')) {
@@ -50,7 +55,10 @@ export const getAllTickets = async (req, res) => {
                 searchCondition
             ];
         }
-
+        // กรอง adminId (ถ้ามีการส่งมา)
+        if (req.query.adminId) {
+            whereClause.adminId = parseInt(req.query.adminId);
+        }
 
         // กรองตามหมวดหมู่
         if (req.query.categoryId) {

@@ -106,7 +106,9 @@ const DetailTicket = () => {
                                     )}
                                 </div>
                             ) : (
-                                <div className="no-image-detail">ไม่มีรูปภาพประกอบ</div>
+                                <div className="no-image-detail">
+                                    <img src="/default-noimage.jpg" alt="No Image" />
+                                </div>
                             )}
 
                             {/* ---------------- รูปหลังแจ้ง ---------------- */}

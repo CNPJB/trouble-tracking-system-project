@@ -37,7 +37,7 @@
     margin: 0;
 }
 
-.img-card img {
+.img-card, img {
     width: 150px;
     height: 100%;
     border-radius: 10px;

@@ -10,7 +10,7 @@ const ImageUploader = ({
 }) => {
   return (
     <div className="form-group">
-      <label>เพิ่มรูปภาพ (ไม่เกิน {maxImages} รูป) <span style={{ color: 'red' }}>*</span></label>
+      <label>เพิ่มรูปภาพ (อย่างน้อย 1 รูป และไม่เกิน {maxImages} รูป) <span style={{ color: 'red' }}>*</span></label>
       <div className="image-upload-container">
         
         {/* Input ที่ถูกซ่อนไว้ */}

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { FaStar, FaStarHalfAlt, FaRegStar, FaTimes } from 'react-icons/fa';
-import { ConfirmButton } from './ConfirmButton.jsx';
 import './componentsStyles/FeedbackModal.css';
 
 export const FeedbackModal = ({ isOpen, onClose, onSubmit, ticketId, isLoading }) => {
@@ -8,7 +7,6 @@ export const FeedbackModal = ({ isOpen, onClose, onSubmit, ticketId, isLoading }
     const [rating, setRating] = useState(0); // คะแนนจริงที่กดเลือก
     const [hoverRating, setHoverRating] = useState(0); // คะแนนชั่วคราวตอนเอาเมาส์ชี้
     const [comment, setComment] = useState('');
-    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
 
     // รีเซ็ตฟอร์มทุกครั้งที่ Modal ถูกเปิดขึ้นมาใหม่
@@ -18,7 +16,6 @@ export const FeedbackModal = ({ isOpen, onClose, onSubmit, ticketId, isLoading }
             setHoverRating(0);
             setComment('');
             setErrorMsg('');
-            setIsConfirmOpen(false);
         }
     }, [isOpen]);
     
@@ -58,19 +55,19 @@ export const FeedbackModal = ({ isOpen, onClose, onSubmit, ticketId, isLoading }
         onClose();
     };
 
-    const handlePreSubmit = () => {
+    const handlePreSubmit = async () => {
         // Validation อย่างรัดกุมก่อนไปถึง Backend
         if (rating < 0.5) {
             setErrorMsg('กรุณาให้คะแนนอย่างน้อย 0.5 ดาวครับ');
             return;
         }
-        setIsConfirmOpen(true); // เปิด Confirm Modal ซ้อนขึ้นมา
+
+        await handleConfirmSubmit();
     };
 
     const handleConfirmSubmit = async () => {
         // ส่งข้อมูลกลับไปให้หน้า Tracking จัดการ API ต่อ
         await onSubmit(ticketId, { rating, comment });
-        setIsConfirmOpen(false);
     };
 
     // ฟังก์ชันวาดดาว 5 ดวง
@@ -157,17 +154,6 @@ export const FeedbackModal = ({ isOpen, onClose, onSubmit, ticketId, isLoading }
                     </button>
                 </div>
             </div>
-
-            <ConfirmButton
-                isOpen={isConfirmOpen}
-                title="ยืนยันการประเมิน"
-                message="คุณแน่ใจหรือไม่ว่าต้องการส่งผลการประเมินนี้? (เมื่อส่งแล้วจะไม่สามารถแก้ไขได้)"
-                onConfirm={handleConfirmSubmit}
-                onCancel={() => setIsConfirmOpen(false)}
-                confirmText="ส่งประเมิน"
-                cancelText="ยกเลิก"
-                isLoading={isLoading}
-            />
         </div>
     );
 };

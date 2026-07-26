@@ -124,14 +124,21 @@
 .no-image-detail-text,
 .no-image-detail {
     border-radius: 8px;
-    /* ทำมุมให้โค้งมน */
+    height: 260px;
     border: 2px solid #e0e0e0;
-    height: 250px;
     text-align: center;
     color: #888;
     font-size: 14px;
     font-style: italic;
+    align-content: center;
 }
+
+.no-image-detail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 .ticketStatus.pending {
     background-color: var(--status-pending-bg);
     color: #000;

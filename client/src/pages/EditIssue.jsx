@@ -243,26 +243,45 @@ function EditIssue() {
         }
     };
 
+    // Memoized Lists สำหรับ Dropdown Options
+    const activeCategories = useMemo(() => {
+        return categories.filter(c => 
+            c.ticketCtgStatus === 'enable' || c.ticketCtgId === ticket?.ticketCtgId
+        );
+    }, [categories, ticket]);
+
+    const activeLocations = useMemo(() => {
+        return locations.filter(l => 
+            l.locationStatus === 'active' || l.locationId === ticket?.locationId
+        );
+    }, [locations, ticket]);
+
     // กรองตัวเลือกชั้นและห้องให้สัมพันธ์กัน (Cascading Dropdown)
     const availableFloors = useMemo(() => {
         if (!formData.locationId) return [];
-        return floors.filter(f => f.locationId === parseInt(formData.locationId, 10));
+        return floors.filter(f => 
+            f.locationId === parseInt(formData.locationId, 10) && 
+            (f.floorStatus === 'active' || f.floorId === ticket?.floorId)
+        );
     }, [floors, formData.locationId]);
 
     const availableRooms = useMemo(() => {
         if (!formData.locationId) return [];
+        const safeRooms = rooms.filter(r => 
+            r.roomStatus === 'active' || r.roomId === ticket?.roomId
+        );
         if (formData.floorId) {
-            return rooms.filter(r => r.floorId === parseInt(formData.floorId, 10));
+            return safeRooms.filter(r => r.floorId === parseInt(formData.floorId, 10));
         }
         const validFloorIds = availableFloors.map(f => f.floorId);
-        return rooms.filter(r => validFloorIds.includes(r.floorId));
+        return safeRooms.filter(r => validFloorIds.includes(r.floorId));
     }, [rooms, availableFloors, formData.locationId, formData.floorId]);
 
     const availableEquipmentOptions = useMemo(() => {
         if (!isEquipmentCategory) return [];
 
         return (equipments || [])
-            .filter(eq => eq.equipmentStatus === 'active')
+            .filter(eq => eq.equipmentStatus === 'active' || eq.equipmentId === ticket?.equipmentId)
             .sort((a, b) => (a.equipmentCode || '').localeCompare(b.equipmentCode || ''));
     }, [equipments, isEquipmentCategory]);
 
@@ -304,7 +323,7 @@ function EditIssue() {
                             <label>ประเภทปัญหา <span>*</span></label>
                             <select name="categoryId" onChange={handleChange} value={formData.categoryId} required>
                                 <option value="">เลือกประเภทปัญหา</option>
-                                {categories.map(c => <option key={c.ticketCtgId} value={c.ticketCtgId}>{c.ticketCtgName}</option>)}
+                                {activeCategories.map(c => <option key={c.ticketCtgId} value={c.ticketCtgId}>{c.ticketCtgName}</option>)}
                             </select>
                         </div>
                         <div className="form-group">
@@ -318,7 +337,7 @@ function EditIssue() {
                             <label>สถานที่ <span>*</span></label>
                             <select name="locationId" onChange={handleChange} value={formData.locationId} required>
                                 <option value="">เลือกสถานที่</option>
-                                {locations.map(l => <option key={l.locationId} value={l.locationId}>{l.locationName}</option>)}
+                                {activeLocations.map(l => <option key={l.locationId} value={l.locationId}>{l.locationName}</option>)}
                             </select>
                         </div>
                         {isEquipmentCategory && (

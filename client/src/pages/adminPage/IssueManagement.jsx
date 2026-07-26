@@ -10,6 +10,7 @@ import 'swiper/css/pagination';
 import './IssueManagement.css';
 
 // Custom hooks
+import { useAuth } from '../../context/AuthContext.jsx';
 import { useTickets } from '../../hooks/useTickets.js';
 import { useUrgentTickets } from '../../hooks/useUrgentTickets.js';
 
@@ -21,20 +22,36 @@ import { SearchBar } from '../../components/SearchBar.jsx'
 import { TicketCategoryFilter } from '../../components/TicketCategoryFilter.jsx';
 import { TicketLocationFilter } from '../../components/TicketLocationFilter.jsx';
 import { TicketStatusFilter } from '../../components/TIcketStatusFilter.jsx';
+import { ToggleSwitch } from '../../components/componentsAdmin/ToggleSwitch.jsx';
 
 const IssueManagement = () => {
     const navigate = useNavigate();
+    const { user } = useAuth();
     const [selectedStatus, setSelectedStatus] = useState('pending,in_progress');
     const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedLocation, setSelectedLocation] = useState('');
     const [searchKeyword, setSearchKeyword] = useState('');
+    const [isMyTasksOnly, setIsMyTasksOnly] = useState(false);
+
     const { tickets: normalTickets, isLoading, pagination, changePage, updateFilters
-    } = useTickets({ status: selectedStatus, limit: 12 }, 'standard');
+    } = useTickets({
+        status: selectedStatus,
+        limit: 12,
+        excludeSubTickets: true
+    }, 'standard');
+
     const { urgentTickets, isLoadingUrgent } = useUrgentTickets();
 
     const hasActiveFilter = Boolean(
-        searchKeyword || selectedCategory || selectedLocation
+        searchKeyword || selectedCategory || selectedLocation || isMyTasksOnly
     );
+
+    // ฟังก์ชันจัดการเมื่อกดปุ่ม Toggle
+    const handleToggleMyTasks = () => {
+        const newValue = !isMyTasksOnly;
+        setIsMyTasksOnly(newValue);
+        updateFilters({ adminId: newValue ? user?.userId : undefined });
+    };
 
     const handleCardClick = (ticketId) => {
         navigate(`/adminPage/IssueManagement/${ticketId}`);
@@ -120,6 +137,12 @@ const IssueManagement = () => {
                 <TicketStatusFilter
                     selectedValue={selectedStatus}
                     onChange={handleStatusFilter}
+                />
+                <ToggleSwitch
+                    id="my-tasks-toggle"
+                    label="งานของฉัน"
+                    checked={isMyTasksOnly}
+                    onChange={handleToggleMyTasks}
                 />
             </div>
 

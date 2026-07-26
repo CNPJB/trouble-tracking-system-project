@@ -26,6 +26,7 @@ img {
     object-position: center;
     width: 150px;
     height: 160px;
+    border-radius: 10px;
 }
 
 .ticketStatus {
@@ -213,7 +214,9 @@ img {
 
 
 @media (max-width: 1536px) {
-    .container-pending-card {}
+    .container-pending-card {
+        min-height: 290px;
+    }
 
     .header-card {
         height: 200px;
@@ -225,6 +228,7 @@ img {
         flex-direction: column;
         gap: 2px;
         align-content: flex-end;
+        max-width: fit-content;
     }
 
     .title-card h3 {
@@ -240,7 +244,7 @@ img {
 
     .floor-room {
         color: var(--text-color-muted);
-        margin-top: auto;
+        padding-top: 10px;
         gap: 30px;
     }
 
@@ -251,5 +255,10 @@ img {
     .floor-room,
     .description {
         font-size: var(--text-size-base);
+    }
+
+    .location-text {
+        max-width: fit-content;
+        -webkit-line-clamp: 2;
     }
 }
