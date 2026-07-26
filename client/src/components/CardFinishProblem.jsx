@@ -5,8 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { StarRating } from './StarRating';
 import { formatDate, formatDateTime } from '../utils/formatDate';
 
-import { formatDate } from '../utils/formatDate';
-
 export const CardFinishProblem = ({ data }) => {
   const navigate = useNavigate();
   const handleClick = () => {
@@ -19,12 +17,12 @@ export const CardFinishProblem = ({ data }) => {
         {data.images && data.images.length > 0 ? (
           <img src={data.images[0].imageUrl} alt="" />
         ) : (
-          <div className="no-image">ไม่มีรูปภาพประกอบ</div>
+          <div className="no-image-finish">ไม่มีรูปภาพประกอบ</div>
         )}
       </div>
         <div className="main-info-card" key={data.id}>
           <div className="info-card">
-            <h1 style={{ fontSize: '25px',margin: 0 }}>{data.title}</h1>
+            <h1>{data.title}</h1>
             <p>โดย : {data.admin?.fullName || 'ไม่ระบุ'}</p>
             <p>เสร็จสิ้น : {formatDateTime(data.timestampFinished) || '-'}</p>
 

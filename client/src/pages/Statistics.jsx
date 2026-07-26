@@ -166,7 +166,7 @@ const Statistics = () => {
                                 </div>
                             } />
                             
-                            <Route path="/statistics/top-locations" element={<div className='statistic-location'>แสดงข้อมูลสถานที่รับแจ้งมากสุด</div>} />
+                            {/* <Route path="/statistics/top-locations" element={<div className='statistic-location'>แสดงข้อมูลสถานที่รับแจ้งมากสุด</div>} /> */}
                             <Route path="top-upvoted" element={(
                                 <div className="statistic-type-of-problem">
                                     <h2>ปัญหาที่ได้รับ Upvote มากที่สุด</h2>
@@ -186,8 +186,8 @@ const Statistics = () => {
                                                     <h4>{ticket.title}</h4>
                                                     <p>{ticket.location}</p>
                                                 </div>
-                                                <div className="stat-card-percentage">
-                                                    <p>จำนวน Upvote: {ticket.upvoteCount}</p>
+                                                <div className="stat-card-upvote">
+                                                    <p>vote: {ticket.upvoteCount}</p>
                                                 </div>
                                             </div>
                                         );

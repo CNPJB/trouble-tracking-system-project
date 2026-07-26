@@ -37,7 +37,7 @@ const DetailTicket = () => {
                     <div className="detail-ticket"   >
                         <div className="header-ticket">
                             <div className="type-status-ticket">
-                                <span className="ticket-type">{ticket.category.ticketCtgName}</span>
+                                {/* <p className="ticket-type">{ticket.category.ticketCtgName}</p> */}
                                 <span className={`ticketStatus ${ticket.ticketStatus}`}>{statusLabels[ticket.ticketStatus]}</span>
                             </div>
                             <div className="header-ticket-title">
@@ -80,6 +80,7 @@ const DetailTicket = () => {
                                     {beforeImages.length > 0 ? (
                                         <>
                                             <div className="img-group">
+                                                <label className='label-img'>รูปก่อนแจ้ง</label>
                                                 {beforeImages.slice(0, 1).map((img, index) => (
                                                     <img
                                                         key={index}
@@ -96,17 +97,17 @@ const DetailTicket = () => {
                                                 <p
                                                     className="see-more-text"
                                                     onClick={() => setShowMoreBeforeImages(true)}
-                                                    style={{ cursor: 'pointer', color: '#007bff', fontSize: '14px', marginTop: '8px', fontWeight: 'bold' }}
+
                                                 >
                                                 </p>
                                             )}
                                         </>
                                     ) : (
-                                        <p className="no-image-text">ไม่มีรูปประกอบ</p>
+                                        <p className="no-image-detail-text">ไม่มีรูปประกอบ</p>
                                     )}
                                 </div>
                             ) : (
-                                <div className="no-image">ไม่มีรูปภาพประกอบ</div>
+                                <div className="no-image-detail">ไม่มีรูปภาพประกอบ</div>
                             )}
 
                             {/* ---------------- รูปหลังแจ้ง ---------------- */}
@@ -114,6 +115,7 @@ const DetailTicket = () => {
                                 {afterImages.length > 0 ? (
                                     <>
                                         <div className="img-group">
+                                            <label className='label-img'>รูปหลังแก้ไข</label>
                                             {afterImages.slice(0, 1).map((img, index) => (
                                                 <img
                                                     key={index}
@@ -130,12 +132,12 @@ const DetailTicket = () => {
                                             <p
                                                 className="see-more-text"
                                                 onClick={() => setShowMoreAfterImages(true)}
-                                                style={{ cursor: 'pointer', color: '#007bff', fontSize: '14px', marginTop: '8px', fontWeight: 'bold' }}
+                                
                                             ></p>
                                         )}
                                     </>
                                 ) : (
-                                    <p className="no-image">รอแอดมินอัปโหลดหลักฐาน</p>
+                                    <p className="no-image-detail">รอแอดมินอัปโหลดหลักฐาน</p>
                                 )}
                             </div>
 

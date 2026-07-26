@@ -11,7 +11,12 @@ export const AuthProvider = ({ children }) => {
 
     const checkLoginStatus = async () => {
         try {
-            const response = await axios.get('/api/auth/checkme');
+            const response = await axios.get('/api/auth/checkme', {
+                headers: {
+                    'ngrok-skip-browser-warning': 'true' 
+                },
+                withCredentials: true 
+            });
             setUser(response.data.user);
         } catch (error) {
             setUser(null);

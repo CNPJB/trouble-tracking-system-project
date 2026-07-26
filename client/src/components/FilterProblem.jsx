@@ -9,6 +9,7 @@ export const FilterProblem = ({ summary, currentFilter, onFilterChange }) => {
         { id: 'pending', label: 'รอรับเรื่อง' },
         { id: 'in_progress', label: 'กำลังดำเนินการ' },
         { id: 'resolved', label: 'เสร็จสิ้น' },
+        { id: 'rejected', label: 'ไม่สามารถแก้ไขได้' },
 
     ];
 

@@ -42,3 +42,10 @@
     border-right: 4px solid var(--tbs-green);
     background-color: rgba(55, 167, 11, 0.1);
 }
+
+@media(max-width: 430px){
+    .statistics-sidebar{
+        display: none;
+    }
+    
+}

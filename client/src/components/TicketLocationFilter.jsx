@@ -1,7 +1,7 @@
 import React from 'react';
 import { useMasterData } from '../hooks/useMasterData.js';
 import { FaFilter } from 'react-icons/fa';
-import '../components/componentStyles/TicketLocationFilter.css';
+import '../components/componentsStyles/TicketLocationFilter.css';
 
 export const TicketLocationFilter = ({ selectedValue, onChange, disabled }) => {
     const { locations, isLoading } = useMasterData();

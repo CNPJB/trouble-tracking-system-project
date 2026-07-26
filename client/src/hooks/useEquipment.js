@@ -6,20 +6,21 @@ export const useEquipment = () => {
     const [equipment, setEquipment] = useState([]);
     const [filterCategory, setFilterCategory] = useState("");
     const [filterLocation, setFilterLocation] = useState("");
-
+    const [searchQuery, setSearchQuery] = useState("");
     const fetchEquipment = useCallback(async () => {
         try {
-            const response = await axios.get('/api/manage/getEquipmentByadmin', {
+            const response = await axios.get('/api/manage/getEquipment', {
                 params: {
                     categoryId: filterCategory || undefined,
-                    LocationId: filterLocation || undefined
+                    locationId: filterLocation || undefined,
+                    search: searchQuery || undefined
                 }
             });
             setEquipment(response.data);
         } catch (error) {
             console.error('Error fetching tickets:', error);
         }
-    }, [filterCategory,filterLocation]);
+    }, [filterCategory,filterLocation, searchQuery]);
 
     const addEquipment = useCallback(async (newEquipment) => {
         try {
@@ -55,6 +56,7 @@ export const useEquipment = () => {
         equipment, 
         filterLocation, setFilterLocation,
         filterCategory, setFilterCategory, 
+        searchQuery, setSearchQuery,
         refetch: fetchEquipment, updateEquipment, deleteEquipment, addEquipment
     };
 };

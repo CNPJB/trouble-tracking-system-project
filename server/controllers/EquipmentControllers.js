@@ -34,38 +34,64 @@ export const addEquipment = async (req, res) => {
 
 export const getEquipment = async (req, res) => {
     try {
-        // console.log("ข้อมูลที่ส่งมาจากหน้าเว็บ (Query):", req.query);
-        const { categoryId, LocationId } = req.query;
+        const { categoryId, locationId, search } = req.query; 
+        
+        // ใช้กล่อง AND เป็นตัวรวมเงื่อนไขทั้งหมด เพื่อไม่ให้เงื่อนไข OR ตีกัน
+        const whereConditions = []; 
+
+        if (categoryId) {
+            whereConditions.push({ equipmentCtgId: Number(categoryId) });
+        }
+
+        if (locationId) {
+            whereConditions.push({
+                OR: [
+                    { locationId: Number(locationId) }, 
+                    { room: { floor: { locationId: Number(locationId) } } } 
+                ]
+            });
+        }
+
+        if (search) {
+            whereConditions.push({
+                OR: [
+                    { equipmentCode: { contains: search, mode: 'insensitive' } },
+                    { equipmentName: { contains: search, mode: 'insensitive' } }
+                ]
+            });
+        }
+
+        const whereClause = whereConditions.length > 0 ? { AND: whereConditions } : {};
 
         const equipments = await prisma.equipment.findMany({
-
-            where: {
-                equipmentCtgId: categoryId ? Number(categoryId) : undefined,
-                room: LocationId ? {
-                    floor: {
-                        locationId: Number(LocationId)
-                    }
-                } : undefined,
+            where: whereClause, // <--- เอาเงื่อนไขที่ประกอบเสร็จแล้วมาใส่ตรงนี้
+            select: {
+                equipmentId: true,
+                equipmentCode: true,
+                equipmentName: true,
+                equipmentStatus: true,
+                roomId: true,
+                floorId: true,
+                locationId: true,
+                category: { select: { equipmentCtgName: true } },
+                location: { select: { locationName: true } },
+                floor: { select: { floorLevel: true } },
+                room: { 
+                    select: { 
+                        roomName: true,
+                        floor: { select: { floorLevel: true, location: { select: { locationName: true } } } }
+                    } 
+                },
             },
+            // แถมให้ครับเฮีย: เรียงลำดับจากล่าสุดไปเก่าสุด
+            orderBy: { equipmentId: 'desc' } 
+        });
 
-            include: {
-                category: true,
-                room: {
-                    include: {
-                        floor: {
-                            include: {
-                                location: true
-                            }
-                        }
-                    }
-                }
-            }
-        })
         res.status(200).json(equipments);
 
     } catch (error) {
         console.error('Error fetching equipment:', error);
-        res.status(500).json({ error: 'Failed to fetch equipment  ' });
+        res.status(500).json({ error: 'Failed to fetch equipment' });
     }
 }
 
@@ -254,7 +280,17 @@ export const updateEquipment = async (req, res) => {
             },
             data: {
                 equipmentStatus: equipmentStatus, // อัปเดตสถานะ
-                roomId: roomId ? Number(roomId) : undefined
+                location: locationId !== undefined
+                    ? (locationId ? { connect: { locationId: Number(locationId) } } : { disconnect: true })
+                    : undefined,
+
+                floor: floorId !== undefined
+                    ? (floorId ? { connect: { floorId: Number(floorId) } } : { disconnect: true })
+                    : undefined,
+
+                room: roomId !== undefined
+                    ? (roomId ? { connect: { roomId: Number(roomId) } } : { disconnect: true })
+                    : undefined
             }
         });
 
@@ -264,6 +300,52 @@ export const updateEquipment = async (req, res) => {
             data: updatedEquipment
         });
     } catch (error) {
+        console.error('Error updating equipment:', error);
+        res.status(500).json({ error: 'Failed to update equipment' });
+    }
+}
+
+export const updateMultipleEquipments = async (req, res) => {
+    try {
+        const MultipleEquipments = req.body;
+        if (!MultipleEquipments || MultipleEquipments.length == 0) {
+            return res.status(400).json({ error: 'ไม่พบ ID ของครุภัณฑ์ที่ต้องการแก้ไข' });
+        }
+
+        const updateMultipleEquipments = MultipleEquipments.map((item) => {
+            return prisma.equipment.update({
+                where: {
+                    equipmentId: Number(item.equipmentId)
+                },
+                data: {
+                    equipmentStatus: item.equipmentStatus !== undefined ? item.equipmentStatus : undefined,
+
+                    // ตึก: อัปเดตตามที่ส่งมา
+                    location: item.locationId !== undefined
+                        ? (item.locationId ? { connect: { locationId: Number(item.locationId) } } : { disconnect: true })
+                        : undefined,
+
+                    // ชั้น: ถ้าส่งมาก็อัปเดต -> แต่ถ้าไม่ส่งมา ให้เช็คว่ามีการเปลี่ยนตึกไหม? ถ้ามีการเปลี่ยนตึกให้ลบชั้นทิ้ง (disconnect)
+                    floor: item.floorId !== undefined
+                        ? (item.floorId ? { connect: { floorId: Number(item.floorId) } } : { disconnect: true })
+                        : (item.locationId !== undefined ? { disconnect: true } : undefined),
+
+                    // ห้อง: ถ้าส่งมาก็อัปเดต -> แต่ถ้าไม่ส่งมา ให้เช็คว่ามีการเปลี่ยนตึกไหม? ถ้ามีการเปลี่ยนตึกให้ลบห้องทิ้ง (disconnect)
+                    room: item.roomId !== undefined
+                        ? (item.roomId ? { connect: { roomId: Number(item.roomId) } } : { disconnect: true })
+                        : (item.locationId !== undefined ? { disconnect: true } : undefined)
+                }
+            });
+        })
+
+        const results = await prisma.$transaction(updateMultipleEquipments)
+
+        res.status(200).json({
+            success: true,
+            message: 'อัปเดตข้อมูลครุภัณฑ์เรียบร้อยแล้ว',
+        });
+    }
+    catch (error) {
         console.error('Error updating equipment:', error);
         res.status(500).json({ error: 'Failed to update equipment' });
     }

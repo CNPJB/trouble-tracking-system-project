@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { FaFilter } from 'react-icons/fa';
 import './AssetManagement.css'
 // component
 import { SearchBar } from '../../components/SearchBar';
@@ -24,7 +25,7 @@ const AssetManagement = () => {
   const [isUpdateConfirmOpen, setIsUpdateConfirmOpen] = useState({ isOpen: false });
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState({ isOpen: false });
   const { loading, startLoading, setError, setSuccess, reset, clearError } = useLoadingState();
-  const { equipment, filterCategory, setFilterCategory, filterLocation, setFilterLocation, deleteEquipment, refetch, } = useEquipment();
+  const { equipment, filterCategory, setFilterCategory, filterLocation, setFilterLocation,searchQuery, setSearchQuery, deleteEquipment, refetch, } = useEquipment();
   const { EquipmentCtgs } = useEquiptmentCtg();
   const [selectedDetails, setSelectedDetails] = useState([]);
   const formatStatus = {
@@ -33,7 +34,7 @@ const AssetManagement = () => {
     'sent_for_repair': 'รอส่งซ่อม',
     'broken': 'ชำรุด'
   };
-  console.log('ssss',EquipmentCtgs)
+  // console.log('ssss', EquipmentCtgs)
   // console.log(equipment)
   const [formData, setFormData] = useState({
     equipmentName: '',
@@ -138,7 +139,7 @@ const AssetManagement = () => {
       equipmentName: selectedItem.equipmentName,
       equipmentCode: selectedItem.equipmentCode,
       equipmentStatus: selectedItem.equipmentStatus,
-      roomId: selectedItem.room.roomId,
+      roomId: selectedItem.room?.roomId || '',
       floorId: selectedItem.room?.floor?.floorId || '',
       locationId: selectedItem.room?.floor?.location?.locationId || ''
     })
@@ -188,13 +189,17 @@ const AssetManagement = () => {
         }
         const payload = selectedEquipments.map(id => {
 
+          // if (selectedEquipments.roomId === "") {
+          //   setError("กรุณาเลือกห้อง", "warning");
+          //   setIsUpdateConfirmOpen({ isOpen: false }); // ปิดป๊อปอัพ
+          //   return;
+          // }
           const updateData = { equipmentId: Number(id) };
 
           if (formData.equipmentStatus !== "") updateData.equipmentStatus = String(formData.equipmentStatus);
           if (formData.locationId !== "") updateData.locationId = Number(formData.locationId);
           if (formData.floorId !== "") updateData.floorId = Number(formData.floorId);
           if (formData.roomId !== "") updateData.roomId = Number(formData.roomId);
-
           return updateData;
         });
 
@@ -257,11 +262,12 @@ const AssetManagement = () => {
       setIsSubmitting(false);
     }
   }
+
   return (
     <div className="assetManagement-container">
       <div className="filter-assetManagement-container">
         <div className="audit-issues-searchbar">
-          <SearchBar />
+          <SearchBar onSearch={(text) => setSearchQuery(text)} />
         </div>
         <div className="filter-category-group">
           {/* ตัวกรอง: ประเภท */}
@@ -303,7 +309,7 @@ const AssetManagement = () => {
           <table className="layout-table">
             <thead>
               <tr>
-                <th style={{ width: '100px', textAlign: 'center' }}>
+                <th style={{ width: '50px', textAlign: 'center' }}>
                   <button
                     type="button"
                     className="btn-toggle-all" // เพิ่มคลาสเผื่อแต่ง CSS ให้สวยๆ
@@ -319,6 +325,8 @@ const AssetManagement = () => {
                 <th>รหัสครุภัณฑ์</th>
                 <th>ประเภท</th>
                 <th>สถานะ</th>
+                {/* <th>สถานที่</th> */}
+                <th>ชั้น</th>
                 <th>ห้อง</th>
               </tr>
             </thead>
@@ -332,6 +340,10 @@ const AssetManagement = () => {
                     onClick={() => {
                       setSelectedId(item.equipmentId);
                       handleEditClick(item);
+                      const isCurrentlyChecked = selectedEquipments.includes(String(item.equipmentId));
+                      const mockEvent = { target: { checked: !isCurrentlyChecked } };
+
+                      handleSelectOne(mockEvent, String(item.equipmentId));
                     }}
                   >
                     {/* 🌟 1. เพิ่มคอลัมน์ Checkbox ไว้ซ้ายสุด */}
@@ -348,6 +360,8 @@ const AssetManagement = () => {
                     <td>{item.equipmentCode}</td>
                     <td>{item.category?.equipmentCtgName}</td>
                     <td>{formatStatus[item.equipmentStatus]}</td>
+                    {/* <td>{item.location?.locationName || 'ไม่ระบุ'}</td> */}
+                    <td>{item.floor?.floorLevel || 'ไม่ระบุ'}</td>
                     <td>{item.room?.roomName || 'ไม่ระบุ'}</td>
                   </tr>
                 ))

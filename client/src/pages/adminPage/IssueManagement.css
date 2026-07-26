@@ -45,6 +45,7 @@
 
 .urgent-swiper {
     padding-top: 1rem;
+    padding-left: 5px;
     padding-bottom: 40px !important;
     /* เว้นที่ให้จุด Pagination ด้านล่าง */
 }
@@ -119,7 +120,7 @@
 
 .issue-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
     gap: 20px;
 }
 

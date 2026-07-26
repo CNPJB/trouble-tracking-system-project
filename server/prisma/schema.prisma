@@ -29,6 +29,7 @@ model Location {
   locationStatus LocationStatus @default(active) @map("location_status")
   createdAt      DateTime       @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt      DateTime       @updatedAt @map("updated_at") @db.Timestamp(6)
+  equipments Equipment[]
   floors         Floor[]
   tickets        Ticket[]
 
@@ -43,6 +44,7 @@ model Floor {
   createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt   DateTime       @updatedAt @map("updated_at") @db.Timestamp(6)
   location    Location       @relation(fields: [locationId], references: [locationId],onDelete: Cascade)
+  equipments Equipment[]
   rooms       Room[]
   tickets     Ticket[]
 
@@ -81,11 +83,15 @@ model Equipment {
   equipmentImageUrl String?           @map("equipment_image_url")
   equipmentStatus   EquipmentStatus   @default(active) @map("equipment_status")
   equipmentCtgId    Int               @map("equipment_ctg_id")
-  roomId            Int               @map("room_id")
+  roomId            Int?              @map("room_id")
+  floorId           Int?              @map("floor_id")
+  locationId        Int?              @map("location_id")
   createdAt         DateTime          @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt         DateTime          @updatedAt @map("updated_at") @db.Timestamp(6)
   category          EquipmentCategory @relation(fields: [equipmentCtgId], references: [equipmentCtgId])
-  room              Room              @relation(fields: [roomId], references: [roomId], onDelete: Cascade)
+  room              Room?             @relation(fields: [roomId], references: [roomId], onDelete: Cascade)
+  floor             Floor?            @relation(fields: [floorId], references: [floorId])
+  location          Location?         @relation(fields: [locationId], references: [locationId])
   tickets           Ticket[]
 
   @@map("equipments")

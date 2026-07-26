@@ -26,30 +26,36 @@
 }
 
 .filter-btn[data-status="all"] { 
-    background-color: var(--status-all-bg); 
-    color: var(--status-all-text); 
-    border: none;
+    background-color: #e1dff9; 
+    color: #000000; 
+    border-color: #5a4adf;
 }
 
 /* รอรับเรื่อง */
 .filter-btn[data-status="pending"] { 
-    background-color: var( --status-pending-bg); /* เหลืองอ่อนมากๆ */
-    color: var(--status-pending-text); /* สีตัวอักษรเป็นส้มอมน้ำตาลเพื่อให้ตัดกับสีเหลือง */
-    border: none;
+    background-color: #fde474; /* เหลืองอ่อนมากๆ */
+    color: #000000; /* สีตัวอักษรเป็นส้มอมน้ำตาลเพื่อให้ตัดกับสีเหลือง */
+    border-color: #ff9800;
 }
 
 /* กำลังดำเนินการ */
 .filter-btn[data-status="in_progress"] { 
-    background-color: var(--status-in-progress-bg); /* ฟ้าอ่อนมากๆ */
-    color: var(--status-in-progress-text); /* สีตัวอักษรฟ้าเข้ม */
-    border: none;
+    background-color: #e3f2fd; /* ฟ้าอ่อนมากๆ */
+    color: #000000; /* สีตัวอักษรฟ้าเข้ม */
+    border-color: #1976d2;
 }
 
 /* เสร็จสิ้น */
 .filter-btn[data-status="resolved"] { 
-    background-color: var(--status-resolved-bg); /* เขียวอ่อนมากๆ */
-    color: var(--status-resolved-text); /* สีตัวอักษรเขียวเข้ม */
-    border: none;
+    background-color: #e8f5e9; /* เขียวอ่อนมากๆ */
+    color: #000000; /* สีตัวอักษรเขียวเข้ม */
+    border-color: #2e7d32;
+}
+
+.filter-btn[data-status="rejected"] { 
+    background-color: #ffebee; /* แดงอ่อนมากๆ */
+    color: #000000; /* สีตัวอักษรแดงเข้ม */
+    border-color: #c62828;
 }
 
 /* --- เมื่อกดเลือก (Active) ให้ดึงสีหลักจาก Root มาใช้แบบเข้มๆ --- */
@@ -89,5 +95,12 @@
 @media (max-width: 1536px) {
     .filter-btn {
         padding: 15px 20px;
+    }
+}
+
+@media (max-width: 430px) {
+    .filter-btn {
+        padding: 10px 10px;
+        font-size: 12px;
     }
 }
