@@ -3,7 +3,7 @@ import axios from 'axios';
 
 export const useTicketSummary = () => {
     const [summary, setSummary] = useState({ 
-        all: 0, pending: 0, in_progress: 0, resolved: 0 
+        all: 0, pending: 0, in_progress: 0, resolved: 0, rejected: 0,
     });
 
     const fetchSummary = useCallback(async () => {

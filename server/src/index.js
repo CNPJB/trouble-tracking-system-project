@@ -9,10 +9,18 @@ import authRoutes from '../routes/authRoutes.js';
 const app = express();
 const port = process.env.PORT || 3000;
 
+// app.set('trust proxy', 1);
 // Middleware
 app.use(cors({
-  origin: process.env.CLIENT_URL, // Allow requests from this origin
-  credentials: true // Allow cookies to be sent with requests
+  // origin: process.env.CLIENT_URL, // Allow requests from this origin
+  // credentials: true // Allow cookies to be sent with requests
+  // ไว้เทสติงบังคับใช้กับ https (ngrok) และอนุญาตให้ข้ามโดเมนได้
+  origin: [
+    'http://localhost:5173', // ลิงก์หน้าบ้านบนคอม
+    'http://192.168.1.53.nip.io:5173',
+    'http://shawl-vertical-depravity.ngrok-free.dev' // ลิงก์หน้าบ้าน ngrok
+  ], 
+  credentials: true
 }));
 app.use(express.json());
 app.use(cookiesParser()); // Parse cookies

@@ -10,9 +10,18 @@ export default defineConfig({
     watch: {
       usePolling: true,
     },
+    allowedHosts: [
+      'shawl-vertical-depravity.ngrok-free.dev',
+      '192.168.1.53.nip.io'
+    ],
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      }
+    }
     // hmr: {
     //   clientPort: 5173, // บังคับให้วิ่งกลับมาสั่ง Refresh ที่พอร์ต 5173 ของเครื่องเรา
     // }
-    
   }
 })

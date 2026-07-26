@@ -81,7 +81,7 @@ export const CardPendingProblem = ({
                 </div>
                 <div className="title-card" key={data.id}>
                     <p style={{ color: 'gray' }}>{data.ticketId}</p>
-                    <h3>{data.title}</h3>
+                    <h3 className='title-problem'>{data.title}</h3>
                     <p><b>แจ้ง:</b> {formatDateTime(data.createdAt)}</p>
                     <div className={`ticketStatus ${data.ticketStatus}`}>
                         {statusLabels[data.ticketStatus] || data.ticketStatus}
@@ -93,9 +93,9 @@ export const CardPendingProblem = ({
                     </div>
                 </div>
             </div>
-            <div className="description">
-                <p>{data.description}</p>
-                <p><b>ผู้ดำเนินการ:</b> {data.admin?.fullName || '-'}</p>
+            <div className="description-container">
+                <p className='des'><b>รายละเอียด : </b>{data.description}</p>
+                <p className='oparetor'><b>ผู้ดำเนินการ : </b>{data.admin?.fullName || '-'}</p>
             </div>
         </div>
     )

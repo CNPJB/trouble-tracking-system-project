@@ -64,3 +64,9 @@
     font-size: 14px;
   }
 }
+
+@media (max-width: 430px) {
+    .searchbar input{
+      width: 250px;
+    }
+}
