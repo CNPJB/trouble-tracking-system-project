@@ -17,7 +17,9 @@ export const CardFinishProblem = ({ data }) => {
         {data.images && data.images.length > 0 ? (
           <img src={data.images[0].imageUrl} alt="" />
         ) : (
-          <div className="no-image-finish">ไม่มีรูปภาพประกอบ</div>
+          <div className="no-image">
+            <img src="/default-noimage.jpg" alt="No Image" />
+          </div>
         )}
       </div>
         <div className="main-info-card" key={data.id}>

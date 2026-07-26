@@ -48,8 +48,6 @@ router.post('/uploadEquipments', verifyToken, requireAdmin, upload.single('file'
 router.put('/updateEquipment', verifyToken, requireAdmin,updateEquipment)
 router.put('/updateMultipleEquipments', verifyToken, requireAdmin,updateMultipleEquipments)
 
-// router.patch('/mergeTickets', verifyToken, requireAdmin, mergeTickets);
-
 router.get('/getMostCategoriesOfProblems', verifyToken, getMostCategoriesOfProblems);
 router.get('/getMostUpvotedTickets', verifyToken, MostUpvotedTickets);
 router.get('/getTicket-stats', verifyToken, getTicketStats);

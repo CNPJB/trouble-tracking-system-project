@@ -19,7 +19,7 @@ import { ticketService } from '../services/ticketService.js';
 import './pageStyles/AddIssue.css';
 
 function AddIssue() {
-  
+
   //  Contexts and Hooks for Authentication and Tickets
   const { user } = useAuth();
   const { refetch } = useTickets();
@@ -74,11 +74,12 @@ function AddIssue() {
     };
   }, [formData.title]);
 
+  const normalizeEquipmentCode = (value) => value?.toString().trim().toUpperCase();
+
   // --- State for validating equipment code ---
   const { equipmentValidation } = useEquipmentValidation(
     isEquipmentCategory,
     formData.equipmentCode,
-    formData.roomId,
     equipments
   );
 
@@ -90,7 +91,43 @@ function AddIssue() {
     equipmentValidation.status === 'success' ? equipmentValidation.equipmentId : null,
     debouncedTitle,
     user?.userId
-  );  
+  );
+
+  // Logic Auto-fill สถานที่
+  useEffect(() => {
+    // ถ้าหมวดหมู่ถูกต้อง หาครุภัณฑ์เจอ
+    if (isEquipmentCategory && equipmentValidation.status === 'success' && equipmentValidation.roomId) {
+      const eqRoomId = equipmentValidation.roomId;
+
+      // ย้อนรอยหาชั้นและสถานที่จาก Master Data
+      const foundRoom = rooms.find(r => r.roomId === eqRoomId);
+      if (foundRoom) {
+        const eqFloorId = foundRoom.floorId;
+        const foundFloor = floors.find(f => f.floorId === eqFloorId);
+
+        if (foundFloor) {
+          const eqLocationId = foundFloor.locationId;
+
+          setFormData(prev => {
+            // เช็คก่อนว่าเปลี่ยนจริงไหม เพื่อไม่ให้ State อัปเดตรัวๆ รบกวนผู้ใช้
+            if (prev.locationId === eqLocationId.toString() &&
+              prev.floorId === eqFloorId.toString() &&
+              prev.roomId === eqRoomId.toString()) {
+              return prev;
+            }
+
+            return {
+              ...prev,
+              locationId: eqLocationId.toString(),
+              floorId: eqFloorId.toString(),
+              roomId: eqRoomId.toString()
+            };
+          });
+        }
+      }
+    }
+  }, [equipmentValidation.status, equipmentValidation.equipmentId, rooms, floors, isEquipmentCategory]);
+
   // --- Logic to handle form input changes ---
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -110,12 +147,10 @@ function AddIssue() {
       if (name === 'locationId') {
         newData.floorId = '';
         newData.roomId = '';
-        newData.equipmentCode = '';
       }
 
       if (name === 'floorId') {
         newData.roomId = '';
-        newData.equipmentCode = '';
       }
 
       return newData;
@@ -125,39 +160,66 @@ function AddIssue() {
   /* ============================================
     --- Logic จัดการตัวเลือก (Cascading Dropdown) ---
      ============================================ */
+  const activeCategories = useMemo(() => {
+    return categories.filter(c => c.ticketCtgStatus === 'enable');
+  }, [categories]);
+
+  const activeLocations = useMemo(() => {
+    return locations.filter(l => l.locationStatus === 'active');
+  }, [locations]);
+
   //    1. กรอง "ชั้น" ให้เหลือเฉพาะที่อยู่ใน "สถานที่" ที่เลือก
   const availableFloors = useMemo(() => {
     if (!formData.locationId) return [];
-    return floors.filter(f => f.locationId === parseInt(formData.locationId, 10));
+    return floors.filter(f =>
+      f.locationId === parseInt(formData.locationId, 10) &&
+      f.floorStatus === 'active'
+    );
   }, [floors, formData.locationId]);
 
   //    2. กรอง "ห้อง" ให้สัมพันธ์กับสถานที่และชั้น
   const availableRooms = useMemo(() => {
     if (!formData.locationId) return []; // ถ้ายังไม่เลือกสถานที่ ไม่ต้องโชว์ห้อง
+    const activeRoomsOnly = rooms.filter(r => r.roomStatus === 'active');
 
     if (formData.floorId) {
       // กรณี 2.1: เลือกชั้นแล้ว -> โชว์เฉพาะห้องที่อยู่ในชั้นนั้นเป๊ะๆ
-      return rooms.filter(r => r.floorId === parseInt(formData.floorId, 10));
+      return activeRoomsOnly.filter(r => r.floorId === parseInt(formData.floorId, 10));
     } else {
       // กรณี 2.2: เลือกสถานที่ แต่ข้ามการเลือกชั้น -> ดึงห้อง "ทั้งหมด" ที่อยู่ในสถานที่นั้นมาโชว์
       const validFloorIds = availableFloors.map(f => f.floorId);
-      return rooms.filter(r => validFloorIds.includes(r.floorId));
+      return activeRoomsOnly.filter(r => validFloorIds.includes(r.floorId));
     }
   }, [rooms, availableFloors, formData.locationId, formData.floorId]);
+
+  const availableEquipmentOptions = useMemo(() => {
+    if (!isEquipmentCategory) return [];
+
+    return (equipments || [])
+      .filter(eq => eq.equipmentStatus === 'active')
+      .sort((a, b) => (a.equipmentCode || '').localeCompare(b.equipmentCode || ''));
+  }, [equipments, isEquipmentCategory]);
 
   // --- Logic to handle submission trigger ---
   const handleSubmit = (e) => {
     e.preventDefault();
 
     reset();
+    const hasEquipmentSelection = Boolean(formData.equipmentCode && formData.equipmentCode.trim());
+
     // Equipment code validation before submission
-    if (isEquipmentCategory && equipmentValidation.status !== 'success') {
-      setError("กรุณาระบุรหัสครุภัณฑ์ให้ถูกต้องตามที่มีในระบบ", "warning");
+    if (isEquipmentCategory && hasEquipmentSelection && equipmentValidation.status !== 'success') {
+      setError(equipmentValidation.message || "กรุณาเลือกรหัสครุภัณฑ์ที่มีในระบบหรือเลือก 'ไม่ระบุ'", "warning");
       return;
     }
 
     if (!formData.title.trim()) {
       setError("กรุณากรอกหัวข้อปัญหาให้ครบถ้วนและไม่เป็นช่องว่าง", "warning");
+      return;
+    }
+
+    if (selectedImages.length === 0) {
+      setError("กรุณาอัปโหลดหรือถ่ายรูปอย่างน้อย 1 รูปก่อนส่งคำร้อง", "warning");
       return;
     }
 
@@ -167,6 +229,12 @@ function AddIssue() {
 
   // --- Logic to confirm and submit form ---
   const handleConfirmSubmit = async () => {
+    if (selectedImages.length === 0) {
+      setError("กรุณาอัปโหลดหรือถ่ายรูปอย่างน้อย 1 รูปก่อนส่งคำร้อง", "warning");
+      setConfirmSubmit({ isOpen: false });
+      return;
+    }
+
     startLoading();
 
     try {
@@ -184,7 +252,7 @@ function AddIssue() {
       // ถ้าเป็นหมวดอุปกรณ์และมีรหัสครุภัณฑ์ที่ถูกต้อง ให้ส่ง equipmentId ไปด้วย
       if (isEquipmentCategory && formData.equipmentCode) {
         const foundEq = equipments.find(
-          eq => eq.roomId === parseInt(formData.roomId, 10) && eq.equipmentCode === formData.equipmentCode
+          eq => normalizeEquipmentCode(eq.equipmentCode) === normalizeEquipmentCode(formData.equipmentCode)
         );
         if (foundEq) {
           submitData.append('equipmentId', foundEq.equipmentId);
@@ -199,7 +267,7 @@ function AddIssue() {
 
       if (result.success) {
         clearImages(); // เคลียร์รูปภาพหลังจากส่งสำเร็จ
-        await refetch(); 
+        await refetch();
 
         reset();
         setConfirmSubmit({ isOpen: false });
@@ -263,6 +331,9 @@ function AddIssue() {
     reset();
   }
 
+  const hasEquipmentInput = Boolean(formData.equipmentCode && formData.equipmentCode.trim());
+  const isEquipmentInvalid = isEquipmentCategory && hasEquipmentInput && equipmentValidation.status !== 'success';
+
   if (!user) {
     return <div style={{ textAlign: 'center', marginTop: '50px' }}>Loading...</div>;
   }
@@ -290,7 +361,7 @@ function AddIssue() {
               <label>ประเภทปัญหา <span style={{ color: 'red' }}>*</span></label>
               <select name="categoryId" onChange={handleChange} value={formData.categoryId} required>
                 <option value="">เลือกประเภทปัญหา</option>
-                {categories.map(c => <option key={c.ticketCtgId} value={c.ticketCtgId}>{c.ticketCtgName}</option>)}
+                {activeCategories.map(c => <option key={c.ticketCtgId} value={c.ticketCtgId}>{c.ticketCtgName}</option>)}
               </select>
             </div>
             <div className="form-group">
@@ -304,22 +375,26 @@ function AddIssue() {
               <label>สถานที่ <span style={{ color: 'red' }}>*</span></label>
               <select name="locationId" onChange={handleChange} value={formData.locationId} required>
                 <option value="">เลือกสถานที่</option>
-                {locations.map(l => <option key={l.locationId} value={l.locationId}>{l.locationName}</option>)}
+                {activeLocations.map(l => <option key={l.locationId} value={l.locationId}>{l.locationName}</option>)}
               </select>
             </div>
 
             {isEquipmentCategory && (
               <div className="form-group highlight-field">
-                <label>รหัสครุภัณฑ์ <span style={{ color: 'red' }}>*</span></label>
+                <label>รหัสครุภัณฑ์ <span className='secondary-label'> (ถ้ามี)</span> </label>
                 <input
                   type="text"
+                  list={`equipment-codes-${formData.roomId || 'none'}`}
                   name="equipmentCode"
                   onChange={handleChange}
                   value={formData.equipmentCode}
-                  placeholder="XXXX-XXX-XXXX/XX"
-                  required
-                  disabled={!formData.roomId} // บังคับเลือกห้องก่อน
+                  placeholder="พิมพ์รหัสครุภัณฑ์"
                 />
+                <datalist id={`equipment-codes-${formData.roomId || 'none'}`}>
+                  {availableEquipmentOptions.map(eq => (
+                    <option key={eq.equipmentId} value={eq.equipmentCode} />
+                  ))}
+                </datalist>
                 {/* แสดงผลลัพธ์การตรวจสอบ */}
                 {equipmentValidation.message && (
                   <small style={{ color: equipmentValidation.status === 'success' ? 'green' : 'red', marginTop: '5px' }}>
@@ -369,7 +444,7 @@ function AddIssue() {
             maxImages={3}
           />
 
-          <div className="form-actions" style={{ marginTop: '20px' }}> 
+          <div className="form-actions" style={{ marginTop: '20px' }}>
             <button
               type="button"
               className="btn-reset"
@@ -384,7 +459,7 @@ function AddIssue() {
             <button
               type="submit"
               className="btn-submit"
-              disabled={loading.isLoading || (isEquipmentCategory && equipmentValidation.status !== 'success')}
+              disabled={loading.isLoading || isEquipmentInvalid}
             >
               {loading.isLoading ? 'กำลังบันทึก...' : 'ยืนยัน'}
             </button>

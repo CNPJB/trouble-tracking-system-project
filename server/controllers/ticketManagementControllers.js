@@ -1,5 +1,6 @@
 import prisma from "../config/prismaClient.js";
 import { uploadToCloudinary, deleteFromCloudinary } from "../utils/cloudinaryUpload.js";
+import { sendTicketStatusEmail } from "../services/emailService.js";
 
 export const getTicketGroups = async (req, res) => {
     try {
@@ -307,7 +308,15 @@ export const updateTicketStatusAdmin = async (req, res) => {
         // 1. ดึงข้อมูลตั๋วปัจจุบันมาตรวจสอบก่อน
         const ticket = await prisma.ticket.findUnique({
             where: { ticketId: id },
-            select: { ticketStatus: true, equipmentId: true, adminId: true }
+            select: { 
+                ticketStatus: true, 
+                equipmentId: true, 
+                adminId: true,
+                title: true,
+                subTickets: { 
+                    select: { equipmentId: true } 
+                }
+             }
         });
 
         if (!ticket) {
@@ -394,7 +403,24 @@ export const updateTicketStatusAdmin = async (req, res) => {
             }
 
             // 5.3 ซิงค์สถานะครุภัณฑ์ (Equipment Status Workflow)
+
+            const equipmentIdsSet = new Set();
+            
             if (ticket.equipmentId) {
+                equipmentIdsSet.add(ticket.equipmentId); // ใส่ของแม่
+            }
+            
+            if (ticket.subTickets && ticket.subTickets.length > 0) {
+                ticket.subTickets.forEach(sub => {
+                    if (sub.equipmentId) {
+                        equipmentIdsSet.add(sub.equipmentId); // ใส่ของลูก
+                    }
+                });
+            }
+
+            const allEquipmentIds = Array.from(equipmentIdsSet);
+
+            if (allEquipmentIds.length > 0) {
                 let newEqStatus = null;
                 
                 if (ticketStatus === 'in_progress') {
@@ -402,12 +428,15 @@ export const updateTicketStatusAdmin = async (req, res) => {
                 } else if (ticketStatus === 'resolved') {
                     newEqStatus = 'active'; // ซ่อมเสร็จ -> กลับมาพร้อมใช้งาน
                 } else if (ticketStatus === 'rejected') {
-                    newEqStatus = 'active'; // ปฏิเสธการซ่อม -> คืนค่ากลับไป active
+                    newEqStatus = 'broken'; // ปฏิเสธการซ่อม -> คืนค่ากลับไป broken
                 }
 
                 if (newEqStatus) {
-                    await tx.equipment.update({
-                        where: { equipmentId: ticket.equipmentId },
+                    // ใช้ updateMany และเงื่อนไข { in: [...] } เพื่ออัปเดตหลายชิ้นพร้อมกัน
+                    await tx.equipment.updateMany({
+                        where: { 
+                            equipmentId: { in: allEquipmentIds } 
+                        },
                         data: { equipmentStatus: newEqStatus }
                     });
                 }
@@ -437,10 +466,40 @@ export const updateTicketStatusAdmin = async (req, res) => {
             return updatedTicket;
         });
 
-        // 6. โซนสำหรับส่ง Email (เว้นไว้ทำในอนาคตตามที่คุณแพลนไว้)
-        // if (['resolved', 'rejected'].includes(ticketStatus)) {
-        //     await sendEmailNotification(result.userId, ticketStatus, adminNote);
-        // }
+        // ส่ง Email
+        if (['in_progress', 'resolved', 'rejected'].includes(ticketStatus)) {
+            
+            // ดึง User ทั้งหมดที่เกี่ยวข้องกับปัญหานี้
+            const relatedUsers = await prisma.user.findMany({
+                where: {
+                    OR: [
+                        { ticketsCreated: { some: { ticketId: id } } },           // ผู้แจ้งปัญหาหลัก
+                        { ticketsCreated: { some: { parentTicketId: id } } },     // ผู้แจ้งตั๋วลูก (ที่ถูกยุบรวม)
+                        { upvotes: { some: { ticketId: id } } }                   // ผู้โหวตติดตามปัญหา
+                    ]
+                },
+                select: { email: true }
+            });
+
+            // กรองเอาเฉพาะคนที่มี Email ในระบบ
+            const userEmails = relatedUsers
+                .map(u => u.email)
+                .filter(email => email !== null && email !== undefined);
+
+            // เตรียมข้อมูลตั๋วเพื่อส่งให้ Template อีเมล
+            const ticketDataForEmail = {
+                ticketId: id,
+                title: ticket.title,
+                ticketStatus: ticketStatus,
+                adminNote: adminNote
+            };
+
+            // สั่งส่งอีเมลแบบ Fire and Forget (วนลูปส่งเบื้องหลัง ไม่ต้องรอให้ส่งเสร็จถึงจะตอบกลับหน้าเว็บ)
+            userEmails.forEach(email => {
+                sendTicketStatusEmail(email, ticketDataForEmail)
+                    .catch(err => console.error(`Failed to send email in background to ${email}`, err));
+            });
+        }
 
         res.status(200).json({
             success: true,

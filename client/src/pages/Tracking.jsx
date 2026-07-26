@@ -15,6 +15,7 @@ import { TrackingSidebar } from '../components/TrackingSidebar.jsx';
 import { ConfirmButton } from '../components/ConfirmButton.jsx';
 import { StarRating } from '../components/StarRating.jsx';
 import { FeedbackModal } from '../components/FeedbackModal.jsx';
+import { TicketActionMenu } from '../components/TicketActionMenu.jsx';
 
 // Services
 import { ticketService } from '../services/ticketService.js';
@@ -29,7 +30,7 @@ const Tracking = () => {
     const location = useLocation();
     const [searchParams] = useSearchParams();
     const { loading, startLoading, setError, setSuccess, reset } = useLoadingState();
-    const [selectedStatus, setSelectedStatus] = useState('pending,in_progress,duplicate,resolved');
+    const [selectedStatus, setSelectedStatus] = useState('pending,in_progress,duplicate,resolved,canceled,rejected');
     const {
         tickets, isLoading, isFetchingNextPage, pagination,
         changePage, updateFilters, refetch, removeTicket, updateTicketStatus
@@ -51,9 +52,9 @@ const Tracking = () => {
         ticketId: null
     });
 
-    const [isCancelMode, setIsCancelMode] = useState(false);
-    const [selectedToCancel, setSelectedToCancel] = useState([]);
-    const [confirmCancelSubmit, setConfirmCancelSubmit] = useState({ isOpen: false });
+    // Cancel Ticket State
+    const [confirmSingleCancel, setConfirmSingleCancel] = useState({ isOpen: false, ticketId: null });
+
     const lastTicketElementRef = useInfiniteScroll({
         isLoading: isLoading,
         isFetchingNextPage: isFetchingNextPage,
@@ -178,97 +179,25 @@ const Tracking = () => {
         fetchSidebarCounts();
     }, [user]);
 
-    const handleToggleCancelMode = () => {
-        setIsCancelMode(!isCancelMode);
-        setSelectedToCancel([]); // ล้างค่าที่เลือกไว้เสมอเมื่อเปิด/ปิดโหมด
+    const handleSingleCancelClick = (ticketId) => {
+        setConfirmSingleCancel({ isOpen: true, ticketId });
     };
 
-    const handleSelectToCancel = (ticketId) => {
-        setSelectedToCancel(prev =>
-            prev.includes(ticketId)
-                ? prev.filter(id => id !== ticketId) // ถ้ามีอยู่แล้วให้เอาออก
-                : [...prev, ticketId] // ถ้ายังไม่มีให้เพิ่มเข้าไป
-        );
-    };
-
-    const handleConfirmCancelSubmit = async () => {
+    const submitSingleCancel = async () => {
+        if (!confirmSingleCancel.ticketId) return;
         startLoading();
         try {
-            const cancelPromises = selectedToCancel.map(id => ticketService.cancelTicket(id));
-            await Promise.all(cancelPromises);
-
-            selectedToCancel.forEach(ticketId => {
-                removeTicket(ticketId);
-            });
-
-            setSuccess(`ยกเลิกรายการแจ้งปัญหาจำนวน ${selectedToCancel.length} รายการสำเร็จ`);
-
-            setIsCancelMode(false);
-            setSelectedToCancel([]);
-            setConfirmCancelSubmit({ isOpen: false });
-            // ✅ รอให้ Backend sync ข้อมูลเสร็จ
-            await refetch();
-            fetchSidebarCounts();
-
+            const result = await ticketService.cancelTicket(confirmSingleCancel.ticketId);
+            if (result.success) {
+                removeTicket(confirmSingleCancel.ticketId);
+                setSuccess(`ยกเลิกรายการแจ้งปัญหาสำเร็จ`);
+                setConfirmSingleCancel({ isOpen: false, ticketId: null });
+                await refetch();
+                fetchSidebarCounts();
+            }
         } catch (error) {
-            console.error("Error bulk canceling tickets:", error);
             setError(error.response?.data?.message || "เกิดข้อผิดพลาดในการยกเลิกรายการ");
-            setConfirmCancelSubmit({ isOpen: false });
-        }
-    };
-
-    const renderTicketActions = (ticket, isOwner) => {
-        const isPending = ticket.ticketStatus === 'pending';
-        const isResolved = ticket.ticketStatus === 'resolved';
-        const needsReview = isOwner && isResolved && ticket.rating === null;
-        const afterReview = isOwner && isResolved && ticket.rating !== null;
-
-        if (needsReview) {
-            return (
-                <button
-                    className="badge-btn badge-feedback"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        setFeedbackModal({ isOpen: true, ticketId: ticket.ticketId });
-                    }}
-                >
-                    Feedback  <FaStar className="star-icons" />
-                </button>
-            );
-        }
-        // after review แล้ว ไม่แสดงปุ่มอะไรเลย
-        if (afterReview) {
-            return (<div></div>);
-        }
-
-        if (isOwner) {
-            return (
-                <button
-                    className="badge-btn badge-edit"
-                    disabled={!isPending} // Disable ถ้าไม่ใช่ pending
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/edit-issue?ticketId=${ticket.ticketId}`);
-                    }}
-                >
-                    แก้ไข <FaEdit />
-                </button>
-            );
-        }
-        else {
-            return (
-                <button
-                    className="badge-btn badge-upvote badge-cancel-hover"
-                    disabled={!isPending} // Disable ถ้าไม่ใช่ pending
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        handleCancelVoteClick(ticket.ticketId);
-                    }}
-                >
-                    <span className="default-text">Voted < FaThumbsUp className="thumbsup-icons" /></span>
-                    <span className="hover-text">ยกเลิกโหวต ✕</span>
-                </button>
-            );
+            setConfirmSingleCancel({ isOpen: false, ticketId: null });
         }
     };
 
@@ -297,79 +226,28 @@ const Tracking = () => {
                     <div className="searchbar">
                         <SearchBar onSearch={handleSearch} />
                     </div>
-
-                    {/* โซนปุ่มเปิด/ปิดโหมด ยกเลิกแจ้ง */}
-                    <div className="cancel-mode-controls">
-                        {!isCancelMode ? (
-                            <button
-                                className="btn-enter-cancel-mode"
-                                onClick={handleToggleCancelMode}
-                                disabled={tickets.length === 0}
-                            >
-                                จัดการรายการ (ยกเลิกแจ้ง)
-                            </button>
-                        ) : (
-                            <div className="cancel-actions-active">
-                                <button className="btn-exit-cancel-mode" onClick={handleToggleCancelMode}>
-                                    ✕ ออกจากโหมดเลือก
-                                </button>
-                                <button
-                                    className="btn-confirm-cancel-bulk"
-                                    disabled={selectedToCancel.length === 0}
-                                    onClick={() => setConfirmCancelSubmit({ isOpen: true })}
-                                >
-                                    ยืนยันการยกเลิก ({selectedToCancel.length})
-                                </button>
-                            </div>
-                        )}
-                    </div>
                 </div>
 
                 {/* พื้นที่แสดงการ์ด */}
                 <div className="ticket-grid">
-                    {isLoading && tickets.length === 0 && (
-                        <div style={{ textAlign: 'center', padding: '20px' }}>กำลังโหลดข้อมูล...</div>
-                    )}
-
-                    {tickets.map((ticket, index) => {
-                        const isTicketOwner = ticket.user?.userId === user?.userId;
-                        const isPending = ticket.ticketStatus === 'pending';
-                        const canBeCanceled = isTicketOwner && isPending;
-                        const shouldDimCard = isCancelMode && !canBeCanceled;
-                        return (
-                            <div
-                                ref={tickets.length === index + 1 ? lastTicketElementRef : null}
-                                key={ticket.ticketId}
-                                style={{
-                                    opacity: shouldDimCard ? 0.4 : 1,
-                                    pointerEvents: shouldDimCard ? 'none' : 'auto',
-                                    transition: 'all 0.3s ease',
-                                }}
-                            >
-                                <CardPendingProblem
-                                    data={ticket}
-                                    actionSlot={isCancelMode ? null : renderTicketActions(ticket, isTicketOwner)}
-
-                                    isMergeMode={isCancelMode && canBeCanceled}
-                                    isSelected={selectedToCancel.includes(ticket.ticketId)}
-                                    onSelect={() => handleSelectToCancel(ticket.ticketId)}
-                                />
-                            </div>
-                        );
-                    })}
-
-                    {!isLoading && tickets.length === 0 && (
-                        <div className="no-result">
-                            <img src="/empty-state.png" alt="empty-state" />
-                            <span>ไม่พบรายการสถานะนี้</span>
+                    {tickets.map((ticket, index) => (
+                        <div ref={tickets.length === index + 1 ? lastTicketElementRef : null} key={ticket.ticketId}>
+                            <CardPendingProblem
+                                data={ticket}
+                                isMergeMode={false}
+                                actionSlot={
+                                    <TicketActionMenu
+                                        ticket={ticket}
+                                        currentUserId={user?.userId}
+                                        onEdit={(id) => navigate(`/edit-issue?ticketId=${id}`)}
+                                        onCancelVote={(id) => handleCancelVoteClick(id)}
+                                        onFeedback={(id) => setFeedbackModal({ isOpen: true, ticketId: id })}
+                                        onCancelTicket={(id) => handleSingleCancelClick(id)}
+                                    />
+                                }
+                            />
                         </div>
-                    )}
-
-                    {isFetchingNextPage && (
-                        <div style={{ textAlign: 'center', padding: '20px' }}>
-                            กำลังโหลดปัญหาเพิ่มเติม... ⏳
-                        </div>
-                    )}
+                    ))}
                 </div>
             </main>
             <ConfirmButton
@@ -390,14 +268,14 @@ const Tracking = () => {
                 ticketId={feedbackModal.ticketId}
                 isLoading={loading.isLoading}
             />
-
+            
             <ConfirmButton
-                isOpen={confirmCancelSubmit.isOpen}
-                title="ยืนยันการยกเลิกการแจ้งปัญหา"
-                message={`คุณแน่ใจหรือไม่ว่าต้องการยกเลิกการแจ้งปัญหาจำนวน ${selectedToCancel.length} รายการที่เลือกไว้? (การกระทำนี้ไม่สามารถย้อนกลับได้)`}
-                onConfirm={handleConfirmCancelSubmit}
-                onCancel={() => setConfirmCancelSubmit({ isOpen: false })}
-                confirmText={loading.isLoading ? "กำลังประมวลผล..." : "ยืนยันยกเลิก"}
+                isOpen={confirmSingleCancel.isOpen}
+                title="ยืนยันการยกเลิกรายการ"
+                message="คุณแน่ใจหรือไม่ว่าต้องการยกเลิกการแจ้งปัญหานี้? (การกระทำนี้ไม่สามารถย้อนกลับได้)"
+                onConfirm={submitSingleCancel}
+                onCancel={() => setConfirmSingleCancel({ isOpen: false, ticketId: null })}
+                confirmText={loading.isLoading ? "กำลังดำเนินการ..." : "ยืนยันยกเลิก"}
                 cancelText="ปิด"
                 isLoading={loading.isLoading}
             />

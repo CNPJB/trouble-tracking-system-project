@@ -43,6 +43,10 @@
     background-color: rgba(55, 167, 11, 0.1);
 }
 
+@media (max-width: 1536px) {
+    .statistics-sidebar {
+        min-width: 280px;
+    }
 @media(max-width: 430px){
     .statistics-sidebar{
         display: none;

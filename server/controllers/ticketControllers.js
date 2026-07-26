@@ -17,8 +17,40 @@ export const addTicket = async (req, res) => {
             description,
         } = req.body;
 
-        const files = req.files; // รับไฟล์จาก multer
+        const files = req.files || []; // รับไฟล์จาก multer
         const customTicketId = await generateTicketId();
+
+        if (!files || files.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "กรุณาอัปโหลดหรือถ่ายรูปอย่างน้อย 1 รูปก่อนส่งคำร้อง"
+            });
+        }
+
+        // ตรวจสอบความถูกต้องของข้อมูลที่ส่งมา
+        const [category, location, floor, room, equipment] = await Promise.all([
+            prisma.ticketCategory.findUnique({ where: { ticketCtgId: parseInt(ticketCtgId) } }),
+            prisma.location.findUnique({ where: { locationId: parseInt(locationId) } }),
+            floorId ? prisma.floor.findUnique({ where: { floorId: parseInt(floorId) } }) : Promise.resolve(null),
+            roomId ? prisma.room.findUnique({ where: { roomId: parseInt(roomId) } }) : Promise.resolve(null),
+            equipmentId ? prisma.equipment.findUnique({ where: { equipmentId: parseInt(equipmentId) } }) : Promise.resolve(null)
+        ]);
+
+        if (!category || category.ticketCtgStatus !== 'enable') {
+            return res.status(400).json({ success: false, message: "ประเภทปัญหานี้ถูกปิดใช้งานไปแล้ว ไม่สามารถแจ้งได้" });
+        }
+        if (!location || location.locationStatus !== 'active') {
+            return res.status(400).json({ success: false, message: "สถานที่นี้ปิดให้บริการ ไม่สามารถแจ้งปัญหาได้" });
+        }
+        if (floorId && (!floor || floor.floorStatus !== 'active')) {
+            return res.status(400).json({ success: false, message: "ชั้นนี้ปิดให้บริการ ไม่สามารถแจ้งปัญหาได้" });
+        }
+        if (roomId && (!room || room.roomStatus !== 'active')) {
+            return res.status(400).json({ success: false, message: "ห้องนี้ปิดให้บริการ ไม่สามารถแจ้งปัญหาได้" });
+        }
+        if (equipmentId && (!equipment || equipment.equipmentStatus !== 'active')) {
+            return res.status(400).json({ success: false, message: "ครุภัณฑ์นี้ไม่ได้อยู่ในสถานะพร้อมใช้งาน หรือถูกส่งซ่อมไปแล้ว" });
+        }
 
         if (equipmentId) {
             const existingActiveTicket = await prisma.ticket.findFirst({
@@ -148,6 +180,37 @@ export const updateTicket = async (req, res) => {
         
         const files = req.files;
         const existingTicket = req.ticket;
+
+        const validationPromises = [
+            (ticketCtgId && parseInt(ticketCtgId) !== existingTicket.ticketCtgId) 
+                ? prisma.ticketCategory.findUnique({ where: { ticketCtgId: parseInt(ticketCtgId) } }) : Promise.resolve(null),
+            (locationId && parseInt(locationId) !== existingTicket.locationId) 
+                ? prisma.location.findUnique({ where: { locationId: parseInt(locationId) } }) : Promise.resolve(null),
+            (floorId && parseInt(floorId) !== existingTicket.floorId) 
+                ? prisma.floor.findUnique({ where: { floorId: parseInt(floorId) } }) : Promise.resolve(null),
+            (roomId && parseInt(roomId) !== existingTicket.roomId) 
+                ? prisma.room.findUnique({ where: { roomId: parseInt(roomId) } }) : Promise.resolve(null),
+            (equipmentId && parseInt(equipmentId) !== existingTicket.equipmentId) 
+                ? prisma.equipment.findUnique({ where: { equipmentId: parseInt(equipmentId) } }) : Promise.resolve(null)
+        ];
+
+        const [newCategory, newLocation, newFloor, newRoom, newEquipment] = await Promise.all(validationPromises);
+
+        if (newCategory && newCategory.ticketCtgStatus !== 'enable') {
+            return res.status(400).json({ success: false, message: "ประเภทปัญหาที่เลือกใหม่ถูกปิดใช้งานไปแล้ว" });
+        }
+        if (newLocation && newLocation.locationStatus !== 'active') {
+            return res.status(400).json({ success: false, message: "สถานที่ที่เลือกใหม่ถูกปิดให้บริการ" });
+        }
+        if (newFloor && newFloor.floorStatus !== 'active') {
+            return res.status(400).json({ success: false, message: "ชั้นที่เลือกใหม่ถูกปิดให้บริการ" });
+        }
+        if (newRoom && newRoom.roomStatus !== 'active') {
+            return res.status(400).json({ success: false, message: "ห้องที่เลือกใหม่ถูกปิดให้บริการ" });
+        }
+        if (newEquipment && newEquipment.equipmentStatus !== 'active') {
+            return res.status(400).json({ success: false, message: "ครุภัณฑ์ที่เลือกใหม่ไม่พร้อมใช้งาน" });
+        }
 
         if (equipmentId) {
             const existingActiveTicket = await prisma.ticket.findFirst({

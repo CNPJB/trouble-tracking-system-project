@@ -87,13 +87,56 @@ function EditIssue() {
     const isEquipmentCategory = selectedCategory?.ticketCtgName === "ด้านอุปกรณ์คอมพิวเตอร์และครุภัณฑ์"
         || selectedCategory?.ticketCtgName === "ด้านซอฟต์แวร์และระบบปฏิบัติการ";
 
+    const normalizeEquipmentCode = (value) => value?.toString().trim().toUpperCase();
+
     // เรียกใช้งาน Hook สำหรับตรวจสอบความถูกต้องของรหัสครุภัณฑ์
     const { equipmentValidation } = useEquipmentValidation(
         isEquipmentCategory,
         formData.equipmentCode,
-        formData.roomId,
         equipments
     );
+
+    // Logic Auto-fill
+    useEffect(() => {
+        if (isEquipmentCategory && equipmentValidation.status === 'success' && equipmentValidation.roomId) {
+            
+            // เช็คว่าผู้ใช้กำลังแก้ไขตั๋วโดยใช้รหัสครุภัณฑ์ "เดิม" ที่บันทึกไว้หรือไม่?
+            // ถ้าใช่แปลว่านี่คือจังหวะเปิดหน้าเว็บโหลดข้อมูลครั้งแรก ห้าม! นำที่อยู่เดิมไปทับเด็ดขาด
+            const isOriginalEquipment = normalizeEquipmentCode(formData.equipmentCode) === normalizeEquipmentCode(ticket?.equipment?.equipmentCode);
+            
+            if (isOriginalEquipment) {
+                return; // ข้ามการทำงานไปเลย ให้ใช้ locationId, roomId จากตั๋วเดิม
+            }
+
+            const eqRoomId = equipmentValidation.roomId;
+            const foundRoom = rooms.find(r => r.roomId === eqRoomId);
+            
+            if (foundRoom) {
+                const eqFloorId = foundRoom.floorId;
+                const foundFloor = floors.find(f => f.floorId === eqFloorId);
+                
+                if (foundFloor) {
+                    const eqLocationId = foundFloor.locationId;
+
+                    setFormData(prev => {
+                        if (prev.locationId === eqLocationId.toString() &&
+                            prev.floorId === eqFloorId.toString() &&
+                            prev.roomId === eqRoomId.toString()) {
+                            return prev;
+                        }
+                        
+                        return {
+                            ...prev,
+                            locationId: eqLocationId.toString(),
+                            floorId: eqFloorId.toString(),
+                            roomId: eqRoomId.toString()
+                        };
+                    });
+                }
+            }
+        }
+    }, [equipmentValidation.status, equipmentValidation.equipmentId, rooms, floors, isEquipmentCategory, ticket]);
+
     // ฟังก์ชันจัดการรูปภาพเก่าที่จะลบ (กดกากบาทลบรูปเก่า)
     const handleRemoveExistingImage = (imageId) => {
         setImagesToDelete(prev => [...prev, imageId]); // บันทึก ID ไว้ส่งให้ Backend
@@ -110,13 +153,12 @@ function EditIssue() {
             if (name === 'locationId') {
                 newData.floorId = '';
                 newData.roomId = '';
-                newData.equipmentCode = '';
             }
             // ถ้าเปลี่ยนชั้น ให้ล้างห้องทิ้ง
             if (name === 'floorId') {
                 newData.roomId = '';
-                newData.equipmentCode = '';
             }
+
             return newData;
         });
     };
@@ -125,8 +167,10 @@ function EditIssue() {
         e.preventDefault();
         reset();
 
-        if (isEquipmentCategory && equipmentValidation.status !== 'success') {
-            setError("กรุณาระบุรหัสครุภัณฑ์ให้ถูกต้องตามที่มีในระบบ", "warning");
+        const hasEquipmentSelection = Boolean(formData.equipmentCode && formData.equipmentCode.trim());
+
+        if (isEquipmentCategory && hasEquipmentSelection && equipmentValidation.status !== 'success') {
+            setError(equipmentValidation.message || "กรุณาเลือกรหัสครุภัณฑ์ที่มีในระบบหรือเลือก 'ไม่ระบุ'", "warning");
             return;
         }
 
@@ -154,9 +198,9 @@ function EditIssue() {
             if (formData.roomId) submitData.append('roomId', formData.roomId);
 
             // แนบข้อมูล Equipment ID (ต้องค้นหาจาก equipmentCode ที่ผู้ใช้กรอก)
-            if (isEquipmentCategory && formData.equipmentCode && formData.roomId) {
+            if (isEquipmentCategory && formData.equipmentCode) {
                 const foundEq = equipments.find(
-                    eq => eq.roomId === parseInt(formData.roomId, 10) && eq.equipmentCode === formData.equipmentCode
+                    eq => normalizeEquipmentCode(eq.equipmentCode) === normalizeEquipmentCode(formData.equipmentCode)
                 );
                 if (foundEq) {
                     submitData.append('equipmentId', foundEq.equipmentId);
@@ -199,20 +243,50 @@ function EditIssue() {
         }
     };
 
+    // Memoized Lists สำหรับ Dropdown Options
+    const activeCategories = useMemo(() => {
+        return categories.filter(c => 
+            c.ticketCtgStatus === 'enable' || c.ticketCtgId === ticket?.ticketCtgId
+        );
+    }, [categories, ticket]);
+
+    const activeLocations = useMemo(() => {
+        return locations.filter(l => 
+            l.locationStatus === 'active' || l.locationId === ticket?.locationId
+        );
+    }, [locations, ticket]);
+
     // กรองตัวเลือกชั้นและห้องให้สัมพันธ์กัน (Cascading Dropdown)
     const availableFloors = useMemo(() => {
         if (!formData.locationId) return [];
-        return floors.filter(f => f.locationId === parseInt(formData.locationId, 10));
+        return floors.filter(f => 
+            f.locationId === parseInt(formData.locationId, 10) && 
+            (f.floorStatus === 'active' || f.floorId === ticket?.floorId)
+        );
     }, [floors, formData.locationId]);
 
     const availableRooms = useMemo(() => {
         if (!formData.locationId) return [];
+        const safeRooms = rooms.filter(r => 
+            r.roomStatus === 'active' || r.roomId === ticket?.roomId
+        );
         if (formData.floorId) {
-            return rooms.filter(r => r.floorId === parseInt(formData.floorId, 10));
+            return safeRooms.filter(r => r.floorId === parseInt(formData.floorId, 10));
         }
         const validFloorIds = availableFloors.map(f => f.floorId);
-        return rooms.filter(r => validFloorIds.includes(r.floorId));
+        return safeRooms.filter(r => validFloorIds.includes(r.floorId));
     }, [rooms, availableFloors, formData.locationId, formData.floorId]);
+
+    const availableEquipmentOptions = useMemo(() => {
+        if (!isEquipmentCategory) return [];
+
+        return (equipments || [])
+            .filter(eq => eq.equipmentStatus === 'active' || eq.equipmentId === ticket?.equipmentId)
+            .sort((a, b) => (a.equipmentCode || '').localeCompare(b.equipmentCode || ''));
+    }, [equipments, isEquipmentCategory]);
+
+    const hasEquipmentInput = Boolean(formData.equipmentCode && formData.equipmentCode.trim());
+    const isEquipmentInvalid = isEquipmentCategory && hasEquipmentInput && equipmentValidation.status !== 'success';
 
     if (isTicketLoading) {
         return <div className="edit-loading-box">กำลังโหลดรายละเอียดข้อมูลปัญหา...</div>;
@@ -249,7 +323,7 @@ function EditIssue() {
                             <label>ประเภทปัญหา <span>*</span></label>
                             <select name="categoryId" onChange={handleChange} value={formData.categoryId} required>
                                 <option value="">เลือกประเภทปัญหา</option>
-                                {categories.map(c => <option key={c.ticketCtgId} value={c.ticketCtgId}>{c.ticketCtgName}</option>)}
+                                {activeCategories.map(c => <option key={c.ticketCtgId} value={c.ticketCtgId}>{c.ticketCtgName}</option>)}
                             </select>
                         </div>
                         <div className="form-group">
@@ -263,7 +337,7 @@ function EditIssue() {
                             <label>สถานที่ <span>*</span></label>
                             <select name="locationId" onChange={handleChange} value={formData.locationId} required>
                                 <option value="">เลือกสถานที่</option>
-                                {locations.map(l => <option key={l.locationId} value={l.locationId}>{l.locationName}</option>)}
+                                {activeLocations.map(l => <option key={l.locationId} value={l.locationId}>{l.locationName}</option>)}
                             </select>
                         </div>
                         {isEquipmentCategory && (
@@ -271,10 +345,17 @@ function EditIssue() {
                                 <label>รหัสครุภัณฑ์</label>
                                 <input
                                     type="text"
+                                    list={`equipment-codes-${formData.roomId || 'none'}`}
                                     name="equipmentCode"
                                     onChange={handleChange}
                                     value={formData.equipmentCode}
-                                    disabled={!formData.roomId} />
+                                    placeholder="พิมพ์รหัสครุภัณฑ์"
+                                />
+                                <datalist id={`equipment-codes-${formData.roomId || 'none'}`}>
+                                    {availableEquipmentOptions.map(eq => (
+                                        <option key={eq.equipmentId} value={eq.equipmentCode} />
+                                    ))}
+                                </datalist>
                                 {equipmentValidation.message && (
                                     <small style={{ position: 'absolute', top: '329px', alignSelf: 'center', color: equipmentValidation.status === 'success' ? 'green' : 'red', marginTop: '5px' }}>
                                         {equipmentValidation.message}
@@ -343,7 +424,7 @@ function EditIssue() {
                         className="btn-save-edit"
                         disabled={
                             loading.isLoading || 
-                            (isEquipmentCategory && equipmentValidation.status !== 'success') || 
+                            isEquipmentInvalid ||
                             // ห้ามส่งถ้าไม่มีการเปลี่ยนแปลงข้อมูลเลย
                             (formData.categoryId === (ticket.ticketCtgId?.toString() || '') &&
                             formData.title === (ticket.title || '') &&
@@ -351,6 +432,7 @@ function EditIssue() {
                             formData.floorId === (ticket.floorId?.toString() || '') &&
                             formData.roomId === (ticket.roomId?.toString() || '') &&
                             formData.description === (ticket.description || '') &&
+                            formData.equipmentCode === (ticket.equipment?.equipmentCode || '') &&
                             (imagesToDelete.length === 0 && selectedImages.length === 0))
                         }>
                         <FaSave style={{ position: 'relative', top: '3.5px' }} /> บันทึกการเแก้ไข

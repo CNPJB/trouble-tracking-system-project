@@ -1,0 +1,85 @@
+/* Container ตัวแม่ */
+.kebab-menu-container {
+    position: relative;
+    display: inline-block;
+}
+
+/* ปุ่ม 3 จุด */
+.kebab-trigger-btn {
+    background: none;
+    border: none;
+    color: #64748b;
+    padding: 8px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.kebab-trigger-btn:hover {
+    background-color: #f1f5f9;
+    color: #0f172a;
+}
+
+/* กล่อง Dropdown */
+.kebab-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    min-width: 200px;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    z-index: 50; /* ให้อยู่เหนือ Card */
+    padding: 8px 0;
+    margin-top: 4px;
+    animation: fadeInDown 0.15s ease-out;
+}
+
+/* ปุ่มเมนูย่อย */
+.kebab-item {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 10px 16px;
+    font-size: 14px;
+    color: #334155;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background-color 0.2s;
+}
+
+.kebab-item:not(:disabled):hover {
+    background-color: #f8fafc;
+    color: #0f172a;
+}
+
+/* สไตล์เมื่อโดน Disable */
+.kebab-item:disabled {
+    color: #cbd5e1;
+    cursor: not-allowed;
+}
+
+.menu-icon {
+    font-size: 16px;
+}
+
+.kebab-item:disabled .menu-icon {
+    color: #cbd5e1 !important;
+}
+
+/* สีไอคอน */
+.text-yellow { color: #eab308; }
+.text-red { color: #ef4444; }
+.text-orange { color: #f97316; }
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}

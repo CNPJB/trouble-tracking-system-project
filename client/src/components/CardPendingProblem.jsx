@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { formatDate, formatDateTime } from '../utils/formatDate';
 import { FaLayerGroup } from 'react-icons/fa'
@@ -18,6 +19,16 @@ export const CardPendingProblem = ({
 }) => {
 
     const navigate = useNavigate();
+    const [imageSrc, setImageSrc] = useState(() => {
+        const imageUrl = data?.images?.[0]?.imageUrl;
+        return typeof imageUrl === 'string' && imageUrl.trim() ? imageUrl : '/default-noimage.jpg';
+    });
+
+    useEffect(() => {
+        const imageUrl = data?.images?.[0]?.imageUrl;
+        setImageSrc(typeof imageUrl === 'string' && imageUrl.trim() ? imageUrl : '/default-noimage.jpg');
+    }, [data?.images]);
+
     const statusLabels = {
         'pending': 'รอรับเรื่อง',
         'in_progress': 'กำลังดำเนินการ',
@@ -73,10 +84,12 @@ export const CardPendingProblem = ({
 
             <div className="header-card">
                 <div className="img">
-                    {data.images && data.images.length > 0 ? (
-                        <img src={data.images[0].imageUrl} alt="" />
+                    {imageSrc === '/default-noimage.jpg' ? (
+                        <div className="no-image">
+                            <img src={imageSrc} alt="No Image" />
+                        </div>
                     ) : (
-                        <div className="no-image">ไม่มีรูปภาพประกอบ</div>
+                        <img src={imageSrc} alt="" onError={() => setImageSrc('/default-noimage.jpg')} />
                     )}
                 </div>
                 <div className="title-card" key={data.id}>
@@ -95,7 +108,7 @@ export const CardPendingProblem = ({
             </div>
             <div className="description-container">
                 <p className='des'><b>รายละเอียด : </b>{data.description}</p>
-                <p className='oparetor'><b>ผู้ดำเนินการ : </b>{data.admin?.fullName || '-'}</p>
+                <p className='oparetor'><b>ดำเนินการโดย : </b>{data.admin?.fullName || '-'}</p>
             </div>
         </div>
     )
