@@ -80,7 +80,7 @@ const UserManagement = () => {
                 success={loading.success}
                 onDismiss={reset}
             />
-            <div className="main-container">
+            <div className="main-user-container">
                 <div className="table-responsive-wrapper">
                     <table className="layout-table">
                         <thead>

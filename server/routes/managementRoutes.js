@@ -8,7 +8,7 @@ import {
         getUsers,updateRoleUsers,
         addEquipmentCtg, getEquipmentCtgs,
 } from '../controllers/managementControllers.js';
-import { getEquipment, addEquipment,deleteEquipment, uploadEquipments,updateEquipment } from '../controllers/EquipmentControllers.js';
+import { getEquipment, addEquipment,deleteEquipment, uploadEquipments,updateEquipment,updateMultipleEquipments } from '../controllers/EquipmentControllers.js';
 import { getMostCategoriesOfProblems, MostUpvotedTickets, getTicketStats} from '../controllers/statisticController.js';
 import { verifyToken, requireAdmin } from '../middleware/authMiddleware.js';
 
@@ -46,6 +46,7 @@ router.get('/getEquipmentByadmin', verifyToken, requireAdmin, getEquipment);
 router.delete('/deleteEquipment/:id', verifyToken, requireAdmin, deleteEquipment);      
 router.post('/uploadEquipments', verifyToken, requireAdmin, upload.single('file'), uploadEquipments);
 router.put('/updateEquipment', verifyToken, requireAdmin,updateEquipment)
+router.put('/updateMultipleEquipments', verifyToken, requireAdmin,updateMultipleEquipments)
 
 router.get('/getMostCategoriesOfProblems', verifyToken, getMostCategoriesOfProblems);
 router.get('/getMostUpvotedTickets', verifyToken, MostUpvotedTickets);

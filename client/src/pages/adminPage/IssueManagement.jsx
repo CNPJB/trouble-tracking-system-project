@@ -161,9 +161,9 @@ const IssueManagement = () => {
                         autoplay={{ delay: 5000, disableOnInteraction: false }}
                         breakpoints={{
                             860: { slidesPerView: 2 },
-                            1200: { slidesPerView: 3 },
+                            1200: { slidesPerView: 2 },
                             1536: { slidesPerView: 2 },
-                            1920: { slidesPerView: 4 }
+                            1920: { slidesPerView: 3 }
                         }}
                         className="urgent-swiper"
                     >

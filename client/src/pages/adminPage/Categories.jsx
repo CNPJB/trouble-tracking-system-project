@@ -91,7 +91,7 @@ const Categories = () => {
                 success={loading.success}
                 onDismiss={reset}
             />
-            <div className="main-container">
+            <div className="categories-main-container">
                 <div className="table-responsive-wrapper">
                     <table className="layout-table">
                         <thead>
@@ -116,7 +116,7 @@ const Categories = () => {
                     </table>
                 </div>
 
-                <div className="manage-container">
+                <div className="categories-manage-container">
                     <div className="header-container">
                         จัดการประเภทปัญหา
                     </div>

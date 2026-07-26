@@ -9,6 +9,7 @@ import App from './App.jsx'
 
 axios.defaults.baseURL = import.meta.env.VITE_SERVER_URL;
 axios.defaults.withCredentials = true;
+axios.defaults.headers.common['bypass-tunnel-reminder'] = 'true';
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const queryClient = new QueryClient({

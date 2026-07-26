@@ -116,15 +116,38 @@ svg {
 
   /* =========================================
      6. แบบอักษรและขนาด (Typography - เผื่อไว้)
-     ========================================= */
-  --text-size-small: 12px;
-  --text-size-base: 14px;
-  --text-size-normal: 16px;
-  --text-size-large: 20px;
+
+  --font-xs: 0.75rem;    /* 12px - หมายเหตุ, ข้อความเล็กๆ */
+  --font-sm: 0.875rem;   /* 14px - เมนูรอง, Subtitle */
+  --font-base: 1rem;     /* 16px - ข้อความทั่วไป (Body text) */
+  --font-lg: 1.125rem;   /* 18px - ข้อความเน้นย้ำ, ปุ่ม Button */
+  --font-xl: 1.25rem;    /* 20px - หัวข้อในการ์ด (H6) */
+  --font-2xl: 1.5rem;    /* 24px - หัวข้อย่อย (H5) */
+  --font-3xl: 1.875rem;  /* 30px - หัวข้อย่อย (H4) */
+  --font-4xl: 2.25rem;   /* 36px - หัวข้อรอง (H3, H2) */
+  --font-5xl: 3rem;      /* 48px - หัวข้อหลัก (H1) */
+
 }
 .text-limit {
     display: -webkit-box;
     -webkit-line-clamp: 2; /* จำนวนบรรทัดที่ต้องการแสดง */
     -webkit-box-orient: vertical;
     overflow: hidden;
+}
+
+/* for ipad */
+
+@media screen and (min-width: 820px) and (max-width: 1180px) {
+  :root {
+    /* ปรับสเกลทุกอย่างให้ใหญ่ขึ้น 1-2 สเต็ปเพื่อความสวยงามบน iPad */
+    --font-xs: 0.875rem;   /* 14px */
+    --font-sm: 1rem;       /* 16px */
+    --font-base: 1.125rem; /* 18px - Body ของ iPad จะอ่านง่ายขึ้นมาก */
+    --font-lg: 1.25rem;    /* 20px */
+    --font-xl: 1.5rem;     /* 24px */
+    --font-2xl: 1.75rem;   /* 28px */
+    --font-3xl: 2.25rem;   /* 36px */
+    --font-4xl: 2.75rem;   /* 44px */
+    --font-5xl: 3.5rem;    /* 56px */
+  }
 }

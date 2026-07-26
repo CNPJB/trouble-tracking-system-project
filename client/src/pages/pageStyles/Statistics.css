@@ -69,7 +69,7 @@
     display: flex;
     align-items: center;
     background-color: #ffffff;
-    padding: 15px 25px;
+    padding: 15px ;
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     /* เงาบางๆ ให้ดูมีมิติ */
@@ -174,7 +174,7 @@
     font-weight: bold;
 }
 
-.stat-card-percentage {
+.stat-card-percentage,.stat-card-upvote {
     margin-left: auto;
     /* 🌟 พระเอกอยู่ตรงนี้: ดันตัวเองไปชิดขวาสุด */
     font-size: 1.2rem;
@@ -185,4 +185,167 @@
     /* ใส่พื้นหลังอ่อนๆ ให้เป็นเหมือนป้าย Tag */
     padding: 5px 12px;
     border-radius: 20px;
+}
+.mobile-sidebar{
+    display: none;
+}
+@media(max-width: 430px) {
+    .Statistics-layout, .Statistics-content {
+        padding: 5px;
+    }
+
+    .Statistics-layout {
+        display: block !important; 
+        width: 100%;
+    }
+
+    .mobile-sidebar {
+        display: block !important;
+        width: 100%;
+        height: auto;
+    }
+
+    .navbar-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start; /* เปลี่ยนจาก center เป็น flex-start ตรงนี้ครับ */
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+    }
+
+    .nav-toggle-icon {
+        font-size: 28px;
+        color: #333;
+    }
+
+    .sidebar-header {
+        text-align: center;
+        padding: 50px 0 0 0;
+    }
+
+    .sidebar-header img {
+        max-width: 200px;
+        height: auto;
+    }
+
+    .menu-group {
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+        margin: 0;
+    }
+
+    .sidebar-statistics-btn {
+        display: flex;
+        align-items: center;
+        padding: 16px 20px 16px 24px;
+        background-color: #ffffff;
+        border-bottom: 1px solid #f0f0f0;
+        border-left: 4px solid transparent;
+        text-decoration: none;
+        color: #4b5563;
+        font-size: 15px;
+        font-weight: 500;
+        transition: 0.2s ease-in-out;
+        border-radius: 0;
+    }
+
+    .sidebar-statistics-btn:last-child {
+        border-bottom: none; 
+    }
+
+    .sidebar-statistics-btn span {
+        order: 1;
+        flex-grow: 1;
+        text-align: left;
+    }
+
+    .nav-icon {
+        order: 2;
+        margin-left: auto;
+        margin-right: 0;
+        font-size: 18px;
+        color: #888;
+    }
+
+    .sidebar-statistics-btn.active {
+        background-color: #eaf5e9 !important; 
+        color: #00a651 !important; 
+        font-weight: bold !important;
+        border-left: 4px solid #00a651 !important;
+        border-right: none !important;
+    }
+    
+    .sidebar-statistics-btn.active .nav-icon {
+        color: #00a651;
+    }
+
+    .mobile-menu-content {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 280px;
+        height: 100vh;
+        background-color: #ffffff;
+        box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+        z-index: 999;
+        padding-top: 20px; 
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .mobile-menu-content.open {
+        transform: translateX(0);
+    }
+    
+    .mobile-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.4);
+        z-index: 998;
+        opacity: 0;
+        visibility: hidden;
+        transition: 0.3s ease-in-out;
+    }
+
+    .mobile-backdrop.open {
+        opacity: 1;
+        visibility: visible;
+    }
+    .Statistics-layout-content{
+        padding: 5px;
+    }
+    .dashboard-container h1{
+        font-size: 18px;
+        padding: 5px;
+        text-align: center;
+    }
+    .filter-section{
+        padding: 5px;
+        font-size: 14px;
+        align-items: center;
+        text-align: center;
+    }
+    .rank-badge{
+        min-width: 10px;
+    }
+    .stat-card-percentage,.stat-card-info p{
+        font-size: 12px;
+    }
+    .stat-card-info h4 {
+        font-size: 16px;
+    }
+    .stat-card-upvote{
+        font-size: 10px;
+        width: 60px;
+        padding: 2px;
+        text-align: center;
+    }
+    .statistic-type-of-problem,.dashboard-container h2{
+        padding-top: 20px;
+    }
 }

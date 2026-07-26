@@ -106,6 +106,7 @@ export const getAllTickets = async (req, res) => {
                 skip: skip,
                 take: limit,
                 orderBy: [
+                    // { ticketStatus: 'asc' },
                     { updatedAt: 'desc' }
                 ],
                 select: {
@@ -186,7 +187,8 @@ export const getTicketSummary = async (req, res) => {
             all: total,
             pending: 0,
             in_progress: 0,
-            resolved: 0
+            resolved: 0,
+            rejected: 0
         };
 
         // เอาผลลัพธ์จาก Database มาหยอดใส่ Object

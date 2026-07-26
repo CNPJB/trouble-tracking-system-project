@@ -1,5 +1,5 @@
-import React  from 'react'
-import { 
+import { useState } from 'react';
+import {
   FaRegFileAlt,    // 1. ตรวจสอบปัญหา
   FaTools,         // 2. จัดการปัญหา
   FaDesktop,       // 3. จัดการครุภัณฑ์
@@ -9,47 +9,98 @@ import {
 } from 'react-icons/fa';
 import './AdminSidebar.css'
 import { NavLink } from 'react-router-dom';
+import { FiAlignJustify } from 'react-icons/fi';
 
 export const AdminSidebar = () => {
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const toggleMobile = () => {
+    setIsMobileOpen(!isMobileOpen);
+  };
   return (
-    <aside className="admin-sidebar">
-      <div className="sidebar-header">
-       <img src="/rmutk-logo.png" alt="Logo"  />
-      </div>
+    <>
+      <aside className="mobile-sidebar">
+        <button className="navbar-toggle" id="navbar-toggle" onClick={toggleMobile}>
+          <FiAlignJustify className="nav-toggle-icon" />
+        </button>
+        
+        <div className={`mobile-backdrop ${isMobileOpen ? 'open' : ''}`} onClick={toggleMobile}></div>
 
-      <nav className="sidebar-nav">
-        {/* ใช้ end เพื่อให้สีเขียวไม่ค้างตอนไปหน้าอื่น */}
+        <div className={`mobile-menu-content ${isMobileOpen ? 'open' : ''}`}>
+          <div className="sidebar-header">
+            <img src="/rmutk-logo.png" alt="Logo" />
+          </div>
+          
+          <nav className="sidebar-nav">
+            <NavLink to="/adminPage/AuditIssues" className="nav-item" onClick={toggleMobile}>
+              <span>Audit Issues</span>
+              <FaRegFileAlt className="nav-icon" />
+            </NavLink>
 
-        <NavLink to="/adminPage/AuditIssues" className="nav-item">
-          <FaRegFileAlt className="nav-icon" />
-          <span>Audit Issues</span>
-        </NavLink>
+            <NavLink to="/adminPage/IssueManagement" className="nav-item" end onClick={toggleMobile}>
+              <span>Issue Management</span>
+              <FaTools className="nav-icon" />
+            </NavLink>
 
-        <NavLink to="/adminPage/IssueManagement" className="nav-item" end>
-          <FaTools className="nav-icon" />
-          <span>Issue Management</span>
-        </NavLink>
+            <NavLink to="/adminPage/AssetManagement" className="nav-item" onClick={toggleMobile}>
+              <span>Asset Management</span>
+              <FaDesktop className="nav-icon" />
+            </NavLink>
 
-        <NavLink to="/adminPage/AssetManagement" className="nav-item">
-          <FaDesktop className="nav-icon" />
-          <span>Asset Management</span>
-        </NavLink>
+            <NavLink to="/adminPage/UserManagement" className="nav-item" onClick={toggleMobile}>
+              <span>User Management</span>
+              <FaUserCog className="nav-icon" />
+            </NavLink>
 
-        <NavLink to="/adminPage/UserManagement" className="nav-item">
-          <FaUserCog className="nav-icon" />
-          <span>User Management</span>
-        </NavLink>
+            <NavLink to="/adminPage/LocationManagement" className="nav-item" onClick={toggleMobile}>
+              <span>Location Management</span>
+              <FaMapMarkedAlt className="nav-icon" />
+            </NavLink>
 
-        <NavLink to="/adminPage/LocationManagement" className="nav-item">
-          <FaMapMarkedAlt className="nav-icon" />
-          <span>Location Management</span>
-        </NavLink>
+            <NavLink to="/adminPage/Categories" className="nav-item" onClick={toggleMobile}>
+              <span>Issue Categories</span>
+              <FaTags className="nav-icon" />
+            </NavLink>
+          </nav>
+        </div>
+      </aside>
 
-        <NavLink to="/adminPage/Categories" className="nav-item">
-          <FaTags className="nav-icon" />
-          <span>Issue Categories</span>
-        </NavLink>
-      </nav>
-    </aside>
+      <aside className="admin-sidebar">
+        <div className="sidebar-header">
+          <img src="/rmutk-logo.png" alt="Logo" />
+        </div>
+
+        <nav className="sidebar-nav">
+          <NavLink to="/adminPage/AuditIssues" className="nav-item">
+            <FaRegFileAlt className="nav-icon" />
+            <span>Audit Issues</span>
+          </NavLink>
+
+          <NavLink to="/adminPage/IssueManagement" className="nav-item" end>
+            <FaTools className="nav-icon" />
+            <span>Issue Management</span>
+          </NavLink>
+
+          <NavLink to="/adminPage/AssetManagement" className="nav-item">
+            <FaDesktop className="nav-icon" />
+            <span>Asset Management</span>
+          </NavLink>
+
+          <NavLink to="/adminPage/UserManagement" className="nav-item">
+            <FaUserCog className="nav-icon" />
+            <span>User Management</span>
+          </NavLink>
+
+          <NavLink to="/adminPage/LocationManagement" className="nav-item">
+            <FaMapMarkedAlt className="nav-icon" />
+            <span>Location Management</span>
+          </NavLink>
+
+          <NavLink to="/adminPage/Categories" className="nav-item">
+            <FaTags className="nav-icon" />
+            <span>Issue Categories</span>
+          </NavLink>
+        </nav>
+      </aside>
+    </>
   )
 }

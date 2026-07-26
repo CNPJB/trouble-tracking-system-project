@@ -24,7 +24,7 @@ export const CardFinishProblem = ({ data }) => {
       </div>
         <div className="main-info-card" key={data.id}>
           <div className="info-card">
-            <h1 style={{ fontSize: '25px',margin: 0 }}>{data.title}</h1>
+            <h1>{data.title}</h1>
             <p>โดย : {data.admin?.fullName || 'ไม่ระบุ'}</p>
             <p>เสร็จสิ้น : {formatDateTime(data.timestampFinished) || '-'}</p>
 
