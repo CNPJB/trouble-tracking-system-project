@@ -25,7 +25,7 @@ const Navbar = () => {
                 </div>
                 <nav>
                     <button className="navbar-toggle" id="navbar-toggle" onClick={toggleMobile}>
-                        <FiAlignJustify className="nav-toggle-icon" />
+                        <FiAlignJustify className="nav-toggle-icon-navbar" />
                     </button>
                     {isMobileOpen && (
                         <div className="navbar-menu-responsive">
@@ -44,6 +44,7 @@ const Navbar = () => {
                             {user.role === 'admin' && (
                                 <NavLink
                                     to="/adminPage/AuditIssues"
+                                    onClick={toggleMobile}
                                     className={({ isActive }) =>
                                         window.location.pathname.includes('/adminPage')
                                             ? "nav-menu-item-responsive active"

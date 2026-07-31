@@ -34,10 +34,10 @@ export const addEquipment = async (req, res) => {
 
 export const getEquipment = async (req, res) => {
     try {
-        const { categoryId, locationId, search } = req.query; 
-        
+        const { categoryId, locationId, search } = req.query;
+
         // ใช้กล่อง AND เป็นตัวรวมเงื่อนไขทั้งหมด เพื่อไม่ให้เงื่อนไข OR ตีกัน
-        const whereConditions = []; 
+        const whereConditions = [];
 
         if (categoryId) {
             whereConditions.push({ equipmentCtgId: Number(categoryId) });
@@ -46,8 +46,8 @@ export const getEquipment = async (req, res) => {
         if (locationId) {
             whereConditions.push({
                 OR: [
-                    { locationId: Number(locationId) }, 
-                    { room: { floor: { locationId: Number(locationId) } } } 
+                    { locationId: Number(locationId) },
+                    { room: { floor: { locationId: Number(locationId) } } }
                 ]
             });
         }
@@ -76,15 +76,15 @@ export const getEquipment = async (req, res) => {
                 category: { select: { equipmentCtgName: true } },
                 location: { select: { locationName: true } },
                 floor: { select: { floorLevel: true } },
-                room: { 
-                    select: { 
+                room: {
+                    select: {
                         roomName: true,
                         floor: { select: { floorLevel: true, location: { select: { locationName: true } } } }
-                    } 
+                    }
                 },
             },
             // แถมให้ครับเฮีย: เรียงลำดับจากล่าสุดไปเก่าสุด
-            orderBy: { equipmentId: 'desc' } 
+            orderBy: { equipmentId: 'desc' }
         });
 
         res.status(200).json(equipments);
@@ -183,8 +183,9 @@ export const uploadEquipments = async (req, res) => {
 
         const validDataToInsert = [];
         const allCategories = await prisma.equipmentCategory.findMany();
-        const allRooms = await prisma.room.findMany();
 
+        const allRooms = await prisma.room.findMany();
+        const allFloors = await prisma.floor.findMany();
         const categoryMap = new Map(
             allCategories.map(c => [
                 normalize(c.equipmentCtgName),
@@ -194,8 +195,15 @@ export const uploadEquipments = async (req, res) => {
 
         const roomMap = new Map(
             allRooms.map(r => [
-                normalize(r.roomName),
-                r.roomId
+                r.roomName.toString().trim(), 
+                r // <--- เก็บ Object ของห้องไว้ทั้งหมดเลย
+            ])
+        );
+
+        const floorMap = new Map(
+            allFloors.map(f => [
+                f.floorId || f.floor_id, 
+                f.locationId || f.location_id
             ])
         );
 
@@ -213,14 +221,15 @@ export const uploadEquipments = async (req, res) => {
             }
 
             const categoryId = categoryMap.get(normalize(item.equipmentCtgId));
-            const roomId = roomMap.get(normalize(item.roomId));
+            const roomNameFromFile = item.roomId.toString().trim();
+            const matchedRoom = roomMap.get(roomNameFromFile);
 
             if (!categoryId) {
                 errors.push(`แถวที่ ${item.rowNumber}: หมวดหมู่ "${item.equipmentCtgId}" ไม่ถูกต้อง`);
                 continue;
             }
 
-            if (!roomId) {
+            if (!matchedRoom) {
                 errors.push(`แถวที่ ${item.rowNumber}: ห้อง "${item.roomId}" ไม่ถูกต้อง`);
                 continue;
             }
@@ -235,11 +244,17 @@ export const uploadEquipments = async (req, res) => {
                 continue;
             }
             seenInFile.add(code);
+
+            const floorId = matchedRoom.floorId || matchedRoom.floor_id || null;
+            const locationId = floorId ? floorMap.get(floorId) : null;
+
             validDataToInsert.push({
-                equipmentCode: item.equipmentCode || null,
+                equipmentCode: code,
                 equipmentName: item.equipmentName,
                 equipmentCtgId: categoryId,
-                roomId: roomId
+                roomId: matchedRoom.roomId || matchedRoom.room_id,
+                floorId: floorId,       
+                locationId: locationId  
             });
         }
 
@@ -251,7 +266,10 @@ export const uploadEquipments = async (req, res) => {
         }
 
         if (errors.length > 0) {
-            return res.status(200).json({
+            // ส่ง status 400 หรือ 422 เพื่อให้ Frontend รู้ว่าเป็น Error พร้อมแนบ Data ที่ผ่านไปแล้ว (ถ้ามี)
+            return res.status(400).json({
+                success: false,
+                message: `อัปโหลดสำเร็จ ${validDataToInsert.length} รายการ แต่พบข้อผิดพลาดบางส่วน`,
                 errors: errors
             });
         }

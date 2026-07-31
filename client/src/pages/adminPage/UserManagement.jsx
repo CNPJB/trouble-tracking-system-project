@@ -81,8 +81,8 @@ const UserManagement = () => {
                 onDismiss={reset}
             />
             <div className="main-user-container">
-                <div className="table-responsive-wrapper">
-                    <table className="layout-table">
+                <div className="table-user-responsive-wrapper">
+                    <table className="user-layout-table">
                         <thead>
                             <tr>
                                 <th>Email</th>
@@ -107,11 +107,11 @@ const UserManagement = () => {
                     </table>
                 </div>
 
-                <div className="manage-container">
-                    <div className="header-container">
+                <div className="manage-user-container">
+                    <div className="header-user-container">
                         จัดการผู้ใช้
                     </div>
-                    <form action="" className="manage-user-container">
+                    <form action="" className="form-user-container">
                         <div>
                             <label>Email</label>
                             <input

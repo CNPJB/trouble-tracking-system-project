@@ -58,38 +58,40 @@
     border-color: #c62828;
 }
 
-/* --- เมื่อกดเลือก (Active) ให้ดึงสีหลักจาก Root มาใช้แบบเข้มๆ --- */
+.filter-btn.active {
+    border: none;
+    font-weight: 600;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    color: #ffffff; /* เปลี่ยนสีอักษรเป็นสีขาวเพื่อให้ตัดกับพื้นหลังที่เข้มขึ้น */
+}
 
+/* 2. กำหนดสีพื้นหลังให้ตรงกับสถานะของระบบจัดการทิกเก็ต */
+
+/* ทั้งหมด */
 .filter-btn.active[data-status="all"] { 
-    color: var(--text-color-main);
-    border: none;
-    font-weight: 600;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    background-color: #5a4adf; 
 }
 
+/* รอรับเรื่อง (สีส้มเหลือง) */
 .filter-btn.active[data-status="pending"] { 
-   color: var(--text-color-main);
-    border: none;
-    font-weight: 600;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    background-color: #ff9800; 
+    color: #000000; /* 💡 หมายเหตุ: เฉพาะสีส้ม ใช้ตัวหนังสือสีดำจะอ่านง่ายและคมชัดกว่าสีขาวครับ */
 }
 
+/* กำลังดำเนินการ (สีฟ้าเข้ม) */
 .filter-btn.active[data-status="in_progress"] { 
-    color: var(--text-color-main);
-    border: none;
-    font-weight: 600;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    background-color: #1976d2; 
 }
 
+/* เสร็จสิ้น (สีเขียวเข้ม) */
 .filter-btn.active[data-status="resolved"] { 
-    color: var(--text-color-main);
-    border: none;
-    font-weight: 600;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    background-color: #2e7d32; 
+}
+
+/* ปฏิเสธ/ยกเลิก (สีแดงเข้ม) - เติมให้ครบชุดครับ */
+.filter-btn.active[data-status="rejected"] { 
+    background-color: #c62828; 
 }
 
 @media (max-width: 1536px) {
@@ -100,7 +102,9 @@
 
 @media (max-width: 430px) {
     .filter-btn {
-        padding: 10px 10px;
-        font-size: 12px;
+        padding:  10px 5px;
+        font-size: 10px;
+        width: 180px;
+        justify-content: center;
     }
 }
