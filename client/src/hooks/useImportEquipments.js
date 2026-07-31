@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
+import Swal from 'sweetalert2'; // 🌟 นำเข้า SweetAlert2
 // hooks
 import { useEquipment } from '../hooks/useEquipment'
 import { useLoadingState } from '../hooks/useLoadingState'
@@ -18,7 +19,14 @@ export const useImportEquipments = (url) => {
 
   const uploadFile = async () => {
     if (!file) {
-      alert("กรุณาเลือกไฟล์ก่อนครับ");
+      // 🌟 เปลี่ยน alert เป็น Swal
+      Swal.fire({
+        icon: 'warning',
+        title: 'แจ้งเตือน',
+        text: 'กรุณาเลือกไฟล์ก่อนครับ',
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'ตกลง'
+      });
       return;
     }
 
@@ -31,13 +39,31 @@ export const useImportEquipments = (url) => {
     try {
       const response = await axios.post(url, formData);
 
+      // รีเฟรชตารางข้อมูล
       if (refetch) {
         await refetch();
       }
+
+      // 🌟 กรณีที่ 1: Backend ตอบกลับเป็น Status 200 แต่มี Error บางบรรทัด
       if (response.data.errors && response.data.errors.length > 0) {
-        setErrorList(response.data.errors); // เอาไปโชว์ในเว็บให้ผู้ใช้ดูว่าพังบรรทัดไหน
+        setErrorList(response.data.errors); 
+        Swal.fire({
+            icon: 'warning',
+            title: 'นำเข้าข้อมูลสำเร็จบางส่วน',
+            text: 'พบข้อผิดพลาดบางรายการ กรุณาตรวจสอบรายละเอียดบนหน้าต่างแจ้งเตือน',
+            confirmButtonColor: '#f39c12',
+            confirmButtonText: 'ดูข้อผิดพลาด'
+        });
       } else {
-        setFile(null); // ถ้าไม่มี Error เลย ค่อยล้างไฟล์ทิ้ง
+        // 🌟 กรณีที่ 2: สำเร็จ 100% ไม่มี Error
+        setFile(null); 
+        Swal.fire({
+            icon: 'success',
+            title: 'อัปโหลดสำเร็จ!',
+            text: response.data.message || 'นำเข้าข้อมูลครุภัณฑ์เรียบร้อยแล้ว',
+            confirmButtonColor: '#28a745',
+            confirmButtonText: 'ตกลง'
+        });
       }
 
       return true;
@@ -46,13 +72,35 @@ export const useImportEquipments = (url) => {
       console.error("Upload Error:", error);
 
       if (error.response && error.response.data) {
-        if (error.response.data.errors) {
+        // 🌟 กรณีที่ 3: Backend แจ้ง Error กลับมาเป็น HTTP Code (เช่น 400, 422) และแนบลิสต์มา
+        if (error.response.data.errors && error.response.data.errors.length > 0) {
           setErrorList(error.response.data.errors);
-        } else if (error.response.data.message) {
-          alert(error.response.data.message);
+          Swal.fire({
+              icon: 'warning',
+              title: 'พบข้อผิดพลาดในไฟล์',
+              text: error.response.data.message || 'ข้อมูลบางรายการไม่ถูกต้อง',
+              confirmButtonColor: '#f39c12',
+              confirmButtonText: 'ดูข้อผิดพลาด'
+          });
+        } else {
+          // 🌟 กรณีที่ 4: Error ทั่วไปจาก Backend (เช่น ไฟล์ไม่ถูกประเภท)
+          Swal.fire({
+              icon: 'error',
+              title: 'เกิดข้อผิดพลาด',
+              text: error.response.data.message || 'ไม่สามารถอัปโหลดข้อมูลได้',
+              confirmButtonColor: '#d33',
+              confirmButtonText: 'ตกลง'
+          });
         }
       } else {
-        alert("เกิดข้อผิดพลาดในการรับส่งข้อมูลกับเซิร์ฟเวอร์");
+        // 🌟 กรณีที่ 5: เซิร์ฟเวอร์ล่ม หรือเน็ตเวิร์คมีปัญหา
+        Swal.fire({
+          icon: 'error',
+          title: 'ข้อผิดพลาดเครือข่าย',
+          text: 'เกิดข้อผิดพลาดในการรับส่งข้อมูลกับเซิร์ฟเวอร์',
+          confirmButtonColor: '#d33',
+          confirmButtonText: 'ตกลง'
+        });
       }
 
       return false;
@@ -61,6 +109,7 @@ export const useImportEquipments = (url) => {
       setIsSubmitting(false);
     }
   };
+
   return {
     file,
     setFile,

@@ -31,7 +31,10 @@
   padding: 0 20px;
   box-sizing: border-box;
 }
-
+.nav-toggle-icon-navbar{
+  font-size: 30px;
+  color: #ffffff;
+}
 .navbar-toggle {
   background: none;
   border: none;
