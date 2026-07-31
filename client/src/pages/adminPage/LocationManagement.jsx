@@ -74,19 +74,22 @@ const LocationManagement = () => {
         setSelectedId(selectedItem.locationId);
     };
 
-    const toggleLocation = (locationId) => {
-        setOpenLocations((prev) =>
-            prev.includes(locationId)
-                ? prev.filter((id) => id !== locationId)
-                : [...prev, locationId]
-        );
-    };
+ const toggleLocation = (locationId) => {
+    setOpenLocations((prev) => {
+        if (prev.includes(locationId)) {
+            return [];
+        } else {
+            setOpenFloors([]); 
+            return [locationId];
+        }
+    });
+};
 
     const toggleFloor = (floorId) => {
         setOpenFloors((prev) =>
             prev.includes(floorId)
-                ? prev.filter((id) => id !== floorId)
-                : [...prev, floorId]
+                ? []
+                : [floorId]
         );
     };
 
@@ -298,7 +301,7 @@ const LocationManagement = () => {
                     roomStatus: ''
                 });
                 setSelectedId(null);
-                setOpenLocations([]);      
+                setOpenLocations([]);
                 setOpenFloors([]);
             }
         } catch (error) {
@@ -324,7 +327,7 @@ const LocationManagement = () => {
                 success={loading.success}
                 onDismiss={reset}
             />
-            <div className="main-container">
+            <div className="main-location-container">
                 <div className="location-container">
                     <h3 style={{ textAlign: 'center' }}>รายการสถานที่</h3>
                     <ul>

@@ -4,7 +4,7 @@
 .tracking-page-layout {
     display: flex;
     gap: 30px;
-    padding: 30px;
+    padding: 0 0 20px;
     margin: 0 auto;
     align-items: flex-start; /* ให้ Sidebar กับ Main Content เริ่มจากขอบบนสุด */
 }
@@ -276,5 +276,23 @@
 @media (max-width: 1536px) {
     .ticket-grid {
         gap: 12px;
+    }
+}
+
+@media (max-width: 430px) {
+    .tracking-page-layout {
+       display: grid;
+       grid-template-columns: 1fr;
+    }
+    .tracking-main-content {
+        padding: 10px;
+        gap: 5px;
+    }
+    .tracking-page-layout{
+        gap: 5px;
+    }
+    .top-toolbar{
+        justify-content: center;
+        margin-top: 50px;
     }
 }

@@ -1,0 +1,147 @@
+"filename", "language", "JavaScript", "MS SQL", "JSON", "TypeScript", "Markdown", "YAML", "Docker", "Ignore", "HTML", "PostCSS", "JavaScript JSX", "comment", "blank", "total"
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\README.md", "Markdown", 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1, 3
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\.dockerignore", "Ignore", 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 11
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\Dockerfile", "Docker", 0, 0, 0, 0, 0, 0, 17, 0, 0, 0, 0, 3, 2, 22
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\README.md", "Markdown", 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 8, 17
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\eslint.config.js", "JavaScript", 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 30
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\index.html", "HTML", 0, 0, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0, 1, 14
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\package-lock.json", "JSON", 0, 0, 3191, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3192
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\package.json", "JSON", 0, 0, 38, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 39
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\App.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 1, 1, 8
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\App.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 81, 6, 10, 97
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\CardFinishProblem.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 63, 0, 6, 69
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\CardPendingProblem.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 127, 2, 8, 137
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\ChartForStatistic.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 65, 0, 8, 73
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\ConfirmButton.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 45, 1, 3, 49
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\DateRangeFilter.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 26, 1, 3, 30
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\FeedbackModal.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 140, 12, 21, 173
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\FilterProblem.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 70, 3, 10, 83
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\Footer.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\ImageUploader.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 44, 3, 5, 52
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\LoadingSpinner.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 67, 2, 8, 77
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\Navbar.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 114, 6, 13, 133
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\SearchBar.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 3, 23
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\SimilarTickets.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 48, 1, 5, 54
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\StarRating.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 5, 7, 32
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\StatisticsSidebar.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 62, 14, 10, 86
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\TIcketStatusFilter.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 0, 3, 30
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\TicketCategoryFilter.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 0, 2, 29
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\TicketLocationFilter.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 0, 3, 30
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\TrackingSidebar.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 2, 5, 40
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsAdmin\AdminLayout.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 1, 4, 18
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsAdmin\AdminSidebar.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 84, 0, 4, 10, 98
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsAdmin\AdminSidebar.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 0, 17, 107
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsAdmin\DropdownAdd.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 82, 4, 9, 95
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsAdmin\ImportEquipments.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 173, 0, 15, 23, 211
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsAdmin\ImportEquipments.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 114, 7, 13, 134
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsAdmin\MergeManagementPanel.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 379, 0, 41, 54, 474
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsAdmin\MergeManagementPanel.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 195, 13, 19, 227
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsAdmin\PopupAlert.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 62, 0, 8, 9, 79
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsAdmin\PopupAlert.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, 2, 7, 39
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsAdmin\TicketActionPanel.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 133, 0, 13, 15, 161
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsAdmin\TicketActionPanel.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 152, 17, 20, 189
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\CardFinishProblem.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 87, 0, 0, 9, 96
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\CardPendingProblem.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 239, 0, 17, 34, 290
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\ConfirmButton.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 89, 0, 10, 17, 116
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\DateRangeFilter.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 40, 0, 6, 6, 52
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\FeedbackModal.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 159, 0, 10, 28, 197
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\FilterProblem.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 88, 0, 4, 14, 106
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\ImageUploader.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 68, 0, 4, 9, 81
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\LoadingSpinner.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 143, 0, 8, 17, 168
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\Navbar.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 224, 0, 45, 40, 309
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\SearchBar.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 58, 0, 6, 9, 73
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\SimilarTickets.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 172, 0, 31, 27, 230
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\StatisticsSidebar.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 45, 0, 0, 6, 51
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\TicketCategoryFilter.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 51, 0, 0, 6, 57
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\TicketLocationFilter.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 51, 0, 0, 5, 56
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\TicketStatusFilter.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 51, 0, 0, 7, 58
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\TrackingSidebar.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 73, 0, 10, 9, 92
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\context\AuthContext.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 41, 3, 8, 52
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useCategories.js", "JavaScript", 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 21
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useEquipment.js", "JavaScript", 56, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 62
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useEquipmentValidation.js", "JavaScript", 57, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 6, 67
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useEquiptmentCtg.js", "JavaScript", 17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 21
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useFilterDate.js", "JavaScript", 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 9, 38
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useImageUpload.js", "JavaScript", 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 9, 59
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useImportEquipments.js", "JavaScript", 62, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 12, 75
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useInfiniteScroll.js", "JavaScript", 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 7, 33
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useLoadingState.js", "JavaScript", 31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 38
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useLocations.js", "JavaScript", 37, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 44
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useMasterData.js", "JavaScript", 47, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 53
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useResolvedTickets.js", "JavaScript", 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5, 32
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useSimilarTickets.js", "JavaScript", 43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 11, 55
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useStatistics.js", "JavaScript", 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 50
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useTicketDetail.js", "JavaScript", 42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 9, 54
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useTicketGroups.js", "JavaScript", 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 4, 27
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useTicketSearch.js", "JavaScript", 42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 10, 54
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useTicketSummary.js", "JavaScript", 19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 23
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useTickets.js", "JavaScript", 97, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 16, 129
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useUrgentTickets.js", "JavaScript", 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 29
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useUsers.js", "JavaScript", 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 32
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\index.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 95, 0, 33, 23, 151
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\main.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, 0, 5, 35
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\AddIssue.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 333, 40, 60, 433
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\Dashboard.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 116, 13, 17, 146
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\DetailTicket.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 191, 17, 11, 219
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\EditIssue.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 298, 27, 48, 373
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\Login.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 73, 4, 8, 85
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\Statistics.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 180, 5, 22, 207
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\Tracking.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 353, 12, 43, 408
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\adminPage\AssetManagement.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 265, 0, 46, 41, 352
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\adminPage\AssetManagement.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 436, 48, 43, 527
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\adminPage\AuditIssues.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 53, 0, 6, 8, 67
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\adminPage\AuditIssues.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 229, 36, 36, 301
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\adminPage\Categories.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 159, 0, 9, 20, 188
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\adminPage\Categories.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 148, 4, 15, 167
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\adminPage\IssueManagement.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 188, 0, 18, 29, 235
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\adminPage\IssueManagement.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 176, 6, 22, 204
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\adminPage\IssueManagementDetail.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 240, 0, 12, 39, 291
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\adminPage\IssueManagementDetail.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 198, 14, 19, 231
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\adminPage\LocationManagement.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 230, 0, 20, 32, 282
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\adminPage\LocationManagement.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 530, 9, 57, 596
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\adminPage\UserManagement.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 95, 0, 2, 8, 105
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\adminPage\UserManagement.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 150, 3, 13, 166
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\pageStyles\AddIssue.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 145, 0, 13, 24, 182
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\pageStyles\Dashboard.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 124, 0, 2, 21, 147
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\pageStyles\DetailTicket.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 369, 0, 69, 61, 499
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\pageStyles\EditIssue.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 135, 0, 2, 19, 156
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\pageStyles\Login.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 86, 0, 9, 17, 112
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\pageStyles\Statistics.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 274, 0, 37, 40, 351
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\pageStyles\Tracking.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 220, 0, 27, 34, 281
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\services\IssueCategoryService.js", "JavaScript", 21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 26
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\services\equipmentService.js", "JavaScript", 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 27
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\services\locationService.js", "JavaScript", 69, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 80
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\services\ticketService.js", "JavaScript", 141, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 17, 159
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\utils\formatDate.js", "JavaScript", 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 25
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\utils\timeline.js", "JavaScript", 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 5, 37
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\vite.config.js", "JavaScript", 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 2, 28
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\docker-compose.prod.yml", "YAML", 0, 0, 0, 0, 0, 31, 0, 0, 0, 0, 0, 0, 3, 34
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\docker-compose.yml", "YAML", 0, 0, 0, 0, 0, 48, 0, 0, 0, 0, 0, 0, 3, 51
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\.dockerignore", "Ignore", 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 11
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\Dockerfile", "Docker", 0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 5, 1, 22
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\config\cloudinaryConfig.js", "JavaScript", 29, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 5, 38
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\config\prismaClient.js", "JavaScript", 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 16
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\controllers\EquipmentControllers.js", "JavaScript", 300, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 48, 353
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\controllers\authController.js", "JavaScript", 144, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 25, 185
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\controllers\getTicketControllers.js", "JavaScript", 304, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 43, 37, 384
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\controllers\managementControllers.js", "JavaScript", 355, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 42, 404
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\controllers\statisticController.js", "JavaScript", 125, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 23, 155
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\controllers\ticketControllers.js", "JavaScript", 328, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31, 59, 418
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\controllers\ticketManagementControllers.js", "JavaScript", 354, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 40, 73, 467
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\middleware\authMiddleware.js", "JavaScript", 21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 5, 28
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\middleware\ticketMiddleware.js", "JavaScript", 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 41
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\package-lock.json", "JSON", 0, 0, 4077, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4078
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\package.json", "JSON", 0, 0, 42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 43
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\prisma.config.ts", "TypeScript", 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 2, 2, 15
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\prisma\migrations\20260517092523_add_extension\migration.sql", "MS SQL", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\prisma\migrations\20260517092757_init_schema\migration.sql", "MS SQL", 0, 130, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36, 46, 212
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\prisma\migrations\20260606071851_change_rating_to_float\migration.sql", "MS SQL", 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 13, 39
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\routes\authRoutes.js", "JavaScript", 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 7, 26
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\routes\managementRoutes.js", "JavaScript", 45, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 13, 59
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\routes\ticketManagementRoutes.js", "JavaScript", 34, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 10, 46
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\routes\ticketRoutes.js", "JavaScript", 42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 9, 52
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\src\index.js", "JavaScript", 29, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 6, 40
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\utils\cloudinaryUpload.js", "JavaScript", 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 26
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\utils\formatDate.js", "JavaScript", 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 23
+"c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\utils\generateID.js", "JavaScript", 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 16
+"Total", "-", 3379, 144, 7348, 11, 11, 79, 33, 22, 13, 5153, 5264, 1170, 2081, 24708

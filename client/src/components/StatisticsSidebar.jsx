@@ -1,7 +1,7 @@
 import './componentsStyles/StatisticsSidebar.css';
 import { NavLink } from 'react-router-dom';
 import { FaChartPie, FaListOl, FaMapMarkerAlt, FaThumbsUp } from 'react-icons/fa';
-import { FiAlignJustify } from 'react-icons/fi';
+import { LuPanelLeftClose } from "react-icons/lu"; 
 import { useState } from 'react';
 export const StatisticsSidebar = ({ activeTab, onTabChange }) => {
   // const menuItems = [
@@ -18,8 +18,8 @@ export const StatisticsSidebar = ({ activeTab, onTabChange }) => {
     <>
       <aside className="mobile-sidebar">
         {/* ปุ่มแฮมเบอร์เกอร์ */}
-        <button className="navbar-toggle" id="navbar-toggle" onClick={toggleMobile}>
-          <FiAlignJustify className="nav-toggle-icon" />
+        <button className="statistics-navbar-toggle" id="navbar-toggle" onClick={toggleMobile}>
+          <LuPanelLeftClose className='nav-toggle-icon' />
         </button>
         
         {/* 🌟 ฉากหลังสีดำโปร่งแสง (Backdrop) กดแล้วปิดเมนูได้ */}

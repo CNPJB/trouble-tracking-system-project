@@ -9,7 +9,7 @@ import {
 } from 'react-icons/fa';
 import './AdminSidebar.css'
 import { NavLink } from 'react-router-dom';
-import { FiAlignJustify } from 'react-icons/fi';
+import { LuPanelLeftClose } from "react-icons/lu"; 
 
 export const AdminSidebar = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -19,8 +19,8 @@ export const AdminSidebar = () => {
   return (
     <>
       <aside className="mobile-sidebar">
-        <button className="navbar-toggle" id="navbar-toggle" onClick={toggleMobile}>
-          <FiAlignJustify className="nav-toggle-icon" />
+        <button className="admin-navbar-toggle" id="navbar-toggle" onClick={toggleMobile}>
+         <LuPanelLeftClose className='nav-toggle-icon' />
         </button>
         
         <div className={`mobile-backdrop ${isMobileOpen ? 'open' : ''}`} onClick={toggleMobile}></div>

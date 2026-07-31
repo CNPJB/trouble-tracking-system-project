@@ -87,8 +87,7 @@ const DetailTicket = () => {
                                                         src={img.imageUrl}
                                                         alt={`ก่อนซ่อม ${index + 1}`}
                                                         className="clickable-img"
-                                                        // ถ้ารูปเดียวเปิดแท็บใหม่ ถ้ารูปเยอะเปิด Modal
-                                                        onClick={() => beforeImages.length === 1 ? window.open(img.imageUrl, '_blank') : setShowMoreBeforeImages(true)}
+                                                        onClick={() => setShowMoreBeforeImages(true)}
                                                     />
                                                 ))}
                                             </div>
@@ -125,7 +124,7 @@ const DetailTicket = () => {
                                                     alt={`หลังซ่อม ${index + 1}`}
                                                     className="clickable-img"
                                                     // ถ้ารูปเดียวเปิดแท็บใหม่ ถ้ารูปเยอะเปิด Modal
-                                                    onClick={() => afterImages.length === 1 ? window.open(img.imageUrl, '_blank') : setShowMoreAfterImages(true)}
+                                                    onClick={() => setShowMoreAfterImages(true)}
                                                 />
                                             ))}
                                         </div>
@@ -134,7 +133,7 @@ const DetailTicket = () => {
                                             <p
                                                 className="see-more-text"
                                                 onClick={() => setShowMoreAfterImages(true)}
-                                
+
                                             ></p>
                                         )}
                                     </>

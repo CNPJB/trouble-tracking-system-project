@@ -160,6 +160,7 @@ const IssueManagement = () => {
                         pagination={{ clickable: true }}
                         autoplay={{ delay: 5000, disableOnInteraction: false }}
                         breakpoints={{
+                            430: { slidesPerView: 1 },
                             860: { slidesPerView: 2 },
                             1200: { slidesPerView: 2 },
                             1536: { slidesPerView: 2 },
