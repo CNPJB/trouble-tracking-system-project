@@ -341,7 +341,12 @@ export const updateTicketStatusAdmin = async (req, res) => {
             return res.status(400).json({ success: false, message: "กรุณาระบุเหตุผลการปฏิเสธ" });
         }
 
-        // 4. จัดการอัปโหลดรูปภาพ (เฉพาะกรณี Resolved และมีไฟล์แนบมา)
+        // 4. บังคับอัปโหลดรูปภาพ กรณี Resolved
+        if (ticketStatus === 'resolved' && (!files || files.length === 0)) {
+            return res.status(400).json({ success: false, message: "กรุณาแนบรูปภาพเพื่อเป็นหลักฐานการแก้ไขอย่างน้อย 1 รูป" });
+        }
+
+        // 5. จัดการอัปโหลดรูปภาพ (เฉพาะกรณี Resolved และมีไฟล์แนบมา)
         const uploadedImagesData = [];
         if (ticketStatus === 'resolved' && files && files.length > 0) {
             // ใช้เทคนิค Promise.all เหมือนใน addTicket[cite: 27]

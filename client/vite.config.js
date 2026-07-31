@@ -12,7 +12,8 @@ export default defineConfig({
     },
     allowedHosts: [
       'shawl-vertical-depravity.ngrok-free.dev',
-      '192.168.1.53.nip.io'
+      '192.168.1.53.nip.io',
+      'nonrestricted-casey-hazelly.ngrok-free.dev',
     ],
     proxy: {
       '/api': {

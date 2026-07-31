@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { FaTasks, FaTimes } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext.jsx';
 
 // styles
@@ -13,6 +14,7 @@ import { MergeManagementPanel } from '../../components/componentsAdmin/MergeMana
 import { LoadingSpinner, ToastAlert } from '../../components/LoadingSpinner.jsx';
 import { TicketCategoryFilter } from '../../components/TicketCategoryFilter.jsx';
 import { TicketLocationFilter } from '../../components/TicketLocationFilter.jsx';
+import { AdvancedFilterPanel } from '../../components/AdvancedFilterPanel.jsx';
 
 // hooks 
 import { useTickets } from '../../hooks/useTickets.js'
@@ -41,6 +43,13 @@ const AuditIssues = () => {
         payload: null,
         type: null
     });
+    const [isMobilePanelOpen, setIsMobilePanelOpen] = useState(false);
+
+    const activeDropdownFiltersCount =
+        (selectedCategory ? 1 : 0) +
+        (selectedLocation ? 1 : 0);
+
+
     const lastTicketElementRef = useInfiniteScroll({
         isLoading: isLoading,
         isFetchingNextPage: isFetchingNextPage,
@@ -137,7 +146,7 @@ const AuditIssues = () => {
             if (result.success) {
                 setSuccess(result.message || "ดำเนินการแยกกลุ่มปัญหาสำเร็จ");
                 setConfirmUnmergeModal({ isOpen: false, payload: null, type: null });
-            
+
                 await Promise.all([refetch(), refetchGroups()]);
             }
         } catch (error) {
@@ -147,31 +156,31 @@ const AuditIssues = () => {
         }
     };
 
+    // ==========================================
+    // โซนฟังก์ชันจัดการ UI & Filters
+    // ==========================================
     const handleSearch = (keyword) => {
         updateFilters({ search: keyword });
-        if (selectedMergeTickets.length > 0) {
-            handleResetSelection();
-        }
+        if (selectedMergeTickets.length > 0) handleResetSelection();
     };
 
     const handleCategoryFilter = (categoryId) => {
         setSelectedCategory(categoryId);
-        // โยนเข้า Hook useTickets ให้ไปยิง API ใหม่ (ถ้าไม่มีค่า ให้ส่ง undefined ไปเพื่อเคลียร์ filter)
         updateFilters({ categoryId: categoryId || undefined });
-
-        if (selectedMergeTickets.length > 0) {
-            handleResetSelection();
-        }
+        if (selectedMergeTickets.length > 0) handleResetSelection();
     };
 
     const handleLocationFilter = (locationId) => {
         setSelectedLocation(locationId);
-        // โยนเข้า Hook useTickets ให้ไปยิง API ใหม่ (ถ้าไม่มีค่า ให้ส่ง undefined ไปเพื่อเคลียร์ filter)
         updateFilters({ locationId: locationId || undefined });
+        if (selectedMergeTickets.length > 0) handleResetSelection();
+    };
 
-        if (selectedMergeTickets.length > 0) {
-            handleResetSelection();
-        }
+    const handleClearAllFilters = () => {
+        setSelectedCategory('');
+        setSelectedLocation('');
+        updateFilters({ categoryId: undefined, locationId: undefined });
+        if (selectedMergeTickets.length > 0) handleResetSelection();
     };
 
     // if (isLoading) return <LoadingSpinner isLoading={true} message="กำลังโหลดข้อมูลปัญหา..." />;
@@ -188,25 +197,16 @@ const AuditIssues = () => {
                     <SearchBar onSearch={handleSearch} />
                 </div>
 
-                <TicketCategoryFilter
-                    selectedValue={selectedCategory}
-                    onChange={handleCategoryFilter}
-                />
-                <TicketLocationFilter
-                    selectedValue={selectedLocation}
-                    onChange={handleLocationFilter}
-                />
-                {/* <DateRangeFilter
-                    startDate={startDate}
-                    endDate={endDate}
-                    onChange={(update) => {
-                        if (!update) {
-                            setDateRange([null, null]); // ถ้ากดกากบาท ล้างเป็น null ทั้งคู่
-                        } else {
-                            setDateRange(update);
-                        }
-                    }}
-                /> */}
+                <div className="filter-panel-responsive-audit">
+                    <AdvancedFilterPanel
+                        onClearAll={handleClearAllFilters}
+                        activeFilterCount={activeDropdownFiltersCount}
+                    >
+                        {/* โยนเข้าไปเฉพาะ 2 ตัวกรองที่ต้องการ */}
+                        <TicketCategoryFilter selectedValue={selectedCategory} onChange={handleCategoryFilter} />
+                        <TicketLocationFilter selectedValue={selectedLocation} onChange={handleLocationFilter} />
+                    </AdvancedFilterPanel>
+                </div>
             </div>
             <div className="audit-issues-content">
                 <div className="audit-issues-card-list">
@@ -244,22 +244,47 @@ const AuditIssues = () => {
                         </div>
                     )}
                 </div>
+                <aside className={`audit-right-panel ${isMobilePanelOpen ? 'open' : ''}`}>
+                    {/* Overlay สำหรับปิด Panel บนมือถือ */}
+                    {isMobilePanelOpen && (
+                        <div className="panel-overlay" onClick={() => setIsMobilePanelOpen(false)}></div>
+                    )}
 
-                <aside className="audit-right-panel">
-                    <MergeManagementPanel
-                        activeTab={activePanelTab}
-                        onTabChange={setActivePanelTab}
-                        allTickets={tickets}
-                        selectedTickets={selectedMergeTickets}
-                        groupedTicketsFromApi={ticketGroups}
-                        isLoadingGroups={isLoadingGroups}
-                        onUnmergeAction={handleUnmergeAction}
-                        onReset={handleResetSelection}
-                        onConfirm={handleConfirmMerge}
-                        onRemoveTicket={handleRemoveSelectedTicket}
-                        isLoading={false}
-                    />
+                    <div className="panel-content-wrapper">
+                        {/* Header สำหรับปิด Panel บนมือถือ */}
+                        <div className="panel-close-header">
+                            <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#334155' }}>จัดการปัญหา</h3>
+                            <button className="btn-close-panel" onClick={() => setIsMobilePanelOpen(false)}>
+                                <FaTimes />
+                            </button>
+                        </div>
+
+                        <MergeManagementPanel
+                            activeTab={activePanelTab}
+                            onTabChange={setActivePanelTab}
+                            allTickets={tickets}
+                            selectedTickets={selectedMergeTickets}
+                            groupedTicketsFromApi={ticketGroups}
+                            isLoadingGroups={isLoadingGroups}
+                            onUnmergeAction={handleUnmergeAction}
+                            onReset={handleResetSelection}
+                            onConfirm={handleConfirmMerge}
+                            onRemoveTicket={handleRemoveSelectedTicket}
+                            isLoading={false}
+                        />
+                    </div>
                 </aside>
+
+                {/* Floating Button สำหรับเปิด Panel บนหน้าจอเล็ก */}
+                <button
+                    className="btn-floating-panel"
+                    onClick={() => setIsMobilePanelOpen(true)}
+                >
+                    <FaTasks /> จัดการปัญหา
+                    {selectedMergeTickets.length > 0 && (
+                        <span className="floating-badge">{selectedMergeTickets.length}</span>
+                    )}
+                </button>
             </div>
             <ConfirmButton
                 isOpen={confirmMergeModal.isOpen}
@@ -275,21 +300,21 @@ const AuditIssues = () => {
             <ConfirmButton
                 isOpen={confirmUnmergeModal.isOpen}
                 title={
-                    confirmUnmergeModal.type === 'single' 
-                    ? "ยืนยันการแยกรายการปัญหา" 
-                    : "ยืนยันการยุบกลุ่มปัญหา (Disband Group)"
+                    confirmUnmergeModal.type === 'single'
+                        ? "ยืนยันการแยกรายการปัญหา"
+                        : "ยืนยันการยุบกลุ่มปัญหา (Disband Group)"
                 }
                 message={
                     confirmUnmergeModal.type === 'single'
-                    ? `คุณแน่ใจหรือไม่ว่าต้องการแยกรายการปัญหา ${confirmUnmergeModal.payload?.subTicketId} ออกจากกลุ่มนี้? ปัญหานี้จะกลับไปแสดงที่หน้ากระดานรอดำเนินการตามปกติ`
-                    : `คุณแน่ใจหรือไม่ว่าต้องการ "ยุบกลุ่ม" ปัญหาหลัก ${confirmUnmergeModal.payload?.mainTicketId}? รายการปัญหาย่อยทั้งหมดในกลุ่มนี้จะถูกแยกตัวออก และกลับไปแสดงบนหน้ากระดานตามปกติ`
+                        ? `คุณแน่ใจหรือไม่ว่าต้องการแยกรายการปัญหา ${confirmUnmergeModal.payload?.subTicketId} ออกจากกลุ่มนี้? ปัญหานี้จะกลับไปแสดงที่หน้ากระดานรอดำเนินการตามปกติ`
+                        : `คุณแน่ใจหรือไม่ว่าต้องการ "ยุบกลุ่ม" ปัญหาหลัก ${confirmUnmergeModal.payload?.mainTicketId}? รายการปัญหาย่อยทั้งหมดในกลุ่มนี้จะถูกแยกตัวออก และกลับไปแสดงบนหน้ากระดานตามปกติ`
                 }
                 onConfirm={submitUnmerge}
                 onCancel={() => setConfirmUnmergeModal({ isOpen: false, payload: null, type: null })}
                 confirmText={
-                    loading.isLoading 
-                    ? "กำลังประมวลผล..." 
-                    : (confirmUnmergeModal.type === 'single' ? "ยืนยันการแยก" : "ยืนยันการยุบกลุ่ม")
+                    loading.isLoading
+                        ? "กำลังประมวลผล..."
+                        : (confirmUnmergeModal.type === 'single' ? "ยืนยันการแยก" : "ยืนยันการยุบกลุ่ม")
                 }
                 cancelText="ปิด"
                 isLoading={loading.isLoading}

@@ -37,8 +37,8 @@ const SimilarTickets = ({ tickets, onUpvote, currentUserId }) => {
                                     onClick={() => onUpvote(ticket.ticketId)}
                                     disabled={ticket.userId === currentUserId}
                                 >
-                                    <FaThumbsUp className="nav-icon" />
-                                    Vote ({ticket.upvotes?.length || 0}) 
+                                    <FaThumbsUp className="nav-icon-vote" />
+                                    Vote ({ticket.upvotes?.length || 0})
                                 </button>
                             </div>
                         </div>

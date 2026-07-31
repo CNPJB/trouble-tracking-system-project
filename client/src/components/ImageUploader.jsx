@@ -1,18 +1,23 @@
 import React from 'react';
 import './componentsStyles/ImageUploader.css';
 
-const ImageUploader = ({ 
-  selectedImages, 
-  fileInputRef, 
-  onImageChange, 
-  onRemoveImage, 
-  maxImages = 3 
+const ImageUploader = ({
+  selectedImages,
+  fileInputRef,
+  onImageChange,
+  onRemoveImage,
+  maxImages = 3,
+  minImages = 0
 }) => {
   return (
     <div className="form-group">
-      <label>เพิ่มรูปภาพ (อย่างน้อย 1 รูป และไม่เกิน {maxImages} รูป) <span style={{ color: 'red' }}>*</span></label>
+      {minImages > 0 ? (
+        <label>เพิ่มรูปภาพ (อย่างน้อย {minImages} รูป และไม่เกิน {maxImages} รูป) <span style={{ color: 'red' }}>*</span></label>
+      ) : (
+        <label>เพิ่มรูปภาพ (ไม่เกิน {maxImages} รูป)</label>
+      )}
       <div className="image-upload-container">
-        
+
         {/* Input ที่ถูกซ่อนไว้ */}
         <input
           type="file"

@@ -16,7 +16,7 @@ import { useResolvedTickets } from '../hooks/useResolvedTickets.js';
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll.js';
 
 const Dashboard = () => {
-  const [selectedStatus, setSelectedStatus] = useState('pending,in_progress,resolved');
+  const [selectedStatus, setSelectedStatus] = useState('pending,in_progress,resolved,rejected');
   const {
     tickets, pagination, isLoading, isFetchingNextPage,
     changePage, updateFilters, refetch, removeTicket, } = useTickets({ status: selectedStatus });
@@ -24,13 +24,14 @@ const Dashboard = () => {
   // ดึงข้อมูลสรุปยอดสำหรับทำ Filter Bar
   const { summary } = useTicketSummary();
 
-  const { resolvedTickets, isLoadingResolved } = useResolvedTickets(10);
+  // ดึงรายการแก้ไขสำเร็จ (จำกัด 10 รายการ และเอาเฉพาะที่มีการให้คะแนนแล้ว)
+  const { resolvedTickets, isLoadingResolved } = useResolvedTickets(10, true);
 
   const scrollRef = useRef(null);
 
   // --- State for ticket status filter
   const [currentStatus, setCurrentStatus] = useState('all');
-  const allowedStatuses = ['pending', 'in_progress', 'resolved'];
+  const allowedStatuses = ['pending', 'in_progress', 'resolved', 'rejected'];
 
   const lastTicketElementRef = useInfiniteScroll({
     isLoading: isLoading,
@@ -75,7 +76,7 @@ const Dashboard = () => {
               <CardFinishProblem key={ticket.ticketId || index} data={ticket} />
             ))
           ) : (
-            <div style={{ padding: '20px', color: 'gray' }}>ยังไม่มีรายการที่แก้ไขสำเร็จ</div>
+            <div style={{ padding: '20px', color: 'gray' }}>ยังไม่มีรายการที่แก้ไขสำเร็จที่ได้รับการประเมิน</div>
           )}
         </div>
 
@@ -92,7 +93,7 @@ const Dashboard = () => {
         </div>
         <div className='fillter-container'>
           {isLoading && tickets.length === 0 ? (
-           <SkeletonFilterProblem />
+            <SkeletonFilterProblem />
           ) : (
             <FilterProblem
               summary={summary}

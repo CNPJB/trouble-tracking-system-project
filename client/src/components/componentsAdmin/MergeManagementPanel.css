@@ -147,7 +147,8 @@
 }
 
 .btn-remove-selected:hover {
-    color: #ef4444; /* สีแดงเมื่อเอาเมาส์ชี้ */
+    color: #ef4444;
+    /* สีแดงเมื่อเอาเมาส์ชี้ */
     background-color: #fee2e2;
     transform: scale(1.1);
 }
@@ -161,18 +162,19 @@
     font-weight: 600;
     padding: 4px 10px;
     border-radius: 50px;
-    
+
 }
 
 .main-badge {
     background-color: var(--tbs-green);
-    color: white; 
+    color: white;
 }
 
 .main-badge svg {
     margin: 3px 2px 0px 2px;
     font-size: 10px;
 }
+
 .main-badge span {
     align-content: center;
 }
@@ -340,6 +342,7 @@
     display: flex;
     gap: 30px;
 }
+
 /* การ์ดที่สามารถคลิกได้ (Tab 2) */
 .clickable-card {
     cursor: pointer;
@@ -359,12 +362,14 @@
 
 /* พื้นที่กล่องลูก (Slide down effect) */
 .accordion-sub-tickets {
-    background-color: #fafaf9; /* สีพื้นหลังอ่อนๆ ให้ดูกลืนกัน */
+    background-color: #fafaf9;
+    /* สีพื้นหลังอ่อนๆ ให้ดูกลืนกัน */
     border: 1px solid var(--tbs-green);
     border-top: none;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
-    padding: 12px 12px 12px 24px; /* เว้นซ้ายเยอะหน่อย ให้ดูย่อหน้า */
+    padding: 12px 12px 12px 24px;
+    /* เว้นซ้ายเยอะหน่อย ให้ดูย่อหน้า */
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -374,7 +379,7 @@
 
 .accordion-sub-item {
     margin-left: 0;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .loading-subs-placeholder {
@@ -414,7 +419,6 @@
 /* ปุ่มแยกทีละใบ (บน Sub Ticket) */
 .btn-unlink-sub {
     position: absolute;
-    top: 10px;
     right: 10px;
     background-color: #f1f5f9;
     color: #64748b;
@@ -432,7 +436,7 @@
 
 .btn-unlink-sub:hover {
     background-color: #fff7ed;
-    color: #ea580c; 
+    color: #ea580c;
     border-color: #fdba74;
 }
 
@@ -445,6 +449,7 @@
         opacity: 0;
         transform: translateY(-10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -456,19 +461,46 @@
         min-height: calc(70vh - 40px);
         max-height: calc(100vh - 40px);
     }
+
     .ticket-list-item {
         padding: 8px;
     }
+
     .selected-tickets-list {
         gap: 8px;
     }
+
     .selection-header {
         padding-bottom: 8px;
     }
+
     .merge-panel-container {
         gap: 12px;
     }
+
     .merge-panel-content {
         gap: 8px;
+    }
+}
+
+@media (max-width: 820px) {
+    .merge-panel-container {
+        max-height: calc(90vh - 40px);
+    }
+
+}
+
+@media (max-width: 430px) {
+    .merge-panel-container {
+        max-height: calc(90vh - 40px);
+    }
+
+    .p-unlink-text {
+        display: none;
+    }
+
+    .btn-unlink-sub {
+        top: -5px;
+        right: -5px;
     }
 }

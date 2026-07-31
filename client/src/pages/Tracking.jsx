@@ -10,19 +10,24 @@ import { useInfiniteScroll } from '../hooks/useInfiniteScroll.js';
 // Components
 import { LoadingSpinner, ToastAlert } from '../components/LoadingSpinner.jsx';
 import { SearchBar } from '../components/SearchBar.jsx';
-import { CardPendingProblem } from '../components/CardpendingProblem.jsx';
+import { CardPendingProblem } from '../components/CardPendingProblem.jsx';
 import { TrackingSidebar } from '../components/TrackingSidebar.jsx';
 import { ConfirmButton } from '../components/ConfirmButton.jsx';
 import { StarRating } from '../components/StarRating.jsx';
 import { FeedbackModal } from '../components/FeedbackModal.jsx';
 import { TicketActionMenu } from '../components/TicketActionMenu.jsx';
 
+import { TicketCategoryFilter } from '../components/TicketCategoryFilter.jsx';
+import { TicketLocationFilter } from '../components/TicketLocationFilter.jsx';
+import { TicketStatusFilter } from '../components/TIcketStatusFilter.jsx';
+import { AdvancedFilterPanel } from '../components/AdvancedFilterPanel.jsx';
+
+
 // Services
 import { ticketService } from '../services/ticketService.js';
 
 // Styles & Icons
 import './pageStyles/Tracking.css';
-import { FaCaretDown, FaEdit, FaThumbsUp, FaStar } from "react-icons/fa";
 
 const Tracking = () => {
     const { user } = useAuth();
@@ -31,6 +36,8 @@ const Tracking = () => {
     const [searchParams] = useSearchParams();
     const { loading, startLoading, setError, setSuccess, reset } = useLoadingState();
     const [selectedStatus, setSelectedStatus] = useState('pending,in_progress,duplicate,resolved,canceled,rejected');
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedLocation, setSelectedLocation] = useState('');
     const {
         tickets, isLoading, isFetchingNextPage, pagination,
         changePage, updateFilters, refetch, removeTicket, updateTicketStatus
@@ -42,7 +49,7 @@ const Tracking = () => {
         upvoted: 0,
         review: 0
     });
-    const allowedStatuses = ['pending', 'in_progress', 'duplicate', 'resolved'];
+    const allowedStatuses = ['pending', 'in_progress', 'duplicate', 'resolved', 'rejected', 'canceled'];
     const [confirmCancelVote, setConfirmCancelVote] = useState({
         isOpen: false,
         ticketId: null
@@ -54,6 +61,12 @@ const Tracking = () => {
 
     // Cancel Ticket State
     const [confirmSingleCancel, setConfirmSingleCancel] = useState({ isOpen: false, ticketId: null });
+
+    const activeDropdownFiltersCount =
+        (selectedCategory ? 1 : 0) +
+        (selectedLocation ? 1 : 0) +
+        (selectedStatus !== 'pending,in_progress,duplicate,resolved,canceled,rejected' ? 1 : 0);
+
 
     const lastTicketElementRef = useInfiniteScroll({
         isLoading: isLoading,
@@ -84,8 +97,31 @@ const Tracking = () => {
         }
     };
 
+    // Search functionality
     const handleSearch = (keyword) => {
         updateFilters({ search: keyword });
+    };
+
+    const handleCategoryFilter = (categoryId) => {
+        setSelectedCategory(categoryId || '');
+        updateFilters({ categoryId: categoryId || undefined });
+    };
+
+    const handleLocationFilter = (locationId) => {
+        setSelectedLocation(locationId || '');
+        updateFilters({ locationId: locationId || undefined });
+    };
+
+    const handleStatusFilter = (status) => {
+        setSelectedStatus(status || '');
+        updateFilters({ status: status || undefined });
+    };
+
+    const handleClearAllFilters = () => {
+        setSelectedCategory('');
+        setSelectedLocation('');
+        setSelectedStatus('pending,in_progress,duplicate,resolved,canceled,rejected');
+        updateFilters({ categoryId: undefined, locationId: undefined, status: 'pending,in_progress,duplicate,resolved,canceled,rejected' });
     };
 
     const handleCancelVoteClick = (ticketId) => {
@@ -222,9 +258,20 @@ const Tracking = () => {
             />
             <main className="tracking-main-content">
                 {/* แถบเครื่องมือด้านบน (ค้นหา + Dropdowns) */}
-                <div className="top-toolbar" style={{ flexWrap: 'wrap' }}>
+                <div className="top-toolbar-tracking" style={{ flexWrap: 'wrap' }}>
                     <div className="searchbar">
                         <SearchBar onSearch={handleSearch} />
+                    </div>
+                    <div className="filter-panel-responsive">
+                        <AdvancedFilterPanel
+                            onClearAll={handleClearAllFilters}
+                            activeFilterCount={activeDropdownFiltersCount}
+                        >
+                            {/* ซ่อน Dropdown ทั้งหมดไว้ใน Component นี้ */}
+                            <TicketCategoryFilter selectedValue={selectedCategory} onChange={handleCategoryFilter} />
+                            <TicketLocationFilter selectedValue={selectedLocation} onChange={handleLocationFilter} />
+                            <TicketStatusFilter selectedValue={selectedStatus} onChange={handleStatusFilter} allOptionValue="pending,in_progress,duplicate,resolved,canceled,rejected" />
+                        </AdvancedFilterPanel>
                     </div>
                 </div>
 
@@ -248,6 +295,13 @@ const Tracking = () => {
                             />
                         </div>
                     ))}
+
+                    {!isLoading && tickets.length === 0 && (
+                        <div className="no-result-tracking">
+                            <img src="/empty-state.png" alt="empty-state" />
+                            <span>ไม่พบรายการสถานะนี้</span>
+                        </div>
+                    )}
                 </div>
             </main>
             <ConfirmButton
@@ -268,7 +322,7 @@ const Tracking = () => {
                 ticketId={feedbackModal.ticketId}
                 isLoading={loading.isLoading}
             />
-            
+
             <ConfirmButton
                 isOpen={confirmSingleCancel.isOpen}
                 title="ยืนยันการยกเลิกรายการ"

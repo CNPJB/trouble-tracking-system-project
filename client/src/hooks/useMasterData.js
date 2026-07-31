@@ -12,6 +12,9 @@ export const useMasterData = () => {
     const ticketStatuses = [
         { value: 'pending', label: 'รอรับเรื่อง' },
         { value: 'in_progress', label: 'กำลังดำเนินการ' },
+        { value: 'resolved', label: 'เสร็จสิ้น' },
+        { value: 'rejected', label: 'ปฏิเสธ' },
+        { value: 'canceled', label: 'ยกเลิก' },
     ];
 
     useEffect(() => {

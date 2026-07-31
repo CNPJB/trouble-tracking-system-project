@@ -178,14 +178,14 @@ export const MergeManagementPanel = ({
                                                         group.subTickets.map(sub => (
                                                             <div key={sub.ticketId} className="ticket-list-item sub-ticket accordion-sub-item" style={{ position: 'relative' }}>
 
-                                                                <button 
-                                                                className="btn-unlink-sub"
-                                                                onClick={() => onUnmergeAction({ subTicketId: sub.ticketId })}
-                                                                title="แยกรายการนี้ออกจากกลุ่ม"
-                                                            >
-                                                                <FaUnlink /> แยกออก
-                                                            </button>
-                                                            
+                                                                <button
+                                                                    className="btn-unlink-sub"
+                                                                    onClick={() => onUnmergeAction({ subTicketId: sub.ticketId })}
+                                                                    title="แยกรายการนี้ออกจากกลุ่ม"
+                                                                >
+                                                                    <FaUnlink /> <p className="p-unlink-text">แยกออก</p>
+                                                                </button>
+
                                                                 <div className="item-badge sub-badge">Sub Ticket: {sub.ticketId}</div>
                                                                 <div className="item-details">
                                                                     <p className="item-title">{sub.title}</p>

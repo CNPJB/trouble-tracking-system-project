@@ -1,14 +1,14 @@
-import   { AdminSidebar }  from "./AdminSidebar.jsx";
+import { AdminSidebar } from "./AdminSidebar.jsx";
 import { Outlet } from 'react-router-dom';
-import React  , {children} from "react";
+import React, { children } from "react";
 
 export const AdminLayout = () => {
   return (
     <div className="admin-container" style={{ display: 'flex' }}>
       {/* 1. ส่วนคงที่ที่จะปรากฏทุกหน้าแอดมิน */}
-      <AdminSidebar /> 
+      <AdminSidebar />
 
-      <div className="admin-body" style={{ flex: 1, padding: '20px' }}>
+      <div className="admin-body" style={{ flex: 1, padding: '20px', maxWidth: '100vw' }}>
         <Outlet />
       </div>
     </div>

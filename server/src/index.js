@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import ticketRoutes from '../routes/ticketRoutes.js';  
+import ticketRoutes from '../routes/ticketRoutes.js';
 import managementRoutes from '../routes/managementRoutes.js';
 import ticketManagementRoutes from '../routes/ticketManagementRoutes.js';
 import cookiesParser from 'cookie-parser';
@@ -18,8 +18,9 @@ app.use(cors({
   origin: [
     'http://localhost:5173', // ลิงก์หน้าบ้านบนคอม
     'http://192.168.1.53.nip.io:5173',
-    'http://shawl-vertical-depravity.ngrok-free.dev' // ลิงก์หน้าบ้าน ngrok
-  ], 
+    'http://shawl-vertical-depravity.ngrok-free.dev', // ลิงก์หน้าบ้าน ngrok
+    'http://nonrestricted-casey-hazelly.ngrok-free.dev',
+  ],
   credentials: true
 }));
 app.use(express.json());

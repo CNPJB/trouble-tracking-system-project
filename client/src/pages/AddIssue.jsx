@@ -63,6 +63,10 @@ function AddIssue() {
   // --- State for debouncing input ---
   const [debouncedTitle, setDebouncedTitle] = useState('');
 
+  // --- State for Similar Tickets Modal on Mobile ---
+  const [showSimilarModal, setShowSimilarModal] = useState(false);
+  const [hasBypassedSimilar, setHasBypassedSimilar] = useState(false);
+
   // --- Logic to Debounce Title  ---
   useEffect(() => {
     const timerId = setTimeout(() => {
@@ -223,6 +227,12 @@ function AddIssue() {
       return;
     }
 
+    // ถ้าย่อจอ (<= 1024px) แล้วเจอปัญหาคล้ายกัน และยังไม่เคยกดข้าม ให้โชว์ Modal ดักไว้ก่อน
+    if (window.innerWidth <= 1024 && similarTickets.length > 0 && !hasBypassedSimilar) {
+      setShowSimilarModal(true);
+      return;
+    }
+
     // Open confirmation modal instead of submitting directly
     setConfirmSubmit({ isOpen: true });
   };
@@ -365,8 +375,11 @@ function AddIssue() {
               </select>
             </div>
             <div className="form-group">
-              <label>หัวข้อปัญหา <span style={{ color: 'red' }}>*</span></label>
-              <input type="text" name="title" onChange={handleChange} value={formData.title} placeholder="ระบุหัวข้อปัญหา" required />
+              <div className="label-with-counter">
+                <label>หัวข้อปัญหา <span style={{ color: 'red' }}>*</span></label>
+                <span className="char-counter">{formData.title.length}/20</span>
+              </div>
+              <input type="text" name="title" onChange={handleChange} value={formData.title} placeholder="ระบุหัวข้อปัญหา" maxLength={20} required />
             </div>
           </div>
 
@@ -436,12 +449,16 @@ function AddIssue() {
           </div>
 
           {/* ส่วน UI Upload รูปภาพ */}
+          <div className="form-group">
+
+          </div>
           <ImageUploader
             selectedImages={selectedImages}
             fileInputRef={fileInputRef}
             onImageChange={handleImageChange}
             onRemoveImage={removeImage}
             maxImages={3}
+            minImages={1}
           />
 
           <div className="form-actions" style={{ marginTop: '20px' }}>
@@ -500,6 +517,52 @@ function AddIssue() {
         cancelText={loading.isLoading ? "ปิด" : "ยกเลิก"}
         isLoading={loading.isLoading}
       />
+
+      {/* Similar Tickets Modal for Mobile */}
+      {showSimilarModal && (
+        <div className="similar-modal-overlay">
+          <div className="similar-modal-content">
+            <h3 style={{ marginTop: 0, textAlign: 'center', color: '#333' }}>พบปัญหาที่คล้ายกัน</h3>
+            <p style={{ textAlign: 'center', fontSize: '14px', color: '#666', marginBottom: '15px' }}>
+              กรุณาตรวจสอบปัญหาด้านล่าง หากตรงกับปัญหาของคุณ สามารถกด "โหวต" แทนการแจ้งใหม่ได้
+            </p>
+
+            <div className="similar-modal-body">
+              <SimilarTickets
+                tickets={similarTickets}
+                onUpvote={(id) => {
+                  setShowSimilarModal(false);
+                  handleUpvote(id);
+                }}
+                currentUserId={user?.userId}
+              />
+            </div>
+
+            <div className="similar-modal-actions">
+              <button
+                type="button"
+                className="btn-submit"
+                style={{ width: '100%', marginTop: '15px', backgroundColor: '#e0e0e0', color: '#555', padding: '12px' }}
+                onClick={() => setShowSimilarModal(false)}
+              >
+                กลับไปแก้ไขข้อมูล
+              </button>
+              <button
+                type="button"
+                className="btn-reset"
+                style={{ width: '100%', marginTop: '10px', backgroundColor: '#ffdddd', color: '#d32f2f', padding: '12px' }}
+                onClick={() => {
+                  setShowSimilarModal(false);
+                  setHasBypassedSimilar(true);
+                  setConfirmSubmit({ isOpen: true }); // ข้ามไปหน้ายืนยัน
+                }}
+              >
+                ข้าม และยืนยันแจ้งปัญหาใหม่
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

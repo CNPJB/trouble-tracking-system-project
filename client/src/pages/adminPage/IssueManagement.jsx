@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
@@ -23,11 +23,12 @@ import { TicketCategoryFilter } from '../../components/TicketCategoryFilter.jsx'
 import { TicketLocationFilter } from '../../components/TicketLocationFilter.jsx';
 import { TicketStatusFilter } from '../../components/TIcketStatusFilter.jsx';
 import { ToggleSwitch } from '../../components/componentsAdmin/ToggleSwitch.jsx';
+import { AdvancedFilterPanel } from '../../components/AdvancedFilterPanel.jsx';
 
 const IssueManagement = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
-    const [selectedStatus, setSelectedStatus] = useState('pending,in_progress');
+    const [selectedStatus, setSelectedStatus] = useState('pending,in_progress,resolved');
     const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedLocation, setSelectedLocation] = useState('');
     const [searchKeyword, setSearchKeyword] = useState('');
@@ -42,19 +43,24 @@ const IssueManagement = () => {
 
     const { urgentTickets, isLoadingUrgent } = useUrgentTickets();
 
+    const activeDropdownFiltersCount =
+        (selectedCategory ? 1 : 0) +
+        (selectedLocation ? 1 : 0) +
+        (selectedStatus !== 'pending,in_progress,resolved' ? 1 : 0);
+
     const hasActiveFilter = Boolean(
         searchKeyword || selectedCategory || selectedLocation || isMyTasksOnly
     );
+
+    // ==========================================
+    // โซนฟังก์ชันจัดการ UI & Filters
+    // ==========================================
 
     // ฟังก์ชันจัดการเมื่อกดปุ่ม Toggle
     const handleToggleMyTasks = () => {
         const newValue = !isMyTasksOnly;
         setIsMyTasksOnly(newValue);
         updateFilters({ adminId: newValue ? user?.userId : undefined });
-    };
-
-    const handleCardClick = (ticketId) => {
-        navigate(`/adminPage/IssueManagement/${ticketId}`);
     };
 
     const handleSearch = (keyword) => {
@@ -75,6 +81,17 @@ const IssueManagement = () => {
     const handleStatusFilter = (status) => {
         setSelectedStatus(status || '');
         updateFilters({ status: status || undefined });
+    };
+
+    const handleClearAllFilters = () => {
+        setSelectedCategory('');
+        setSelectedLocation('');
+        setSelectedStatus('pending,in_progress,resolved');
+        updateFilters({ categoryId: undefined, locationId: undefined, status: 'pending,in_progress,resolved' });
+    };
+
+    const handleCardClick = (ticketId) => {
+        navigate(`/adminPage/IssueManagement/${ticketId}`);
     };
 
     const renderPagination = () => {
@@ -122,28 +139,31 @@ const IssueManagement = () => {
 
     return (
         <div className="issue-management-container">
-            <div className="issue-management-filter-container">
-                <div className="searchbar">
-                    <SearchBar onSearch={handleSearch} />
+            <div className="top-toolbar-modern">
+                <div className='searchbar-container '>
+                    <div className="searchbar">
+                        <SearchBar onSearch={handleSearch} />
+                    </div>
                 </div>
-                <TicketCategoryFilter
-                    selectedValue={selectedCategory}
-                    onChange={handleCategoryFilter}
-                />
-                <TicketLocationFilter
-                    selectedValue={selectedLocation}
-                    onChange={handleLocationFilter}
-                />
-                <TicketStatusFilter
-                    selectedValue={selectedStatus}
-                    onChange={handleStatusFilter}
-                />
-                <ToggleSwitch
-                    id="my-tasks-toggle"
-                    label="งานของฉัน"
-                    checked={isMyTasksOnly}
-                    onChange={handleToggleMyTasks}
-                />
+                <div className="filter-panel-responsive">
+                    <AdvancedFilterPanel
+                        onClearAll={handleClearAllFilters}
+                        activeFilterCount={activeDropdownFiltersCount}
+                        rightActions={
+                            <ToggleSwitch
+                                id="my-tasks-toggle"
+                                label="งานของฉัน"
+                                checked={isMyTasksOnly}
+                                onChange={handleToggleMyTasks}
+                            />
+                        }
+                    >
+                        {/* ซ่อน Dropdown ทั้งหมดไว้ใน Component นี้ */}
+                        <TicketCategoryFilter selectedValue={selectedCategory} onChange={handleCategoryFilter} />
+                        <TicketLocationFilter selectedValue={selectedLocation} onChange={handleLocationFilter} />
+                        <TicketStatusFilter selectedValue={selectedStatus} onChange={handleStatusFilter} allowedStatuses={['pending', 'in_progress', 'resolved']} allOptionValue="pending,in_progress,resolved" />
+                    </AdvancedFilterPanel>
+                </div>
             </div>
 
             {/* Section 1: สไลด์โชว์ปัญหาเร่งด่วน */}

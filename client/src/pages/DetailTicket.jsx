@@ -21,7 +21,10 @@ const DetailTicket = () => {
     const statusLabels = {
         'pending': 'รอรับเรื่อง',
         'in_progress': 'กำลังดำเนินการ',
-        'resolved': 'เสร็จสิ้น'
+        'resolved': 'เสร็จสิ้น',
+        'rejected': 'ปฏิเสธ',
+        'canceled': 'ยกเลิก',
+        'duplicate': 'ถูกรวม'
     };
     if (isLoading) return <div>กำลังโหลด...</div>;
     if (error) return <div>❌ {error}</div>;
@@ -87,6 +90,7 @@ const DetailTicket = () => {
                                                         src={img.imageUrl}
                                                         alt={`ก่อนซ่อม ${index + 1}`}
                                                         className="clickable-img"
+                                                        // เปิด Modal เสมอ ไม่ว่าจะกี่รูป
                                                         onClick={() => setShowMoreBeforeImages(true)}
                                                     />
                                                 ))}
@@ -123,7 +127,7 @@ const DetailTicket = () => {
                                                     src={img.imageUrl}
                                                     alt={`หลังซ่อม ${index + 1}`}
                                                     className="clickable-img"
-                                                    // ถ้ารูปเดียวเปิดแท็บใหม่ ถ้ารูปเยอะเปิด Modal
+                                                    // เปิด Modal เสมอ ไม่ว่าจะกี่รูป
                                                     onClick={() => setShowMoreAfterImages(true)}
                                                 />
                                             ))}

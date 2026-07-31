@@ -248,6 +248,13 @@ export const updateTicket = async (req, res) => {
         const remainingImagesCount = existingTicket.images.length - validImagesToDelete.length;
         const incomingImagesCount = files ? files.length : 0;
 
+        if (remainingImagesCount + incomingImagesCount === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "กรุณาให้มีรูปภาพอย่างน้อย 1 รูป"
+            });
+        }
+
         if (remainingImagesCount + incomingImagesCount > 3) {
             return res.status(400).json({
                 success: false,
@@ -409,22 +416,77 @@ export const cancelTicket = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const canceledTicket = await prisma.ticket.update({
-            where: { ticketId: id },
-            data: { ticketStatus: "canceled" }
+        const result = await prisma.$transaction(async (tx) => {
+            
+            // ดึงข้อมูลตั๋วเพื่อตรวจสอบสถานะ และดูว่ามีตั๋วลูกห้อยมาด้วยหรือไม่
+            const ticketToCancel = await tx.ticket.findUnique({
+                where: { ticketId: id },
+                select: { 
+                    ticketStatus: true, 
+                    _count: { select: { subTickets: true } } 
+                }
+            });
+
+            if (!ticketToCancel) {
+                throw new Error("TICKET_NOT_FOUND");
+            }
+
+            // ดักความปลอดภัย: อนุญาตให้ยกเลิกได้เฉพาะตอนที่ยังเป็น pending เท่านั้น
+            if (ticketToCancel.ticketStatus !== 'pending') {
+                throw new Error("CANNOT_CANCEL");
+            }
+
+            // เปลี่ยนสถานะตั๋วหลักเป็น 'canceled'
+            const canceledTicket = await tx.ticket.update({
+                where: { ticketId: id },
+                data: { 
+                    ticketStatus: "canceled",
+                    updatedAt: new Date()
+                }
+            });
+
+            // Auto-Unmerge: หากตั๋วใบนี้มีลูก ให้ทำการปลดแอกตั๋วลูกทั้งหมด
+            if (ticketToCancel._count.subTickets > 0) {
+                await tx.ticket.updateMany({
+                    where: { 
+                        parentTicketId: id,
+                        ticketStatus: 'duplicate'
+                    },
+                    data: {
+                        ticketStatus: 'pending', 
+                        parentTicketId: null,    
+                        updatedAt: new Date()
+                    }
+                });
+            }
+
+            return {
+                canceledTicket,
+                releasedSubTicketsCount: ticketToCancel._count.subTickets
+            };
         });
 
         res.status(200).json({
             success: true,
-            message: "Cancel ticket Successfully!",
-            data: canceledTicket
+            message: result.releasedSubTicketsCount > 0 
+                ? `ยกเลิกรายการสำเร็จ และระบบได้แยกตั๋วที่ถูกรวม ${result.releasedSubTicketsCount} รายการกลับสู่กระดาน`
+                : "ยกเลิกรายการแจ้งปัญหาสำเร็จ",
+            data: result.canceledTicket
         });
 
     } catch (error) {
         console.error("Error canceling ticket:", error);
+        
+        if (error.message === "TICKET_NOT_FOUND") {
+            return res.status(404).json({ success: false, message: "ไม่พบรายการปัญหา" });
+        }
+        if (error.message === "CANNOT_CANCEL") {
+            return res.status(400).json({ success: false, message: "ไม่สามารถยกเลิกได้เนื่องจากแอดมินกำลังดำเนินการหรือปิดงานไปแล้ว" });
+        }
+
         res.status(500).json({
             success: false,
-            message: "Cancel ticket fail.",
+            message: "เกิดข้อผิดพลาดในการยกเลิกรายการ",
             error: error.message
         });
     }

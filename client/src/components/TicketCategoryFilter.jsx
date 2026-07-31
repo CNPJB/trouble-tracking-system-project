@@ -8,12 +8,9 @@ export const TicketCategoryFilter = ({ selectedValue, onChange, disabled }) => {
 
     return (
         <div className="category-filter-wrapper">
-            <div className="category-filter-icon">
-                <FaFilter />
-            </div>
-            <select 
-                className="category-filter-select" 
-                value={selectedValue || ''} 
+            <select
+                className="category-filter-select"
+                value={selectedValue || ''}
                 onChange={(e) => onChange(e.target.value)}
                 disabled={disabled || isLoading}
             >

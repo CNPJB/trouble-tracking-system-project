@@ -143,7 +143,7 @@
 .no-image-detail-text,
 .no-image-detail {
     border-radius: 8px;
-    height: 260px;
+    height: 300px;
     border: 2px solid #e0e0e0;
     text-align: center;
     color: #888;
@@ -369,9 +369,10 @@
 }
 
 @media (max-width: 820px) {
-    .container-detail{
+    .container-detail {
         height: 100%;
     }
+
     .type-status-ticket,
     .starRating {
         display: flex;
@@ -399,107 +400,123 @@
         font-size: 14px;
     }
 
-    .label-img{
+    .label-img {
         padding: 1px 2px;
         font-size: 12px;
     }
 
-    .roadmap-working,.container-detail{
-        max-width:90%;
+    .roadmap-working,
+    .container-detail {
+        max-width: 90%;
     }
+
     /* .gallery{
        display: grid;
        grid-template-columns: auto;
     } */
-    .gallery img{
+    .gallery img {
         height: 250px;
     }
 }
 
 @media (max-width: 1180px) {
 
-    .label-img{
+    .label-img {
         padding: 1px 2px;
     }
 
 
 }
-@media  (max-width: 430px) {
-     .detail-ticket {
-        display: flex ;
-        flex-direction: column ; /* คำสั่งนี้คือพระเอกที่จะทำให้มันไม่เบียดซ้ายขวา */
+
+@media (max-width: 430px) {
+    .detail-ticket {
+        display: flex;
+        flex-direction: column;
+        /* คำสั่งนี้คือพระเอกที่จะทำให้มันไม่เบียดซ้ายขวา */
     }
 
     /* 🌟 2. ดันกล่องรูปขึ้นบนสุด */
     .ticket-img {
-        order: -1 ; 
-        display: flex ;
-        flex-direction: row ; /* รูปก่อน-หลัง จัดซ้ายขวา */
-        justify-content: space-between ; 
-        gap: 10px ; 
-        width: 100% ;
-        height: 150px ;
+        order: -1;
+        display: flex;
+        flex-direction: row;
+        /* รูปก่อน-หลัง จัดซ้ายขวา */
+        justify-content: space-between;
+        gap: 10px;
+        width: 100%;
+        height: 150px;
     }
 
     /* 🌟 3. ข้อความลงไปอยู่ข้างล่างเต็มจอ */
     .header-ticket {
-        order: 1 ; 
-        width: 100% ;
+        order: 1;
+        width: 100%;
     }
 
     /* 🌟 4. บังคับรูปก่อน-หลัง กางออกคนละครึ่ง */
-    .before-img-ticket, 
+    .before-img-ticket,
     .after-img-ticket {
-        width: 48% ; 
-        display: flex ;
-        flex-direction: column ;
-        justify-content: flex-start ;
-        height: 100% ; /* บังคับให้สูงเต็มพื้นที่ */
+        width: 48%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        height: 100%;
+        /* บังคับให้สูงเต็มพื้นที่ */
     }
 
     .img-group {
-        width: 100% ; 
-        display: flex ;
-        flex-direction: column ;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
     }
 
     p.see-more-text {
-        margin-top: auto ; /* ท่าไม้ตาย! ดันตัวเองลงไปชิดขอบล่างสุดของกล่อง */
-        margin-bottom: -10px ; /* เคลียร์ขอบล่างให้เรียบ */
-        text-align: center ; 
-        font-size: 12px ; /* ปรับไซส์นิดนึงไม่ให้แย่งซีนรูป */
+        margin-top: auto;
+        /* ท่าไม้ตาย! ดันตัวเองลงไปชิดขอบล่างสุดของกล่อง */
+        margin-bottom: -10px;
+        /* เคลียร์ขอบล่างให้เรียบ */
+        text-align: center;
+        font-size: 12px;
+        /* ปรับไซส์นิดนึงไม่ให้แย่งซีนรูป */
     }
 
     /* 🌟 5. แก้ปัญหารูปลีบแบน */
-   .img-group img.clickable-img {
-        display: block ; /* ปิดพฤติกรรมแปลกๆ ของ inline element */
-        width: 100% ;
-        height: 160px ; 
-        min-height: 160px ; /* ล็อกขั้นต่ำ */
-        max-height: 160px ; /* ล็อกขั้นสูง จะได้ไม่หลุดกรอบ */
-        object-fit: cover ; 
-        border-radius: 8px ;
+    .img-group img.clickable-img {
+        display: block;
+        /* ปิดพฤติกรรมแปลกๆ ของ inline element */
+        width: 100%;
+        height: 160px;
+        min-height: 160px;
+        /* ล็อกขั้นต่ำ */
+        max-height: 160px;
+        /* ล็อกขั้นสูง จะได้ไม่หลุดกรอบ */
+        object-fit: cover;
+        border-radius: 8px;
     }
-    
+
     .label-img {
-        text-align: center ;
-        font-size: 13px ; 
-        margin-bottom: 6px ;
-        width: 100% ; 
+        text-align: center;
+        font-size: 13px;
+        margin-bottom: 6px;
+        width: 100%;
     }
-    
-    .ticket-type{
+
+    .ticket-type {
         align-items: center;
     }
-    .container-detail,.roadmap-working{
+
+    .container-detail,
+    .roadmap-working {
         font-size: 14px;
     }
-    .timeline-container{
+
+    .timeline-container {
         padding: 5px;
         margin-top: 10px;
     }
+
     .gallery {
-    display: grid;
-    grid-template-columns: 1fr;
-}
+        display: grid;
+        grid-template-columns: 1fr;
+    }
 }
