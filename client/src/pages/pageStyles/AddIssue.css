@@ -45,6 +45,23 @@
   color: #444;
 }
 
+.label-with-counter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.label-with-counter label {
+  margin-bottom: 0;
+}
+
+.char-counter {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 6px;
+}
+
 .form-group textarea {
   resize: vertical;
   /* ให้ปรับขนาดได้เฉพาะแนวตั้ง */
@@ -84,6 +101,10 @@
 
 .secondary-label {
   color: var(--text-color-muted);
+}
+
+.urgent-label {
+  color: red;
 }
 
 .searching-indicator {
@@ -169,7 +190,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .add-issue-container {
     grid-template-columns: 1fr;
   }
@@ -178,4 +199,90 @@
     flex-direction: column;
     gap: 15px;
   }
+}
+
+@media (max-width: 820px) {
+  .add-issue-container {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 15px;
+  }
+}
+
+@media (max-width: 430px) {
+  .add-issue-container {
+    padding: 10px;
+    margin-top: 90px;
+  }
+
+  .form-section {
+    max-width: 100vw;
+    padding: 15px;
+    margin-left: -5px;
+  }
+}
+
+/* =========================================
+   Similar Tickets Modal (For Mobile)
+   ========================================= */
+.similar-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.similar-modal-content {
+  background: #fff;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  box-sizing: border-box;
+}
+
+.similar-modal-body {
+  overflow-y: auto;
+  flex-grow: 1;
+  /* ซ่อน margin เดิมจาก SimilarTickets */
+  margin: -10px -10px 0 -10px;
+}
+
+/* แต่ง Scroll bar ให้ดูสวยงาม */
+.similar-modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+.similar-modal-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.similar-modal-body::-webkit-scrollbar-thumb {
+  background-color: #a1a2a1;
+  border-radius: 10px;
+}
+
+/* Override SimilarTickets UI ภายใน Modal */
+.similar-modal-body .suggestion-section {
+  box-shadow: none;
+  padding: 10px;
+  max-height: none;
+  position: static;
+  background-color: transparent;
+}
+.similar-modal-body .suggestion-section h2 {
+  display: none; /* ซ่อนหัวข้อซ้ำซ้อน */
 }

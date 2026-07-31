@@ -21,7 +21,10 @@ const DetailTicket = () => {
     const statusLabels = {
         'pending': 'รอรับเรื่อง',
         'in_progress': 'กำลังดำเนินการ',
-        'resolved': 'เสร็จสิ้น'
+        'resolved': 'เสร็จสิ้น',
+        'rejected': 'ปฏิเสธ',
+        'canceled': 'ยกเลิก',
+        'duplicate': 'ถูกรวม'
     };
     if (isLoading) return <div>กำลังโหลด...</div>;
     if (error) return <div>❌ {error}</div>;
@@ -87,8 +90,8 @@ const DetailTicket = () => {
                                                         src={img.imageUrl}
                                                         alt={`ก่อนซ่อม ${index + 1}`}
                                                         className="clickable-img"
-                                                        // ถ้ารูปเดียวเปิดแท็บใหม่ ถ้ารูปเยอะเปิด Modal
-                                                        onClick={() => beforeImages.length === 1 ? window.open(img.imageUrl, '_blank') : setShowMoreBeforeImages(true)}
+                                                        // เปิด Modal เสมอ ไม่ว่าจะกี่รูป
+                                                        onClick={() => setShowMoreBeforeImages(true)}
                                                     />
                                                 ))}
                                             </div>
@@ -124,8 +127,8 @@ const DetailTicket = () => {
                                                     src={img.imageUrl}
                                                     alt={`หลังซ่อม ${index + 1}`}
                                                     className="clickable-img"
-                                                    // ถ้ารูปเดียวเปิดแท็บใหม่ ถ้ารูปเยอะเปิด Modal
-                                                    onClick={() => afterImages.length === 1 ? window.open(img.imageUrl, '_blank') : setShowMoreAfterImages(true)}
+                                                    // เปิด Modal เสมอ ไม่ว่าจะกี่รูป
+                                                    onClick={() => setShowMoreAfterImages(true)}
                                                 />
                                             ))}
                                         </div>
@@ -134,7 +137,7 @@ const DetailTicket = () => {
                                             <p
                                                 className="see-more-text"
                                                 onClick={() => setShowMoreAfterImages(true)}
-                                
+
                                             ></p>
                                         )}
                                     </>

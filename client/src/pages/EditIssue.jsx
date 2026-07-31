@@ -99,22 +99,22 @@ function EditIssue() {
     // Logic Auto-fill
     useEffect(() => {
         if (isEquipmentCategory && equipmentValidation.status === 'success' && equipmentValidation.roomId) {
-            
+
             // เช็คว่าผู้ใช้กำลังแก้ไขตั๋วโดยใช้รหัสครุภัณฑ์ "เดิม" ที่บันทึกไว้หรือไม่?
             // ถ้าใช่แปลว่านี่คือจังหวะเปิดหน้าเว็บโหลดข้อมูลครั้งแรก ห้าม! นำที่อยู่เดิมไปทับเด็ดขาด
             const isOriginalEquipment = normalizeEquipmentCode(formData.equipmentCode) === normalizeEquipmentCode(ticket?.equipment?.equipmentCode);
-            
+
             if (isOriginalEquipment) {
                 return; // ข้ามการทำงานไปเลย ให้ใช้ locationId, roomId จากตั๋วเดิม
             }
 
             const eqRoomId = equipmentValidation.roomId;
             const foundRoom = rooms.find(r => r.roomId === eqRoomId);
-            
+
             if (foundRoom) {
                 const eqFloorId = foundRoom.floorId;
                 const foundFloor = floors.find(f => f.floorId === eqFloorId);
-                
+
                 if (foundFloor) {
                     const eqLocationId = foundFloor.locationId;
 
@@ -124,7 +124,7 @@ function EditIssue() {
                             prev.roomId === eqRoomId.toString()) {
                             return prev;
                         }
-                        
+
                         return {
                             ...prev,
                             locationId: eqLocationId.toString(),
@@ -176,6 +176,11 @@ function EditIssue() {
 
         if (!formData.title.trim()) {
             setError("กรุณากรอกหัวข้อปัญหาให้ครบถ้วนและไม่เป็นช่องว่าง", "warning");
+            return;
+        }
+
+        if (existingImages.length + selectedImages.length === 0) {
+            setError("กรุณาให้มีรูปภาพอย่างน้อย 1 รูป", "warning");
             return;
         }
         setConfirmSubmit({ isOpen: true });
@@ -245,13 +250,13 @@ function EditIssue() {
 
     // Memoized Lists สำหรับ Dropdown Options
     const activeCategories = useMemo(() => {
-        return categories.filter(c => 
+        return categories.filter(c =>
             c.ticketCtgStatus === 'enable' || c.ticketCtgId === ticket?.ticketCtgId
         );
     }, [categories, ticket]);
 
     const activeLocations = useMemo(() => {
-        return locations.filter(l => 
+        return locations.filter(l =>
             l.locationStatus === 'active' || l.locationId === ticket?.locationId
         );
     }, [locations, ticket]);
@@ -259,15 +264,15 @@ function EditIssue() {
     // กรองตัวเลือกชั้นและห้องให้สัมพันธ์กัน (Cascading Dropdown)
     const availableFloors = useMemo(() => {
         if (!formData.locationId) return [];
-        return floors.filter(f => 
-            f.locationId === parseInt(formData.locationId, 10) && 
+        return floors.filter(f =>
+            f.locationId === parseInt(formData.locationId, 10) &&
             (f.floorStatus === 'active' || f.floorId === ticket?.floorId)
         );
     }, [floors, formData.locationId]);
 
     const availableRooms = useMemo(() => {
         if (!formData.locationId) return [];
-        const safeRooms = rooms.filter(r => 
+        const safeRooms = rooms.filter(r =>
             r.roomStatus === 'active' || r.roomId === ticket?.roomId
         );
         if (formData.floorId) {
@@ -320,21 +325,21 @@ function EditIssue() {
                 <div className="half-top-panel">
                     <div className="form-row">
                         <div className="form-group">
-                            <label>ประเภทปัญหา <span>*</span></label>
+                            <label>ประเภทปัญหา <span style={{ color: 'red' }}>*</span></label>
                             <select name="categoryId" onChange={handleChange} value={formData.categoryId} required>
                                 <option value="">เลือกประเภทปัญหา</option>
                                 {activeCategories.map(c => <option key={c.ticketCtgId} value={c.ticketCtgId}>{c.ticketCtgName}</option>)}
                             </select>
                         </div>
                         <div className="form-group">
-                            <label>หัวข้อปัญหา <span>*</span></label>
+                            <label>หัวข้อปัญหา <span style={{ color: 'red' }}>*</span></label>
                             <input type="text" name="title" onChange={handleChange} value={formData.title} required />
                         </div>
                     </div>
 
                     <div className="form-row">
                         <div className="form-group">
-                            <label>สถานที่ <span>*</span></label>
+                            <label>สถานที่ <span style={{ color: 'red' }}>*</span></label>
                             <select name="locationId" onChange={handleChange} value={formData.locationId} required>
                                 <option value="">เลือกสถานที่</option>
                                 {activeLocations.map(l => <option key={l.locationId} value={l.locationId}>{l.locationName}</option>)}
@@ -414,6 +419,7 @@ function EditIssue() {
                                 onImageChange={handleImageChange}
                                 onRemoveImage={removeImage}
                                 maxImages={3 - existingImages.length}
+                                minImages={existingImages.length === 0 ? 1 : 0}
                             />
                         </div>
                     </div>
@@ -423,17 +429,17 @@ function EditIssue() {
                         type="submit"
                         className="btn-save-edit"
                         disabled={
-                            loading.isLoading || 
+                            loading.isLoading ||
                             isEquipmentInvalid ||
                             // ห้ามส่งถ้าไม่มีการเปลี่ยนแปลงข้อมูลเลย
                             (formData.categoryId === (ticket.ticketCtgId?.toString() || '') &&
-                            formData.title === (ticket.title || '') &&
-                            formData.locationId === (ticket.locationId?.toString() || '') &&
-                            formData.floorId === (ticket.floorId?.toString() || '') &&
-                            formData.roomId === (ticket.roomId?.toString() || '') &&
-                            formData.description === (ticket.description || '') &&
-                            formData.equipmentCode === (ticket.equipment?.equipmentCode || '') &&
-                            (imagesToDelete.length === 0 && selectedImages.length === 0))
+                                formData.title === (ticket.title || '') &&
+                                formData.locationId === (ticket.locationId?.toString() || '') &&
+                                formData.floorId === (ticket.floorId?.toString() || '') &&
+                                formData.roomId === (ticket.roomId?.toString() || '') &&
+                                formData.description === (ticket.description || '') &&
+                                formData.equipmentCode === (ticket.equipment?.equipmentCode || '') &&
+                                (imagesToDelete.length === 0 && selectedImages.length === 0))
                         }>
                         <FaSave style={{ position: 'relative', top: '3.5px' }} /> บันทึกการเแก้ไข
                     </button>

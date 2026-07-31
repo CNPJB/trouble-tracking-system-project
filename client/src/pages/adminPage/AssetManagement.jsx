@@ -6,6 +6,10 @@ import { SearchBar } from '../../components/SearchBar';
 import { ImportEquipments } from '../../components/componentsAdmin/ImportEquipments';
 import { ConfirmButton } from '../../components/ConfirmButton';
 import { LoadingSpinner, ToastAlert } from '../../components/LoadingSpinner';
+import { AdvancedFilterPanel } from '../../components/AdvancedFilterPanel.jsx';
+import { EquipmentCategoryFilter } from '../../components/EquipmentCategoryFilter.jsx';
+import { TicketLocationFilter } from '../../components/TicketLocationFilter.jsx';
+
 // hook
 import { useEquipment } from '../../hooks/useEquipment'
 import { useLocations } from '../../hooks/useLocations';
@@ -25,8 +29,7 @@ const AssetManagement = () => {
   const [isUpdateConfirmOpen, setIsUpdateConfirmOpen] = useState({ isOpen: false });
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState({ isOpen: false });
   const { loading, startLoading, setError, setSuccess, reset, clearError } = useLoadingState();
-  const { equipment, filterCategory, setFilterCategory, filterLocation, setFilterLocation,searchQuery, setSearchQuery, deleteEquipment, refetch, } = useEquipment();
-  const { EquipmentCtgs } = useEquiptmentCtg();
+  const { equipment, filterCategory, setFilterCategory, filterLocation, setFilterLocation, searchQuery, setSearchQuery, deleteEquipment, refetch, EquipmentCtgs } = useEquipment();
   const [selectedDetails, setSelectedDetails] = useState([]);
   const formatStatus = {
     'active': 'ใช้งาน',
@@ -262,47 +265,27 @@ const AssetManagement = () => {
       setIsSubmitting(false);
     }
   }
+  const activeDropdownFiltersCount = (filterCategory ? 1 : 0) + (filterLocation ? 1 : 0);
+
+  const handleClearAllFilters = () => {
+    setFilterCategory('');
+    setFilterLocation('');
+  };
 
   return (
     <div className="assetManagement-container">
-      <div className="filter-assetManagement-container">
-        <div className="audit-issues-searchbar">
+      <div className="filter-assetManagement-container" style={{ justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
+        <div className="searchbar">
           <SearchBar onSearch={(text) => setSearchQuery(text)} />
         </div>
-        <div className="filter-category-group">
-          {/* ตัวกรอง: ประเภท */}
-          <select
-            className="custom-select"
-            value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
-          >
-            <option value="">ประเภทครุภัณฑ์ทั้งหมด</option>
-            {EquipmentCtgs?.map((ctg) => (
-              <option
-                key={ctg.equipmentCtgId}
-                value={ctg.equipmentCtgId}
-              >
-                {ctg.equipmentCtgName}
-              </option>
-            ))}
-          </select>
-          {/* ตัวกรอง: สถานที่/ห้อง */}
-          <select
-            className="custom-select"
-            value={filterLocation}
-            onChange={(e) => setFilterLocation(e.target.value)}
-          >
-            <option value="">เลือกสถานที่</option>
-            {locations.map((location) => (
-              <option
-                key={location.locationId}
-                value={location.locationId}
-              >
-                {location.locationName}
-              </option>
-            ))}
-          </select>
-        </div>
+
+        <AdvancedFilterPanel
+          onClearAll={handleClearAllFilters}
+          activeFilterCount={activeDropdownFiltersCount}
+        >
+          <EquipmentCategoryFilter selectedValue={filterCategory} onChange={setFilterCategory} />
+          <TicketLocationFilter selectedValue={filterLocation} onChange={setFilterLocation} />
+        </AdvancedFilterPanel>
       </div>
       <div className="main-container">
         <div className="table-responsive-wrapper">

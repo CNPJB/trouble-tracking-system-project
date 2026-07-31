@@ -28,6 +28,8 @@ const IssueManagementDetail = () => {
         isOpen: false,
         payload: null
     });
+    const [showMoreBeforeImages, setShowMoreBeforeImages] = useState(false);
+    const [showMoreAfterImages, setShowMoreAfterImages] = useState(false);
 
     const handleUpdateStatus = async (payload) => {
         setConfirmModal({ isOpen: true, payload });
@@ -36,12 +38,12 @@ const IssueManagementDetail = () => {
     const submitUpdateStatus = async () => {
         if (!confirmModal.payload) return;
         startLoading();
-        
+
         try {
             const result = await ticketService.updateTicketStatusAdmin(ticket.ticketId, confirmModal.payload);
-            
+
             if (result.success) {
-                setSuccess(result.message); 
+                setSuccess(result.message);
                 setConfirmModal({ isOpen: false, payload: null });
                 refetch();
             }
@@ -79,6 +81,9 @@ const IssueManagementDetail = () => {
     };
     const modalContent = getModalContent();
 
+    const beforeImages = ticket?.images?.filter(img => img.imageType === 'before') || [];
+    const afterImages = ticket?.images?.filter(img => img.imageType === 'after') || [];
+
     // if (isFetching) {
     //     return <LoadingSpinner isLoading={true} message="กำลังโหลดรายละเอียดปัญหา..." />;
     // }
@@ -96,6 +101,15 @@ const IssueManagementDetail = () => {
         );
     }
 
+    const statusLabels = {
+        'pending': 'รอรับเรื่อง',
+        'in_progress': 'กำลังดำเนินการ',
+        'resolved': 'เสร็จสิ้น',
+        'rejected': 'ปฏิเสธ',
+        'canceled': 'ยกเลิก',
+        'duplicate': 'ถูกรวม'
+    };
+
     return (
         <div className="issue-detail-container">
             <ToastAlert error={loading.error} onDismiss={reset} />
@@ -107,8 +121,8 @@ const IssueManagementDetail = () => {
                 </button>
                 <div className="title-area">
                     <h1>รหัสปัญหา: {ticket.ticketId}</h1>
-                    <span className={`status-badge status-${ticket.ticketStatus}`}>
-                        {ticket.ticketStatus}
+                    <span className={`status-badge-admin-detail status-${ticket.ticketStatus}`}>
+                        {statusLabels[ticket.ticketStatus] || ticket.ticketStatus}
                     </span>
                 </div>
             </div>
@@ -122,17 +136,101 @@ const IssueManagementDetail = () => {
                         <h2>{ticket.title}</h2>
                         <p className="ticket-desc">{ticket.description}</p>
 
-                        {/* แสดงรูปภาพ ถ้าไม่มีให้แสดงข้อความ */}
-                        {ticket.images && ticket.images.length > 0 && (
-                            <div className="image-gallery">
-                                {ticket.images.map((img, idx) => (
-                                    <img key={idx} src={img.imageUrl} alt={`ticket-${idx}`} className="ticket-img-admin" />
-                                ))}
+                        {/* แสดงรูปภาพ แบบแบ่งก่อนซ่อม/หลังซ่อม */}
+                        <div className="ticket-img-admin-zone">
+                            {/* รูปก่อนแจ้ง */}
+                            <div className="before-img-admin">
+                                {beforeImages.length > 0 ? (
+                                    <>
+                                        <div className="img-group-admin">
+                                            <label className='label-img-admin'>รูปก่อนแจ้ง</label>
+                                            {beforeImages.slice(0, 1).map((img, index) => (
+                                                <img
+                                                    key={index}
+                                                    src={img.imageUrl}
+                                                    alt={`ก่อนซ่อม ${index + 1}`}
+                                                    className="clickable-img-admin"
+                                                    onClick={() => setShowMoreBeforeImages(true)}
+                                                />
+                                            ))}
+                                        </div>
+                                        {beforeImages.length > 1 && (
+                                            <p
+                                                className="see-more-text-admin"
+                                                onClick={() => setShowMoreBeforeImages(true)}
+                                            >
+                                                + ดูรูปเพิ่มเติม ({beforeImages.length})
+                                            </p>
+                                        )}
+                                    </>
+                                ) : (
+                                    <div className="no-image-admin">
+                                        <p>ไม่มีรูปก่อนแจ้ง</p>
+                                    </div>
+                                )}
                             </div>
-                        )}
-                        {!ticket.images || ticket.images.length === 0 && (
-                            <div className="frame-no-images">ไม่มีรูปภาพ</div>
-                        )}
+
+                            {/* รูปหลังแจ้ง */}
+                            <div className="after-img-admin">
+                                {afterImages.length > 0 ? (
+                                    <>
+                                        <div className="img-group-admin">
+                                            <label className='label-img-admin'>รูปหลังแก้ไข</label>
+                                            {afterImages.slice(0, 1).map((img, index) => (
+                                                <img
+                                                    key={index}
+                                                    src={img.imageUrl}
+                                                    alt={`หลังซ่อม ${index + 1}`}
+                                                    className="clickable-img-admin"
+                                                    onClick={() => setShowMoreAfterImages(true)}
+                                                />
+                                            ))}
+                                        </div>
+                                        {afterImages.length > 1 && (
+                                            <p
+                                                className="see-more-text-admin"
+                                                onClick={() => setShowMoreAfterImages(true)}
+                                            >
+                                                + ดูรูปเพิ่มเติม ({afterImages.length})
+                                            </p>
+                                        )}
+                                    </>
+                                ) : (
+                                    <div className="no-image-admin">
+                                        <p>รออัปโหลดหลักฐาน</p>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* ---------------- Popup Modal ---------------- */}
+                            {showMoreBeforeImages && (
+                                <div className="modal-backdrop-admin" onClick={() => setShowMoreBeforeImages(false)}>
+                                    <div className="modal-content-admin" onClick={e => e.stopPropagation()}>
+                                        <h4>รูปก่อนแจ้งทั้งหมด</h4>
+                                        <div className="gallery-admin">
+                                            {beforeImages.map((img, i) => (
+                                                <img key={i} src={img.imageUrl} alt={`before-${i}`} />
+                                            ))}
+                                        </div>
+                                        <button onClick={() => setShowMoreBeforeImages(false)}>ปิด</button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {showMoreAfterImages && (
+                                <div className="modal-backdrop-admin" onClick={() => setShowMoreAfterImages(false)}>
+                                    <div className="modal-content-admin" onClick={e => e.stopPropagation()}>
+                                        <h4>รูปหลังแจ้งทั้งหมด</h4>
+                                        <div className="gallery-admin">
+                                            {afterImages.map((img, i) => (
+                                                <img key={i} src={img.imageUrl} alt={`after-${i}`} />
+                                            ))}
+                                        </div>
+                                        <button onClick={() => setShowMoreAfterImages(false)}>ปิด</button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
 
                         <hr className="divider" />
 

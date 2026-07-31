@@ -100,6 +100,11 @@ export const getAllTickets = async (req, res) => {
             whereClause.rating = null;
         }
 
+        // โชว์เฉพาะตั๋วที่มีการให้คะแนนแล้ว (rating > 0)
+        if (req.query.ratedOnly === 'true') {
+            whereClause.rating = { gt: 0 };
+        }
+
         const [tickets, totalTickets] = await prisma.$transaction([
             prisma.ticket.findMany({
                 where: whereClause,

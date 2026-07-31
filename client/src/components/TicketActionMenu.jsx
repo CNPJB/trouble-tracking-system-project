@@ -1,14 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FaEllipsisV, FaEdit, FaTrashAlt, FaThumbsDown, FaStar } from 'react-icons/fa';
-import './componentsStyles/TicketActionMenu.css'; // เดี๋ยวเราจะสร้างไฟล์ CSS นี้กันครับ
+import './componentsStyles/TicketActionMenu.css';
 
-export const TicketActionMenu = ({ 
-    ticket, 
-    currentUserId, 
-    onEdit, 
-    onCancelVote, 
-    onFeedback, 
-    onCancelTicket 
+export const TicketActionMenu = ({
+    ticket,
+    currentUserId,
+    onEdit,
+    onCancelVote,
+    onFeedback,
+    onCancelTicket
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef(null);
@@ -52,24 +52,24 @@ export const TicketActionMenu = ({
                     {isOwner ? (
                         /* เมนูสำหรับเจ้าของตั๋ว */
                         <>
-                            <button 
-                                className="kebab-item" 
+                            <button
+                                className="kebab-item"
                                 disabled={!isPending}
                                 onClick={(e) => handleAction(e, () => onEdit(ticket.ticketId))}
                             >
                                 <FaEdit className="menu-icon text-yellow" /> แก้ไขรายการ
                             </button>
 
-                            <button 
-                                className="kebab-item" 
+                            <button
+                                className="kebab-item"
                                 disabled={!isPending}
                                 onClick={(e) => handleAction(e, () => onCancelTicket(ticket.ticketId))}
                             >
                                 <FaTrashAlt className="menu-icon text-red" /> ยกเลิกแจ้งปัญหา
                             </button>
 
-                            <button 
-                                className="kebab-item" 
+                            <button
+                                className="kebab-item"
                                 disabled={!isResolved || hasRated}
                                 onClick={(e) => handleAction(e, () => onFeedback(ticket.ticketId))}
                             >
@@ -78,8 +78,8 @@ export const TicketActionMenu = ({
                         </>
                     ) : (
                         /* เมนูสำหรับผู้โหวต/ติดตาม */
-                        <button 
-                            className="kebab-item" 
+                        <button
+                            className="kebab-item"
                             disabled={!isPending}
                             onClick={(e) => handleAction(e, () => onCancelVote(ticket.ticketId))}
                         >

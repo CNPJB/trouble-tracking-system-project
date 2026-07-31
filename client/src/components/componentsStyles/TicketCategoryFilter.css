@@ -15,8 +15,8 @@
 }
 
 .category-filter-select {
-    width: 100%;
-    padding: 12px 35px 12px 40px;
+    min-width: 0;
+    padding: 12px 35px 12px 25px;
     border: 2px solid #e0e0e0;
     border-radius: 25px;
     background-color: #ffffff;
@@ -51,7 +51,7 @@
     }
 
     .category-filter-select {
-        padding: 10px 35px 10px 37px;
+        padding: 10px 35px 10px 25px;
         font-size: 14px;
     }
 }

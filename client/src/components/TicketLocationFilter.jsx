@@ -8,22 +8,19 @@ export const TicketLocationFilter = ({ selectedValue, onChange, disabled }) => {
 
     return (
         <div className="location-filter-wrapper">
-                    <div className="location-filter-icon">
-                        <FaFilter />
-                    </div>
-                    <select 
-                        className="location-filter-select" 
-                        value={selectedValue || ''} 
-                        onChange={(e) => onChange(e.target.value)}
-                        disabled={disabled || isLoading}
-                    >
-                        <option value="">สถานที่ทั้งหมด</option>
-                        {locations.map(l => (
-                            <option key={l.locationId} value={l.locationId}>
-                                {l.locationName}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-            );
+            <select
+                className="location-filter-select"
+                value={selectedValue || ''}
+                onChange={(e) => onChange(e.target.value)}
+                disabled={disabled || isLoading}
+            >
+                <option value="">สถานที่ทั้งหมด</option>
+                {locations.map(l => (
+                    <option key={l.locationId} value={l.locationId}>
+                        {l.locationName}
+                    </option>
+                ))}
+            </select>
+        </div>
+    );
 };

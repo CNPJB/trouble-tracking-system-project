@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-export const useResolvedTickets = (limit = 10) => {
+export const useResolvedTickets = (limit = 10, ratedOnly = false) => {
     const [resolvedTickets, setResolvedTickets] = useState([]);
     const [isLoadingResolved, setIsLoadingResolved] = useState(true);
 
@@ -13,7 +13,8 @@ export const useResolvedTickets = (limit = 10) => {
                     params: { 
                         status: 'resolved', 
                         limit: limit, 
-                        page: 1 
+                        page: 1,
+                        ratedOnly: ratedOnly
                     } 
                 });
                 
