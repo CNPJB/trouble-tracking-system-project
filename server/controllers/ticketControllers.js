@@ -363,59 +363,55 @@ export const upvoteTicket = async (req, res) => {
         const existingTicket = req.ticket;
 
         if (existingTicket.userId === userId) {
-            console.log("User attempted to upvote their own ticket:", { userId, ticketId: id });
             return res.status(403).json({
                 success: false,
                 message: "You cannot upvote your own ticket. Your Issue will be resolved as soon as possible."
             });
         }
 
-        // Check if the user has already upvoted this ticket
-        const existingUpvote = await prisma.upvote.findFirst({
-            where: {
-                ticketId: id,
-                userId: userId
-            }
-        });
+       const result = await prisma.$transaction(async (tx) => {
+            
+            // 1. ใช้ 'tx' ในการค้นหา เพื่อให้ล็อคสถานะใน Transaction นี้ (Atomic)
+            const existingUpvote = await tx.upvote.findFirst({
+                where: {
+                    ticketId: id,
+                    userId: userId
+                }
+            });
 
-        if (existingUpvote) {
-            // If the upvote already exists, delete it (cancel the upvote)
-            await prisma.$transaction([
-                prisma.upvote.delete({
+            if (existingUpvote) {
+                // 2A. สั่งลบ และ ดันกระทู้ (Bump) ผ่าน 'tx'
+                await tx.upvote.delete({
                     where: { upvoteId: existingUpvote.upvoteId }
-                }),
-                prisma.ticket.update({
+                });
+                await tx.ticket.update({
                     where: { ticketId: id },
                     data: { updatedAt: new Date() }
-                })
-            ]);
-
-            return res.status(200).json({
-                success: true,
-                message: "Cancel upvote successfully.",
-                isUpvoted: false
-            });
-        } else {
-            // If the upvote does not exist, create it
-            await prisma.$transaction([
-                prisma.upvote.create({
+                });
+                return { isUpvoted: false, message: "Cancel upvote successfully." };
+            } else {
+                // 2B. สั่งสร้าง และ ดันกระทู้ (Bump) ผ่าน 'tx'
+                await tx.upvote.create({
                     data: {
                         ticketId: id,
                         userId: userId
                     }
-                }),
-                prisma.ticket.update({
+                });
+                await tx.ticket.update({
                     where: { ticketId: id },
-                    data: { updatedAt: new Date() }
-                })
-            ]);
+                    data: { updatedAt: new Date() } 
+                });
+                return { isUpvoted: true, message: "Vote successfully!" };
+            }
+        });
 
-            return res.status(200).json({
-                success: true,
-                message: "Vote successfully!",
-                isUpvoted: true
-            });
-        }
+        // 3. ส่ง Response กลับไปให้หน้าบ้านหลังจาก Transaction ทำงานจบอย่างสมบูรณ์
+        return res.status(200).json({
+            success: true,
+            message: result.message,
+            isUpvoted: result.isUpvoted
+        });
+        
     } catch (error) {
         console.error('Error upvoting ticket:', error);
         res.status(500).json({
