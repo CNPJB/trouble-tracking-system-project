@@ -33,7 +33,8 @@
     "nodemailer": "^9.0.3",
     "pg": "^8.20.0",
     "pure-rand": "^8.4.0",
-    "streamifier": "^0.1.1"
+    "streamifier": "^0.1.1",
+    "sweetalert2": "^11.26.25"
   },
   "devDependencies": {
     "@types/node": "^25.8.0",

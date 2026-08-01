@@ -113,7 +113,11 @@
   }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
+  .audit-issues-container {
+    padding: 10px;
+  }
+
   .audit-issues-content {
     flex-direction: column;
   }

@@ -45,6 +45,18 @@
     bottom: 4px;
 }
 
+.edit-label-with-counter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.edit-char-counter {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 6px;
+}
+
 .half-bottom-panel {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -98,6 +110,7 @@
 }
 
 .btn-save-edit {
+    display: flex;
     background-color: #fcd271;
     color: #333;
     border: none;
@@ -107,10 +120,8 @@
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.2s ease;
-    margin-top: 15px;
-    position: relative;
-    left: 940px;
-    bottom: 600px;
+    margin: 15px auto auto auto;
+    gap: 5px;
 }
 
 .btn-save-edit:hover {
@@ -124,11 +135,7 @@
     cursor: not-allowed;
 }
 
-@media (max-width: 1536px) {
-    .btn-save-edit {
-        bottom: 580px;
-    }
-}
+@media (max-width: 1536px) {}
 
 @media (max-width: 1024px) {
     .btn-save-edit {

@@ -20,7 +20,8 @@ export const TicketActionPanel = ({ ticket, onUpdateStatus, isLoading }) => {
         selectedImages,
         fileInputRef,
         handleImageChange,
-        removeImage
+        removeImage,
+        isCompressing
     } = useImageUpload(3, (msg) => setErrorMsg(msg));
 
     // เช็คสถานะปัจจุบันจากฐานข้อมูล[cite: 25]
@@ -160,13 +161,15 @@ export const TicketActionPanel = ({ ticket, onUpdateStatus, isLoading }) => {
                             rows="4"
                         />
                     </div>
-                    
-                    <ImageUploader 
+
+                    <ImageUploader
                         selectedImages={selectedImages}
                         fileInputRef={fileInputRef}
                         onImageChange={handleImageChange}
                         onRemoveImage={removeImage}
                         maxImages={3}
+                        minImages={1}
+                        isCompressing={isCompressing}
                     />
 
                     {errorMsg && <p className="error-text">{errorMsg}</p>}
@@ -175,7 +178,7 @@ export const TicketActionPanel = ({ ticket, onUpdateStatus, isLoading }) => {
                         <button
                             className="btn-action success"
                             onClick={handleResolve}
-                            disabled={isLoading}
+                            disabled={isLoading || isCompressing}
                         >
                             <FaCheck /> บันทึกและปิดงาน (Resolve)
                         </button>

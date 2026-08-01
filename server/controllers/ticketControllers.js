@@ -380,9 +380,16 @@ export const upvoteTicket = async (req, res) => {
 
         if (existingUpvote) {
             // If the upvote already exists, delete it (cancel the upvote)
-            await prisma.upvote.delete({
-                where: { upvoteId: existingUpvote.upvoteId }
-            });
+            await prisma.$transaction([
+                prisma.upvote.delete({
+                    where: { upvoteId: existingUpvote.upvoteId }
+                }),
+                prisma.ticket.update({
+                    where: { ticketId: id },
+                    data: { updatedAt: new Date() }
+                })
+            ]);
+
             return res.status(200).json({
                 success: true,
                 message: "Cancel upvote successfully.",
@@ -390,12 +397,19 @@ export const upvoteTicket = async (req, res) => {
             });
         } else {
             // If the upvote does not exist, create it
-            await prisma.upvote.create({
-                data: {
-                    ticketId: id,
-                    userId: userId
-                }
-            });
+            await prisma.$transaction([
+                prisma.upvote.create({
+                    data: {
+                        ticketId: id,
+                        userId: userId
+                    }
+                }),
+                prisma.ticket.update({
+                    where: { ticketId: id },
+                    data: { updatedAt: new Date() }
+                })
+            ]);
+
             return res.status(200).json({
                 success: true,
                 message: "Vote successfully!",

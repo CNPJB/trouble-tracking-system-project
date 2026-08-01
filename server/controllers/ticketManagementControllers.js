@@ -9,7 +9,7 @@ export const getTicketGroups = async (req, res) => {
                 subTickets: {
                     some: {} // เฉพาะตั๋วที่มี sub tickets
                 },
-                ticketStatus: 'pending' 
+                ticketStatus: 'pending'
             },
             include: {
                 category: { select: { ticketCtgName: true } },
@@ -61,7 +61,7 @@ export const mergeTickets = async (req, res) => {
 
         // 2. เริ่มต้น Transaction (ทำงานทุกอย่างในกรอบ tx นี้)
         const result = await prisma.$transaction(async (tx) => {
-            
+
             // A. ดึงข้อมูลตั๋วหลัก (เพื่อดูว่ามีใครเกี่ยวข้องกันอยู่แล้วบ้าง)
             const primaryTicket = await tx.ticket.findUnique({
                 where: { ticketId: primaryTicketId },
@@ -83,7 +83,7 @@ export const mergeTickets = async (req, res) => {
             // B. ดึงข้อมูลตั๋วซ้ำทั้งหมดที่ส่งมา
             const duplicateTickets = await tx.ticket.findMany({
                 where: { ticketId: { in: duplicateTicketIds } },
-                include: { 
+                include: {
                     upvotes: true,
                     subTickets: {
                         include: { upvotes: true } // ดึงคนโหวตของตั๋วลูกมาด้วย
@@ -97,7 +97,7 @@ export const mergeTickets = async (req, res) => {
             const allTicketsToFlatten = new Set();
 
             duplicateTickets.forEach(ticket => {
-            allTicketsToFlatten.add(ticket.ticketId);
+                allTicketsToFlatten.add(ticket.ticketId);
                 usersToMigrate.add(ticket.userId);
                 ticket.upvotes.forEach(u => usersToMigrate.add(u.userId));
 
@@ -108,14 +108,14 @@ export const mergeTickets = async (req, res) => {
                         usersToMigrate.add(sub.userId);
                         sub.upvotes.forEach(u => usersToMigrate.add(u.userId));
                     });
-                }   
+                }
             });
 
             // D. กรองคนที่ซ้ำออก (ถ้าเขาโหวตตั๋วหลักอยู่แล้ว ก็ไม่ต้องย้ายไปซ้ำ)
             const newUpvoters = [...usersToMigrate].filter(userId => !primaryUsers.has(userId));
 
             // E. เริ่มกระบวนการแก้ไข Database
-            
+
             // 1) เพิ่มคนโหวตใหม่เข้าตั๋วหลัก
             if (newUpvoters.length > 0) {
                 await tx.upvote.createMany({
@@ -146,7 +146,7 @@ export const mergeTickets = async (req, res) => {
 
     } catch (error) {
         console.error('Error merging tickets:', error);
-        
+
         if (error.message === "PRIMARY_NOT_FOUND") {
             return res.status(404).json({ success: false, message: "ไม่พบข้อมูลตั๋วหลักในระบบ" });
         }
@@ -275,9 +275,9 @@ export const getUrgentTickets = async (req, res) => {
             const subCount = ticket._count?.subTickets || 0;
             const voteCount = ticket.upvotes?.length || 0;
             const score = (subCount * 5) + voteCount;
-            
+
             // ลบ upvotes ทิ้งเพื่อไม่ให้ payload บวมเกินความจำเป็น
-            const { upvotes, ...ticketData } = ticket; 
+            const { upvotes, ...ticketData } = ticket;
             return { ...ticketData, urgencyScore: score };
         });
 
@@ -303,20 +303,20 @@ export const updateTicketStatusAdmin = async (req, res) => {
         const { id } = req.params;
         const { ticketStatus, adminNote } = req.body;
         const adminId = req.user.userId;
-        const files = req.files; 
+        const files = req.files;
 
         // 1. ดึงข้อมูลตั๋วปัจจุบันมาตรวจสอบก่อน
         const ticket = await prisma.ticket.findUnique({
             where: { ticketId: id },
-            select: { 
-                ticketStatus: true, 
-                equipmentId: true, 
+            select: {
+                ticketStatus: true,
+                equipmentId: true,
                 adminId: true,
                 title: true,
-                subTickets: { 
-                    select: { equipmentId: true } 
+                subTickets: {
+                    select: { equipmentId: true }
                 }
-             }
+            }
         });
 
         if (!ticket) {
@@ -366,7 +366,7 @@ export const updateTicketStatusAdmin = async (req, res) => {
 
         // 5. เริ่ม Transaction เพื่ออัปเดตข้อมูลทุกตารางพร้อมกัน
         const result = await prisma.$transaction(async (tx) => {
-            
+
             // 5.1 เตรียมข้อมูลอัปเดต Ticket
             const updateData = {
                 ticketStatus,
@@ -378,7 +378,7 @@ export const updateTicketStatusAdmin = async (req, res) => {
             if (!ticket.adminId) {
                 updateData.adminId = adminId;
             }
-            
+
             // ใส่ Admin Note ถ้ามีการส่งมา
             if (adminNote) updateData.adminNote = adminNote;
 
@@ -410,11 +410,11 @@ export const updateTicketStatusAdmin = async (req, res) => {
             // 5.3 ซิงค์สถานะครุภัณฑ์ (Equipment Status Workflow)
 
             const equipmentIdsSet = new Set();
-            
+
             if (ticket.equipmentId) {
                 equipmentIdsSet.add(ticket.equipmentId); // ใส่ของแม่
             }
-            
+
             if (ticket.subTickets && ticket.subTickets.length > 0) {
                 ticket.subTickets.forEach(sub => {
                     if (sub.equipmentId) {
@@ -427,7 +427,7 @@ export const updateTicketStatusAdmin = async (req, res) => {
 
             if (allEquipmentIds.length > 0) {
                 let newEqStatus = null;
-                
+
                 if (ticketStatus === 'in_progress') {
                     newEqStatus = 'sent_for_repair'; // แจ้งซ่อม -> สถานะส่งซ่อม
                 } else if (ticketStatus === 'resolved') {
@@ -439,8 +439,8 @@ export const updateTicketStatusAdmin = async (req, res) => {
                 if (newEqStatus) {
                     // ใช้ updateMany และเงื่อนไข { in: [...] } เพื่ออัปเดตหลายชิ้นพร้อมกัน
                     await tx.equipment.updateMany({
-                        where: { 
-                            equipmentId: { in: allEquipmentIds } 
+                        where: {
+                            equipmentId: { in: allEquipmentIds }
                         },
                         data: { equipmentStatus: newEqStatus }
                     });
@@ -449,10 +449,10 @@ export const updateTicketStatusAdmin = async (req, res) => {
 
             const subTicketUpdateData = {
                 ticketStatus,
-                adminId, 
+                adminId,
                 updatedAt: new Date()
             };
-            
+
             if (adminNote) {
                 subTicketUpdateData.adminNote = `[ดำเนินการจากปัญหาหลัก]: ${adminNote}`;
             }
@@ -473,7 +473,7 @@ export const updateTicketStatusAdmin = async (req, res) => {
 
         // ส่ง Email
         if (['in_progress', 'resolved', 'rejected'].includes(ticketStatus)) {
-            
+
             // ดึง User ทั้งหมดที่เกี่ยวข้องกับปัญหานี้
             const relatedUsers = await prisma.user.findMany({
                 where: {
@@ -502,7 +502,7 @@ export const updateTicketStatusAdmin = async (req, res) => {
             // สั่งส่งอีเมลแบบ Fire and Forget (วนลูปส่งเบื้องหลัง ไม่ต้องรอให้ส่งเสร็จถึงจะตอบกลับหน้าเว็บ)
             userEmails.forEach(email => {
                 sendTicketStatusEmail(email, ticketDataForEmail)
-                    .catch(err => console.error(`Failed to send email in background to ${email}`, err));
+                    .catch(err => console.error(`Failed to send email in background.`, err));
             });
         }
 
@@ -514,7 +514,7 @@ export const updateTicketStatusAdmin = async (req, res) => {
 
     } catch (error) {
         console.error('Error updating ticket status:', error);
-        
+
         // Rollback: ถ้าเซฟลง Database ไม่สำเร็จ แต่ดันอัปโหลดรูปขึ้น Cloudinary ไปแล้ว ต้องลบรูปทิ้ง[cite: 27]
         if (uploadedImagesForRollback.length > 0) {
             console.log("Rolling back uploaded images from Cloudinary...");
@@ -522,10 +522,10 @@ export const updateTicketStatusAdmin = async (req, res) => {
             await Promise.all(rollbackPromises).catch(e => console.error("Rollback failed:", e));
         }
 
-        res.status(500).json({ 
-            success: false, 
+        res.status(500).json({
+            success: false,
             message: 'เกิดข้อผิดพลาดในการอัปเดตสถานะปัญหา',
-            error: error.message 
+            error: error.message
         });
     }
 };
