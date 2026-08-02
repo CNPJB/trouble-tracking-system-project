@@ -1,0 +1,259 @@
+/* SimilarTickets.css */
+
+/* กล่องครอบหลัก (สีขาว ขอบมน มีเงาอ่อนๆ) */
+.suggestion-section {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 30px 24px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  height: 100%;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 90px;
+  max-height: calc(100vh - 120px);
+  /* ปรับให้สูงสุดไม่เกินความสูงหน้าจอ */
+}
+
+/* หัวข้อด้านบนสุด */
+.suggestion-section h2 {
+  text-align: center;
+  font-size: var(--text-size-large);
+  font-weight: 600;
+  color: #333333;
+  margin-top: 0;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+
+/* คอนเทนเนอร์แสดงการ์ด */
+.ticket-list {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 14px;
+  overflow-y: auto;
+  padding-right: 8px;
+  padding-bottom: 15px;
+  /* flex-grow: 1; */
+  min-height: 0;
+}
+
+/* แต่ง Scroll bar ให้ดูสวยงามและเข้ากับธีม */
+.ticket-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ticket-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.ticket-list::-webkit-scrollbar-thumb {
+  background-color: #a1a2a1;
+  border-radius: 10px;
+}
+
+.ticket-list::-webkit-scrollbar-thumb:hover {
+  background-color: #6f7171;
+}
+
+/* กล่องการ์ดแต่ละใบ */
+.ticket-card {
+  border: 1px solid #adadad;
+  border-radius: 12px;
+  padding: 16px;
+  background-color: #ffffff;
+  position: relative;
+  display: flex;
+  margin: 5px 10px -2px 5px;
+  flex-direction: row;
+  gap: 16px;
+  min-height: 150px;
+  box-shadow: 3px 3px 10px rgba(70, 70, 71, 0.25);
+  height: 170px;
+}
+
+.ticket-card:hover {
+  transition: all 0.2s ease;
+  transform: translateY(-3px);
+}
+
+/* กล่องครอบรูป (สร้างลายตารางหมากรุก Placeholder ด้วย CSS) */
+.ticket-image-container {
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
+  /* ไม่ให้รูปถูกบีบให้เล็กลง */
+  border: 1px solid #cbd5e0;
+  border-radius: 8px;
+  overflow: hidden;
+
+  /* สร้างลายตารางเทา-ขาวแบบใน Mockup */
+  background-image:
+    repeating-linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%, #f0f0f0),
+    repeating-linear-gradient(45deg, #f0f0f0 25%, #ffffff 25%, #ffffff 75%, #f0f0f0 75%, #f0f0f0);
+  background-position: 0 0, 8px 8px;
+  background-size: 16px 16px;
+}
+
+/* ตัวรูปภาพจริงๆ (ถ้ามี) */
+.ticket-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* ตัดรูปให้เต็มกล่องแบบไม่เสียสัดส่วน */
+  display: block;
+  /* ทับลายตาราง CSS เอาไว้ */
+}
+
+/* ส่วนเนื้อหาขวาของรูป */
+.ticket-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  /* ให้กินพื้นที่ขวามือที่เหลือทั้งหมด */
+}
+
+/* ส่วนข้อมูลภายในการ์ด */
+.ticket-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* หัวข้อปัญหา (เว้นที่ว่างด้านขวาไว้ไม่ให้ทับปุ่ม Upvote) */
+.ticket-info h4 {
+  margin: 0 0 6px 0;
+  font-size: 14px;
+  font-weight: bold;
+  color: #000000;
+  padding-right: 90px;
+  word-break: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* รายละเอียด (สถานที่ ชั้น ห้อง) */
+.ticket-info p {
+  margin: 0;
+  font-size: 12px;
+  color: #2d3748;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+/* ป้ายกำกับสถานะ */
+.status-badge {
+  display: inline-block;
+  margin-top: 7px;
+  padding: 4px 24px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  width: fit-content;
+}
+
+/* สีป้ายสถานะ (สีฟ้าอมม่วงตามรูป) */
+.status-badge.pending {
+  background-color: var(--status-pending-bg);
+  color: #1a202c;
+}
+
+/* กล่องครอบปุ่ม Upvote */
+.ticket-action {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+/* ปุ่ม Upvote */
+.btn-upvote {
+  background-color: #8bed6a;
+  /* สีเขียวสว่างตามรูป */
+  color: #000000;
+  border: 1px solid #74db51;
+  /* เส้นขอบสีเขียวเข้มขึ้นนิดนึง */
+  border-radius: 6px;
+  padding: 4px 8px 6px 4px;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-upvote:hover:not(:disabled) {
+  background-color: #03b927;
+}
+
+.btn-upvote .nav-icon-vote {
+  margin-right: 4px;
+  /* เว้นระยะห่างระหว่างข้อความกับไอคอน */
+  font-size: 12px;
+  /* ขนาดไอคอน */
+  vertical-align: middle;
+  /* จัดให้อยู่ตรงกลางแนวตั้งกับข้อความ */
+}
+
+/* ปุ่ม Upvote กรณีถูก Disabled (ผู้ใช้แจ้งเอง หรือกดโหวตไปแล้ว) */
+.btn-upvote:disabled {
+  background-color: #d1f2cf;
+  color: #718096;
+  border-color: #d1f2cf;
+  cursor: not-allowed;
+}
+
+/* ข้อความกรณีไม่มีข้อมูล */
+.no-suggestion {
+  text-align: center;
+  color: #a0aec0;
+  grid-column: span 2;
+  padding: 30px 0;
+}
+
+@media (max-width: 1536px) {
+  .suggestion-section h2 {
+    font-size: 18px;
+  }
+
+  .suggestion-section {
+    padding-top: 25px;
+  }
+}
+
+/* รองรับ Responsive: ถ้าย่อจอให้เปลี่ยนเป็น 1 คอลัมน์ */
+@media (max-width: 1024px) {
+  .ticket-list {
+    grid-template-columns: 1fr;
+  }
+
+  .ticket-card {
+    margin: 5px 0px;
+  }
+}
+
+@media (max-width: 430px) {
+  .suggestion-section {
+    max-width: 100vw;
+    margin-left: -5px;
+    padding: 10px;
+  }
+
+  .status-badge.pending {
+    display: none;
+  }
+
+  .ticket-card {
+    margin: 5px 0px;
+  }
+}

@@ -1,0 +1,239 @@
+/* คอนเทนเนอร์หลักของ Sidebar */
+.tracking-sidebar {
+  width: 260px;
+  height: 100vh;
+  background-color: var(--tbs-green-light);
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  transition: all 0.3s;
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.tracking-sidebar-header img {
+  width: 100%;
+  object-fit: contain;
+  height: auto;
+  padding: 2rem;
+}
+
+/* กลุ่มปุ่มเมนู */
+.menu-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  /* ระยะห่างปุ่มลดลงให้ดูเป็นกลุ่มเดียวกัน */
+}
+
+.personal-count {
+  color: var(--text-light);
+  margin-left: 4px;
+}
+
+/* สไตล์เมนูพื้นฐาน (คลีน เรียบง่าย) */
+.sidebar-menu-btn {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-main);
+  /* สีเทาเข้มอ่านง่าย */
+  background-color: transparent;
+  /* พื้นหลังใส */
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  /* ดันข้อความไปซ้าย และ Badge ไปขวาสุด */
+  align-items: center;
+}
+
+/* เอฟเฟกต์ตอน Hover เมาส์ชี้ */
+.sidebar-menu-btn:hover {
+  background-color: var(--tbs-green-light);
+  /* สีเขียวอ่อนสุด */
+  color: var(--tbs-green-dark);
+  /* ตัวอักษรเปลี่ยนเป็นสีเขียวเข้ม */
+}
+
+/* สถานะเปิดใช้งานอยู่ (Active Tab) */
+.sidebar-menu-btn.active {
+  background-color: var(--tbs-green-active);
+  color: var(--tbs-green-dark);
+  font-weight: 600;
+}
+
+/* เส้นคั่นกลางแบบเนียนตา */
+.sidebar-divider {
+  border: none;
+  border-top: 1px solid #eef2f6;
+  /* สีเทาอ่อนมากๆ */
+  margin: 4px 0;
+  width: 100%;
+}
+
+/* =========================================
+   ปุ่มรอประเมิน (ฉีกอารมณ์ด้วยโทนเตือนเบาๆ)
+   ========================================= */
+.sidebar-menu-btn.review-btn:hover {
+  background-color: #fff0f0;
+  /* สีแดงอ่อนมากตอน Hover */
+  color: var(--status-red);
+}
+
+.sidebar-menu-btn.review-btn.active {
+  background-color: #ffe4e4;
+  /* สีแดงอ่อนชัดขึ้นตอน Active */
+  color: var(--status-red);
+}
+
+/* ป้าย Badge เครื่องหมายตกใจแบบ Notification Pill */
+.badge-exclamation {
+  background-color: var(--status-red);
+  /* ใช้สีแดงจากระบบ */
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  box-shadow: 0 2px 4px rgba(231, 76, 60, 0.3);
+  /* ใส่เงาสีแดงจางๆ ให้ดูมีมิติ */
+}
+
+.sidebar-menu-btn:hover,
+.sidebar-menu-btn.active {
+  color: var(--tbs-green);
+  border-right: 4px solid var(--tbs-green);
+  background-color: rgba(55, 167, 11, 0.1);
+}
+
+.sidebar-menu-btn.review-btn.active {
+  border-right: 4px solid red;
+}
+
+.mobile-hamburger-btn {
+  display: none;
+}
+
+.close-btn {
+  display: none;
+}
+
+.sidebar-overlay {
+  display: none;
+}
+
+@media (max-width: 1536px) {
+  .tracking-sidebar {
+    min-width: 280px;
+  }
+}
+
+@media (max-width: 820px) {
+
+  /* 1.ปุ่มแฮมเบอร์เกอร์ (ถ้าใช้ Navbar ของตัวเอง ลบโค้ดบล็อกนี้ทิ้งได้ครับ) */
+  .mobile-hamburger-btn {
+    display: flex;
+    position: fixed;
+    top: 87px;
+    left: 13px;
+    z-index: 900;
+    border: none;
+    padding: 8px 12px;
+    background-color: #f5f5f5;
+    background: transparent;
+    font-size: 20px;
+    cursor: pointer;
+    align-items: center;
+    border-radius: 10px;
+  }
+
+  .mobile-hamburger-btn span {
+    margin: 2px;
+    font-size: 14px;
+  }
+
+  /* 2. ฉากหลังสีดำทึบ (Overlay) */
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.4);
+    /* สีดำโปร่งแสง 40% */
+    z-index: 998;
+    /* อยู่หลังเมนู แต่อยู่หน้าเว็บหลัก */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease-in-out;
+  }
+
+  .sidebar-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* 3. ตัว Sidebar (สไลด์จากซ้าย) */
+  .tracking-sidebar {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    width: 280px;
+    /* ความกว้างของเมนูตอนสไลด์ออกมา */
+    border-radius: 0;
+    /* เอาขอบมนออก */
+    z-index: 999;
+    /* ลอยอยู่หน้าสุด */
+    padding-top: 20px;
+    background-color: #ffffff !important;
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.15);
+    /* ใส่เงาด้านขวาให้ดูมีมิติ */
+
+    /* 💡 พระเอกอยู่ตรงนี้: สไลด์เก็บไปทางซ้ายสุดขอบ */
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* เมื่อ React ส่งคลาส open มา ให้สไลด์กลับมาที่เดิม */
+  .tracking-sidebar.open {
+    transform: translateX(0);
+  }
+
+  /* 4. ปรับ Header ให้มีพื้นที่สำหรับปุ่มกากบาท */
+  .tracking-sidebar-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 20px 0 20px 0;
+  }
+
+  .tracking-sidebar-header img {
+    height: 44px;
+    width: 200px;
+    padding: 0;
+  }
+
+  .close-btn {
+    display: block;
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: var(--text-muted, #888);
+    cursor: pointer;
+    padding: 4px;
+  }
+}
+
+@media (max-width: 430px) {}

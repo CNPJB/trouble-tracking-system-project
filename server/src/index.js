@@ -1,89 +1,41 @@
 import express from 'express';
 import cors from 'cors';
-import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
+import ticketRoutes from '../routes/ticketRoutes.js';
+import managementRoutes from '../routes/managementRoutes.js';
+import ticketManagementRoutes from '../routes/ticketManagementRoutes.js';
+import cookiesParser from 'cookie-parser';
+import authRoutes from '../routes/authRoutes.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
-const pool = new Pool({ 
-  connectionString: process.env.DATABASE_URL 
-});
-const adapter = new PrismaPg(
-  pool
-);
-const prisma = new PrismaClient({ 
-  adapter,
-});
 
-app.use(cors());
+app.set('trust proxy', 1);
+// Middleware
+app.use(cors({
+  // origin: process.env.CLIENT_URL, // Allow requests from this origin
+  // credentials: true // Allow cookies to be sent with requests
+  // ไว้เทสติงบังคับใช้กับ https (ngrok) และอนุญาตให้ข้ามโดเมนได้
+  origin: [
+    'http://localhost:5173', // ลิงก์หน้าบ้านบนคอม
+    'http://192.168.1.53.nip.io:5173',
+    'http://shawl-vertical-depravity.ngrok-free.dev', // ลิงก์หน้าบ้าน ngrok
+    'http://nonrestricted-casey-hazelly.ngrok-free.dev',
+    process.env.CLIENT_URL // รับ URL หน้าบ้านตอนใช้งานจริง
+  ].filter(Boolean),
+  credentials: true
+}));
 app.use(express.json());
+app.use(cookiesParser()); // Parse cookies
+
+app.use('/api/auth', authRoutes);
+app.use('/api/tickets', ticketRoutes);
+app.use('/api/manage', managementRoutes);
+app.use('/api/ticketManagement', ticketManagementRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello from server testest!!');
 });
 
-app.post('/api/users', async (req, res) => {
-  try {
-    const { email, fullName, role } = req.body;
-    const newUser = await prisma.user.create({
-      data: { email, fullName, role },
-    });
-    res.status(201).json(newUser);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to create user', details: error.message });
-  }
-});
-
-app.get('/api/users', async (req, res) => {
-  try {
-    const users = await prisma.user.findMany();
-    res.status(200).json(users);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch users' });
-  }
-});
-
-app.get('/api/users/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const user = await prisma.user.findUnique({
-      where: { userId: Number(id) }, // แปลง id จาก URL เป็นตัวเลข
-    });
-    
-    if (!user) return res.status(404).json({ error: 'User not found' });
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch user' });
-  }
-});
-
-app.put('/api/users/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { email, fullName, role } = req.body;
-    
-    const updatedUser = await prisma.user.update({
-      where: { userId: Number(id) },
-      data: { email, fullName, role },
-    });
-    res.status(200).json(updatedUser);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to update user', details: error.message });
-  }
-});
-
-app.delete('/api/users/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    await prisma.user.delete({
-      where: { userId: Number(id) },
-    });
-    res.status(200).json({ message: 'User deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to delete user', details: error.message });
-  }
-});
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);

@@ -1,0 +1,350 @@
+.issue-management-container {
+    padding: 20px 20px 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 1565px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.top-toolbar-modern {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    width: 100%;
+    align-items: center;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.25rem;
+    margin-bottom: 15px;
+    color: #334155;
+}
+
+.urgent-title {
+    color: #ef4444;
+    /* สีแดงสื่อถึงความด่วน */
+}
+
+/* =========================================
+   Swiper Styles (Slideshow)
+   ========================================= */
+.urgent-section {
+    background: linear-gradient(145deg, #fff1f2, #ffe4e6);
+    padding: 20px 25px 10px 25px;
+    border-radius: 20px;
+    border: 1px solid #fecdd3;
+    box-shadow: 0 10px 25px rgba(225, 29, 72, 0.05);
+}
+
+.urgent-swiper {
+    padding-top: 1rem;
+    padding-left: 5px;
+    padding-bottom: 40px !important;
+    /* เว้นที่ให้จุด Pagination ด้านล่าง */
+}
+
+/* แต่งปุ่มลูกศรซ้ายขวาของ Swiper */
+.swiper-button-next,
+.swiper-button-prev {
+    color: #e11d48 !important;
+    background: rgba(255, 255, 255, 0.8);
+    width: 45px !important;
+    height: 45px !important;
+    padding: 10px;
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+    font-size: 18px !important;
+    font-weight: bold;
+}
+
+.swiper-pagination-bullet-active {
+    background-color: #e11d48 !important;
+}
+
+/* =========================================
+   Card Wrappers (ทำให้การ์ดกดได้)
+   ========================================= */
+.clickable-card-wrapper {
+    position: relative;
+    cursor: pointer;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    height: 100%;
+}
+
+.clickable-card-wrapper:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+/* กรอบสีแดงอ่อนๆ ให้การ์ดด่วน */
+.urgent-card .ticket-card {
+    border: 2px solid #fda4af;
+}
+
+.urgency-badge {
+    position: absolute;
+    top: -10px;
+    right: 20px;
+    background-color: #e11d48;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(225, 29, 72, 0.3);
+    z-index: 5;
+    animation: pulse 2s infinite;
+}
+
+/* =========================================
+   Grid Section (ปัญหาทั่วไป)
+   ========================================= */
+.normal-section {
+    background: white;
+    padding: 25px;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+}
+
+.issue-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+/* =========================================
+   Pagination Styles
+   ========================================= */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 10px;
+    padding: 20px 0;
+}
+
+.page-numbers {
+    display: flex;
+    gap: 8px;
+}
+
+.page-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    background-color: white;
+    color: #475569;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.page-btn:hover:not(:disabled) {
+    border-color: var(--tbs-green);
+    color: var(--tbs-green);
+    background-color: #f0fdf4;
+    /* พื้นหลังสีเขียวอ่อน */
+}
+
+.page-btn.active {
+    background-color: var(--tbs-green);
+    border-color: var(--tbs-green);
+    color: white;
+    box-shadow: 0 4px 10px rgba(34, 197, 94, 0.3);
+}
+
+.page-btn.nav-btn {
+    color: var(--tbs-green);
+}
+
+.page-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background-color: #f8fafc;
+}
+
+.total-items-badge {
+    background-color: #e2e8f0;
+    color: #475569;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.empty-state-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    padding: 40px 20px;
+    background-color: #f8fafc;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+}
+
+/* Effect ชีพจรเตือนใจ */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@media (max-width: 1536px) {
+    .section-title {
+        margin-bottom: 5px;
+    }
+
+    .issue-management-container {
+        max-width: 1200px;
+        gap: 10px;
+        padding: 20px;
+    }
+
+    .top-toolbar-modern {
+        margin-bottom: 1rem;
+    }
+
+    .urgent-section {
+        padding: 15px 20px 5px 20px;
+    }
+
+    .pagination-container {
+        margin-top: 0px;
+    }
+
+    .issue-management-filter-container {
+        gap: 10px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .issue-management-container {
+        box-sizing: border-box;
+        padding: 10px 0 0 10px
+    }
+
+    .urgent-section {
+        max-width: 850px;
+    }
+}
+
+@media (max-width: 820px) {
+    .issue-management-container {
+        box-sizing: border-box;
+    }
+
+    .top-toolbar-modern {
+        flex-direction: column;
+    }
+
+    .searchbar-container {
+        width: 100%;
+        min-width: 100%;
+    }
+
+    .filter-panel-responsive {
+        margin-left: 30%;
+    }
+
+    .issue-grid {
+        grid-template-columns: repeat(1, minmax(280px, 1fr));
+        gap: 15px;
+    }
+
+    .normal-section {
+        padding: 15px;
+    }
+
+    /* ปรับ Title และ Badge ให้ซ้อนกันบนจอมือถือเพื่อไม่ให้เบียด */
+    .normal-section>div:first-child {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 10px;
+    }
+
+
+
+    .urgent-section {
+        padding: 15px 10px 5px 10px;
+    }
+
+    .urgent-swiper {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    /* ซ่อนปุ่มลูกศร Swiper บนจอมือถือ ใช้การปัด (Swipe) แทน */
+    .swiper-button-next,
+    .swiper-button-prev {
+        display: none !important;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+    }
+
+    .total-items-badge {
+        font-size: 11px;
+        padding: 4px 10px;
+    }
+}
+
+
+@media (max-width: 430px) {
+    .issue-management-container {
+        /* box-sizing: border-box; */
+        max-width: 95vw;
+        padding: 0;
+    }
+
+    .top-toolbar-modern {
+        margin: 2.75rem 0 0.5rem 0;
+        gap: 10px;
+    }
+    .filter-panel-responsive {
+        margin-left: auto;
+    }
+
+    .normal-section,
+    .urgent-section {
+        min-width: 350px;
+    }
+
+    .page-btn {
+        width: 35px;
+        height: 35px;
+    }
+
+    .pagination-container {
+        gap: 10px;
+    }
+}

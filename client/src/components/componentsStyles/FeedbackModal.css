@@ -1,0 +1,197 @@
+/* Overlay พื้นหลังดำโปร่งใส */
+.feedback-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+/* กล่องเนื้อหา Modal */
+.feedback-modal-content {
+    background-color: #ffffff;
+    width: 100%;
+    max-width: 450px;
+    border-radius: 20px;
+    padding: 30px;
+    position: relative;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    
+    animation: slideUp 0.3s ease-out;
+}
+
+/* ปุ่มกากบาท (X) */
+.feedback-close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.feedback-close-btn:hover:not(:disabled) {
+    color: #ef4444;
+}
+
+/* ส่วนหัว */
+.feedback-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.feedback-header h2 {
+    margin: 0 0 5px 0;
+    font-size: 22px;
+    color: #1e293b;
+}
+
+.feedback-header p {
+    margin: 0;
+    font-size: 14px;
+    color: #64748b;
+}
+
+/* ส่วนเนื้อหา */
+.feedback-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.feedback-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 10px;
+}
+
+.feedback-label .req {
+    color: #ef4444;
+}
+
+.mt-4 { margin-top: 16px; }
+
+/* โซนให้คะแนนดาว */
+.star-rating-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #f8fafc;
+    padding: 15px;
+    border-radius: 12px;
+    justify-content: center;
+}
+
+.star-wrapper {
+    cursor: pointer;
+    transition: transform 0.1s ease;
+}
+
+.star-wrapper:hover {
+    transform: scale(1.15); /* ให้ดาวเด้งนิดนึงตอนเอาเมาส์ชี้ */
+}
+
+/* ป้องกันไฮไลท์สีฟ้าๆ ตอนลากเมาส์รัวๆ */
+.star-icon-svg {
+    pointer-events: none;
+}
+
+.rating-text {
+    margin-left: 5px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #d97706; /* สีส้มทอง */
+    width: 55px;
+    text-align: right;
+    line-height: 1;
+}
+
+.feedback-error-text {
+    color: #ef4444;
+    font-size: 12px;
+    margin: 5px 0 0 0;
+    text-align: center;
+}
+
+/* กล่องแสดงความคิดเห็น */
+.feedback-textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 12px;
+    background-color: #f8fafc;
+    font-size: 14px;
+    color: #334155;
+    font-family: inherit;
+    resize: none; /* ล็อกขนาด */
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.feedback-textarea:focus {
+    outline: none;
+    border-color: #fcd271;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(252, 210, 113, 0.15);
+}
+
+/* ปุ่ม Action */
+.feedback-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.btn-feedback-reset {
+    flex: 1;
+    background-color: #f1f5f9;
+    color: #475569;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-feedback-reset:hover:not(:disabled) { background-color: #e2e8f0; }
+
+.btn-feedback-submit {
+    flex: 2; /* ให้ปุ่มส่งกว้างกว่า */
+    background-color: #c5f2ba; /* สีเขียวพาสเทลตามธีมเว็บ */
+    color: #166534;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-feedback-submit:hover:not(:disabled) { background-color: #aee0a1; }
+
+.btn-feedback-submit:disabled, .btn-feedback-reset:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}

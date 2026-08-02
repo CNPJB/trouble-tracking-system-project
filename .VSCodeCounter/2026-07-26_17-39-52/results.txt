@@ -1,0 +1,209 @@
+Date : 2026-07-26 17:39:52
+Directory : c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project
+Total : 145 files,  21457 codes, 1170 comments, 2081 blanks, all 24708 lines
+
+Languages
++----------------+------------+------------+------------+------------+------------+
+| language       | files      | code       | comment    | blank      | total      |
++----------------+------------+------------+------------+------------+------------+
+| JSON           |          4 |      7,348 |          0 |          4 |      7,352 |
+| JavaScript JSX |         43 |      5,264 |        343 |        650 |      6,257 |
+| PostCSS        |         37 |      5,153 |        538 |        771 |      6,462 |
+| JavaScript     |         48 |      3,379 |        230 |        576 |      4,185 |
+| MS SQL         |          3 |        144 |         49 |         59 |        252 |
+| YAML           |          2 |         79 |          0 |          6 |         85 |
+| Docker         |          2 |         33 |          8 |          3 |         44 |
+| Ignore         |          2 |         22 |          0 |          0 |         22 |
+| HTML           |          1 |         13 |          0 |          1 |         14 |
+| TypeScript     |          1 |         11 |          2 |          2 |         15 |
+| Markdown       |          2 |         11 |          0 |          9 |         20 |
++----------------+------------+------------+------------+------------+------------+
+
+Directories
++---------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                                                        | files      | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                                           |        145 |     21,457 |      1,170 |      2,081 |     24,708 |
+| . (Files)                                                                                                                                   |          3 |         81 |          0 |          7 |         88 |
+| client                                                                                                                                      |        115 |     14,848 |        944 |      1,630 |     17,422 |
+| client (Files)                                                                                                                              |          8 |      3,329 |          7 |         17 |      3,353 |
+| client\src                                                                                                                                  |        107 |     11,519 |        937 |      1,613 |     14,069 |
+| client\src (Files)                                                                                                                          |          4 |        212 |         40 |         39 |        291 |
+| client\src\components                                                                                                                       |         47 |      4,170 |        328 |        567 |      5,065 |
+| client\src\components (Files)                                                                                                               |         19 |      1,025 |         52 |        124 |      1,201 |
+| client\src\components\componentsAdmin                                                                                                       |         12 |      1,507 |        125 |        200 |      1,832 |
+| client\src\components\componentsStyles                                                                                                      |         16 |      1,638 |        151 |        243 |      2,032 |
+| client\src\context                                                                                                                          |          1 |         41 |          3 |          8 |         52 |
+| client\src\hooks                                                                                                                            |         21 |        796 |         53 |        147 |        996 |
+| client\src\pages                                                                                                                            |         28 |      5,994 |        510 |        807 |      7,311 |
+| client\src\pages (Files)                                                                                                                    |          7 |      1,544 |        118 |        209 |      1,871 |
+| client\src\pages\adminPage                                                                                                                  |         14 |      3,097 |        233 |        382 |      3,712 |
+| client\src\pages\pageStyles                                                                                                                 |          7 |      1,353 |        159 |        216 |      1,728 |
+| client\src\services                                                                                                                         |          4 |        254 |          1 |         37 |        292 |
+| client\src\utils                                                                                                                            |          2 |         52 |          2 |          8 |         62 |
+| server                                                                                                                                      |         27 |      6,528 |        226 |        444 |      7,198 |
+| server (Files)                                                                                                                              |          5 |      4,157 |          7 |          5 |      4,169 |
+| server\config                                                                                                                               |          2 |         42 |          4 |          8 |         54 |
+| server\controllers                                                                                                                          |          7 |      1,910 |        149 |        307 |      2,366 |
+| server\middleware                                                                                                                           |          2 |         56 |          2 |         11 |         69 |
+| server\prisma                                                                                                                               |          3 |        144 |         49 |         59 |        252 |
+| server\prisma\migrations                                                                                                                    |          3 |        144 |         49 |         59 |        252 |
+| server\prisma\migrations\20260517092523_add_extension                                                                                       |          1 |          1 |          0 |          0 |          1 |
+| server\prisma\migrations\20260517092757_init_schema                                                                                         |          1 |        130 |         36 |         46 |        212 |
+| server\prisma\migrations\20260606071851_change_rating_to_float                                                                              |          1 |         13 |         13 |         13 |         39 |
+| server\routes                                                                                                                               |          4 |        137 |          7 |         39 |        183 |
+| server\src                                                                                                                                  |          1 |         29 |          5 |          6 |         40 |
+| server\utils                                                                                                                                |          3 |         53 |          3 |          9 |         65 |
++---------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++---------------------------------------------------------------------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+
+| filename                                                                                                                                    | language       | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\README.md                                                                    | Markdown       |          2 |          0 |          1 |          3 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\.dockerignore                                                         | Ignore         |         11 |          0 |          0 |         11 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\Dockerfile                                                            | Docker         |         17 |          3 |          2 |         22 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\README.md                                                             | Markdown       |          9 |          0 |          8 |         17 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\eslint.config.js                                                      | JavaScript     |         28 |          0 |          2 |         30 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\index.html                                                            | HTML           |         13 |          0 |          1 |         14 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\package-lock.json                                                     | JSON           |      3,191 |          0 |          1 |      3,192 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\package.json                                                          | JSON           |         38 |          0 |          1 |         39 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\App.css                                                           | PostCSS        |          6 |          1 |          1 |          8 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\App.jsx                                                           | JavaScript JSX |         81 |          6 |         10 |         97 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\CardFinishProblem.jsx                                  | JavaScript JSX |         63 |          0 |          6 |         69 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\CardPendingProblem.jsx                                 | JavaScript JSX |        127 |          2 |          8 |        137 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\ChartForStatistic.jsx                                  | JavaScript JSX |         65 |          0 |          8 |         73 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\ConfirmButton.jsx                                      | JavaScript JSX |         45 |          1 |          3 |         49 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\DateRangeFilter.jsx                                    | JavaScript JSX |         26 |          1 |          3 |         30 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\FeedbackModal.jsx                                      | JavaScript JSX |        140 |         12 |         21 |        173 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\FilterProblem.jsx                                      | JavaScript JSX |         70 |          3 |         10 |         83 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\Footer.jsx                                             | JavaScript JSX |          0 |          0 |          1 |          1 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\ImageUploader.jsx                                      | JavaScript JSX |         44 |          3 |          5 |         52 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\LoadingSpinner.jsx                                     | JavaScript JSX |         67 |          2 |          8 |         77 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\Navbar.jsx                                             | JavaScript JSX |        114 |          6 |         13 |        133 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\SearchBar.jsx                                          | JavaScript JSX |         20 |          0 |          3 |         23 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\SimilarTickets.jsx                                     | JavaScript JSX |         48 |          1 |          5 |         54 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\StarRating.jsx                                         | JavaScript JSX |         20 |          5 |          7 |         32 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\StatisticsSidebar.jsx                                  | JavaScript JSX |         62 |         14 |         10 |         86 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\TIcketStatusFilter.jsx                                 | JavaScript JSX |         27 |          0 |          3 |         30 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\TicketCategoryFilter.jsx                               | JavaScript JSX |         27 |          0 |          2 |         29 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\TicketLocationFilter.jsx                               | JavaScript JSX |         27 |          0 |          3 |         30 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\TrackingSidebar.jsx                                    | JavaScript JSX |         33 |          2 |          5 |         40 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsAdmin\AdminLayout.jsx                        | JavaScript JSX |         13 |          1 |          4 |         18 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsAdmin\AdminSidebar.css                       | PostCSS        |         84 |          4 |         10 |         98 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsAdmin\AdminSidebar.jsx                       | JavaScript JSX |         90 |          0 |         17 |        107 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsAdmin\DropdownAdd.jsx                        | JavaScript JSX |         82 |          4 |          9 |         95 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsAdmin\ImportEquipments.css                   | PostCSS        |        173 |         15 |         23 |        211 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsAdmin\ImportEquipments.jsx                   | JavaScript JSX |        114 |          7 |         13 |        134 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsAdmin\MergeManagementPanel.css               | PostCSS        |        379 |         41 |         54 |        474 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsAdmin\MergeManagementPanel.jsx               | JavaScript JSX |        195 |         13 |         19 |        227 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsAdmin\PopupAlert.css                         | PostCSS        |         62 |          8 |          9 |         79 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsAdmin\PopupAlert.jsx                         | JavaScript JSX |         30 |          2 |          7 |         39 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsAdmin\TicketActionPanel.css                  | PostCSS        |        133 |         13 |         15 |        161 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsAdmin\TicketActionPanel.jsx                  | JavaScript JSX |        152 |         17 |         20 |        189 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\CardFinishProblem.css                 | PostCSS        |         87 |          0 |          9 |         96 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\CardPendingProblem.css                | PostCSS        |        239 |         17 |         34 |        290 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\ConfirmButton.css                     | PostCSS        |         89 |         10 |         17 |        116 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\DateRangeFilter.css                   | PostCSS        |         40 |          6 |          6 |         52 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\FeedbackModal.css                     | PostCSS        |        159 |         10 |         28 |        197 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\FilterProblem.css                     | PostCSS        |         88 |          4 |         14 |        106 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\ImageUploader.css                     | PostCSS        |         68 |          4 |          9 |         81 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\LoadingSpinner.css                    | PostCSS        |        143 |          8 |         17 |        168 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\Navbar.css                            | PostCSS        |        224 |         45 |         40 |        309 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\SearchBar.css                         | PostCSS        |         58 |          6 |          9 |         73 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\SimilarTickets.css                    | PostCSS        |        172 |         31 |         27 |        230 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\StatisticsSidebar.css                 | PostCSS        |         45 |          0 |          6 |         51 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\TicketCategoryFilter.css              | PostCSS        |         51 |          0 |          6 |         57 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\TicketLocationFilter.css              | PostCSS        |         51 |          0 |          5 |         56 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\TicketStatusFilter.css                | PostCSS        |         51 |          0 |          7 |         58 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\components\componentsStyles\TrackingSidebar.css                   | PostCSS        |         73 |         10 |          9 |         92 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\context\AuthContext.jsx                                           | JavaScript JSX |         41 |          3 |          8 |         52 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useCategories.js                                            | JavaScript     |         18 |          0 |          3 |         21 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useEquipment.js                                             | JavaScript     |         56 |          0 |          6 |         62 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useEquipmentValidation.js                                   | JavaScript     |         57 |          4 |          6 |         67 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useEquiptmentCtg.js                                         | JavaScript     |         17 |          0 |          4 |         21 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useFilterDate.js                                            | JavaScript     |         23 |          6 |          9 |         38 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useImageUpload.js                                           | JavaScript     |         40 |         10 |          9 |         59 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useImportEquipments.js                                      | JavaScript     |         62 |          1 |         12 |         75 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useInfiniteScroll.js                                        | JavaScript     |         20 |          6 |          7 |         33 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useLoadingState.js                                          | JavaScript     |         31 |          0 |          7 |         38 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useLocations.js                                             | JavaScript     |         37 |          0 |          7 |         44 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useMasterData.js                                            | JavaScript     |         47 |          0 |          6 |         53 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useResolvedTickets.js                                       | JavaScript     |         26 |          1 |          5 |         32 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useSimilarTickets.js                                        | JavaScript     |         43 |          1 |         11 |         55 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useStatistics.js                                            | JavaScript     |         46 |          0 |          4 |         50 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useTicketDetail.js                                          | JavaScript     |         42 |          3 |          9 |         54 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useTicketGroups.js                                          | JavaScript     |         20 |          3 |          4 |         27 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useTicketSearch.js                                          | JavaScript     |         42 |          2 |         10 |         54 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useTicketSummary.js                                         | JavaScript     |         19 |          0 |          4 |         23 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useTickets.js                                               | JavaScript     |         97 |         16 |         16 |        129 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useUrgentTickets.js                                         | JavaScript     |         25 |          0 |          4 |         29 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\hooks\useUsers.js                                                 | JavaScript     |         28 |          0 |          4 |         32 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\index.css                                                         | PostCSS        |         95 |         33 |         23 |        151 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\main.jsx                                                          | JavaScript JSX |         30 |          0 |          5 |         35 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\AddIssue.jsx                                                | JavaScript JSX |        333 |         40 |         60 |        433 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\Dashboard.jsx                                               | JavaScript JSX |        116 |         13 |         17 |        146 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\DetailTicket.jsx                                            | JavaScript JSX |        191 |         17 |         11 |        219 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\EditIssue.jsx                                               | JavaScript JSX |        298 |         27 |         48 |        373 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\Login.jsx                                                   | JavaScript JSX |         73 |          4 |          8 |         85 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\Statistics.jsx                                              | JavaScript JSX |        180 |          5 |         22 |        207 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\Tracking.jsx                                                | JavaScript JSX |        353 |         12 |         43 |        408 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\adminPage\AssetManagement.css                               | PostCSS        |        265 |         46 |         41 |        352 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\adminPage\AssetManagement.jsx                               | JavaScript JSX |        436 |         48 |         43 |        527 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\adminPage\AuditIssues.css                                   | PostCSS        |         53 |          6 |          8 |         67 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\adminPage\AuditIssues.jsx                                   | JavaScript JSX |        229 |         36 |         36 |        301 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\adminPage\Categories.css                                    | PostCSS        |        159 |          9 |         20 |        188 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\adminPage\Categories.jsx                                    | JavaScript JSX |        148 |          4 |         15 |        167 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\adminPage\IssueManagement.css                               | PostCSS        |        188 |         18 |         29 |        235 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\adminPage\IssueManagement.jsx                               | JavaScript JSX |        176 |          6 |         22 |        204 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\adminPage\IssueManagementDetail.css                         | PostCSS        |        240 |         12 |         39 |        291 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\adminPage\IssueManagementDetail.jsx                         | JavaScript JSX |        198 |         14 |         19 |        231 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\adminPage\LocationManagement.css                            | PostCSS        |        230 |         20 |         32 |        282 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\adminPage\LocationManagement.jsx                            | JavaScript JSX |        530 |          9 |         57 |        596 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\adminPage\UserManagement.css                                | PostCSS        |         95 |          2 |          8 |        105 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\adminPage\UserManagement.jsx                                | JavaScript JSX |        150 |          3 |         13 |        166 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\pageStyles\AddIssue.css                                     | PostCSS        |        145 |         13 |         24 |        182 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\pageStyles\Dashboard.css                                    | PostCSS        |        124 |          2 |         21 |        147 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\pageStyles\DetailTicket.css                                 | PostCSS        |        369 |         69 |         61 |        499 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\pageStyles\EditIssue.css                                    | PostCSS        |        135 |          2 |         19 |        156 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\pageStyles\Login.css                                        | PostCSS        |         86 |          9 |         17 |        112 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\pageStyles\Statistics.css                                   | PostCSS        |        274 |         37 |         40 |        351 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\pages\pageStyles\Tracking.css                                     | PostCSS        |        220 |         27 |         34 |        281 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\services\IssueCategoryService.js                                  | JavaScript     |         21 |          0 |          5 |         26 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\services\equipmentService.js                                      | JavaScript     |         23 |          0 |          4 |         27 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\services\locationService.js                                       | JavaScript     |         69 |          0 |         11 |         80 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\services\ticketService.js                                         | JavaScript     |        141 |          1 |         17 |        159 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\utils\formatDate.js                                               | JavaScript     |         22 |          0 |          3 |         25 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\src\utils\timeline.js                                                 | JavaScript     |         30 |          2 |          5 |         37 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\client\vite.config.js                                                        | JavaScript     |         22 |          4 |          2 |         28 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\docker-compose.prod.yml                                                      | YAML           |         31 |          0 |          3 |         34 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\docker-compose.yml                                                           | YAML           |         48 |          0 |          3 |         51 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\.dockerignore                                                         | Ignore         |         11 |          0 |          0 |         11 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\Dockerfile                                                            | Docker         |         16 |          5 |          1 |         22 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\config\cloudinaryConfig.js                                            | JavaScript     |         29 |          4 |          5 |         38 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\config\prismaClient.js                                                | JavaScript     |         13 |          0 |          3 |         16 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\controllers\EquipmentControllers.js                                   | JavaScript     |        300 |          5 |         48 |        353 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\controllers\authController.js                                         | JavaScript     |        144 |         16 |         25 |        185 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\controllers\getTicketControllers.js                                   | JavaScript     |        304 |         43 |         37 |        384 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\controllers\managementControllers.js                                  | JavaScript     |        355 |          7 |         42 |        404 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\controllers\statisticController.js                                    | JavaScript     |        125 |          7 |         23 |        155 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\controllers\ticketControllers.js                                      | JavaScript     |        328 |         31 |         59 |        418 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\controllers\ticketManagementControllers.js                            | JavaScript     |        354 |         40 |         73 |        467 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\middleware\authMiddleware.js                                          | JavaScript     |         21 |          2 |          5 |         28 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\middleware\ticketMiddleware.js                                        | JavaScript     |         35 |          0 |          6 |         41 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\package-lock.json                                                     | JSON           |      4,077 |          0 |          1 |      4,078 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\package.json                                                          | JSON           |         42 |          0 |          1 |         43 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\prisma.config.ts                                                      | TypeScript     |         11 |          2 |          2 |         15 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\prisma\migrations\20260517092523_add_extension\migration.sql          | MS SQL         |          1 |          0 |          0 |          1 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\prisma\migrations\20260517092757_init_schema\migration.sql            | MS SQL         |        130 |         36 |         46 |        212 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\prisma\migrations\20260606071851_change_rating_to_float\migration.sql | MS SQL         |         13 |         13 |         13 |         39 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\routes\authRoutes.js                                                  | JavaScript     |         16 |          3 |          7 |         26 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\routes\managementRoutes.js                                            | JavaScript     |         45 |          1 |         13 |         59 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\routes\ticketManagementRoutes.js                                      | JavaScript     |         34 |          2 |         10 |         46 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\routes\ticketRoutes.js                                                | JavaScript     |         42 |          1 |          9 |         52 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\src\index.js                                                          | JavaScript     |         29 |          5 |          6 |         40 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\utils\cloudinaryUpload.js                                             | JavaScript     |         22 |          2 |          2 |         26 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\utils\formatDate.js                                                   | JavaScript     |         20 |          0 |          3 |         23 |
+| c:\Users\Palmt\Desktop\Project\trouble-tracking-system-project\server\utils\generateID.js                                                   | JavaScript     |         11 |          1 |          4 |         16 |
+| Total                                                                                                                                       |                |     21,457 |      1,170 |      2,081 |     24,708 |
++---------------------------------------------------------------------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+

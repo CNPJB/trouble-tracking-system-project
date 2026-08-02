@@ -1,0 +1,79 @@
+/* PopupAlert.css */
+
+/* ส่วนคลุมให้อยู่มุมขวาบนและทำแอนิเมชันตอนเลื่อนเข้ามา */
+.popup-alert-overlay {
+  position: fixed;
+  top: 15%; 
+  left: 50%;  /* ดันมาขวาครึ่งจอ */
+  transform: translate(-50%, -50%); /* ดึงกลับให้จุดศูนย์กลางของกล่องอยู่ตรงกลางเป๊ะ */
+  z-index: 50;
+  animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+/* กล่องข้อความหลัก */
+.popup-alert-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 20px;
+  padding: 16px 20px;
+  border-left: 4px solid;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  width: 500px;
+}
+
+/* ธีมสำหรับ "สำเร็จ" (Success) */
+.popup-alert-box.success {
+  background-color: #f0fdf4; /* สีพื้นหลังเขียวอ่อน */
+  border-left-color: #22c55e; /* สีเส้นขอบเขียว */
+  color: #166534; /* สีตัวอักษรเขียวเข้ม */
+}
+
+/* ธีมสำหรับ "ผิดพลาด" (Error) */
+.popup-alert-box.error {
+  background-color: #fef2f2; /* สีพื้นหลังแดงอ่อน */
+  border-left-color: #ef4444; /* สีเส้นขอบแดง */
+  color: #991b1b; /* สีตัวอักษรแดงเข้ม */
+}
+
+/* ไอคอนและข้อความ */
+.popup-icon {
+  font-size: 20px;
+}
+
+.popup-message {
+  font-weight: 500;
+  font-size: 14px;
+  flex: 1;
+  margin: 0;
+}
+
+/* ปุ่มกากบาทปิด */
+.popup-close-btn {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0;
+  margin-left: 16px;
+  transition: color 0.2s;
+}
+
+.popup-close-btn:hover {
+  color: #4b5563;
+}
+
+/* แอนิเมชันเลื่อนจากขวามาซ้าย */
+@keyframes popIn {
+  from {
+    transform: translate(-50%, -50%) scale(0.8); /* เริ่มจากขนาดเล็ก 80% */
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1); /* ขยายมาที่ขนาดปกติ 100% */
+    opacity: 1;
+  }
+}

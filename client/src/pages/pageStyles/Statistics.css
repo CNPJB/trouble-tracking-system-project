@@ -1,0 +1,530 @@
+.Statistics-layout {
+    display: flex;
+    gap: 30px;
+    padding: 0px 30px 30px 0px;
+    margin: 0 auto;
+    align-items: flex-start;
+    /* ให้ Sidebar กับ Main Content เริ่มจากขอบบนสุด */
+}
+
+.Statistics-main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    min-width: 0;
+    /* ป้องกันไม่ให้ Grid ล้นจอ */
+}
+
+.Statistics-layout-content {
+    padding: 30px;
+    margin: 20px;
+}
+
+.Statistics-content {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.statistic-type-of-problem {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    ;
+}
+
+.statistic-type-of-problem h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333333;
+    text-align: center;
+}
+
+/* chart */
+.filter-section {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 20px;
+}
+
+/* =========================================
+   ส่วนห่อหุ้มกล่องสถิติทั้งหมด (Wrapper)
+========================================= */
+.stat-cards-wrapper {
+    display: flex;
+    flex-direction: column;
+    /* ให้การ์ดเรียงต่อกันจากบนลงล่าง */
+    gap: 15px;
+    /* ระยะห่างระหว่างการ์ดแต่ละใบ */
+    margin-top: 20px;
+    padding: 10px;
+}
+
+/* =========================================
+   กล่องการ์ดแต่ละใบ (Card Container)
+========================================= */
+.stat-card-container {
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    /* เงาบางๆ ให้ดูมีมิติ */
+    border-left: 8px solid #e0e0e0;
+    /* แถบสีด้านซ้ายเริ่มต้น (สีเทา) */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    height: 120px;
+    /* กำหนดความสูงให้เท่ากันทุกการ์ด */
+}
+
+/* เอฟเฟกต์ตอนนำเมาส์ไปชี้ */
+.stat-card-container:hover {
+    transform: translateY(-3px);
+    /* ลอยขึ้นนิดหน่อย */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    /* เงาเข้มขึ้น */
+}
+
+/* =========================================
+   เหรียญรางวัล / ตัวเลขอันดับ (Badge)
+========================================= */
+.rank-badge {
+    font-size: 2.2rem;
+    min-width: 60px;
+    /* บังคับความกว้างให้ตรงกันทุกกล่อง */
+    text-align: center;
+    margin-right: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* =========================================
+   ข้อความข้อมูลด้านใน (Info)
+========================================= */
+.stat-card-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-card-info h4 {
+    margin: 0 0 5px 0;
+    font-size: 1.1rem;
+    color: #333333;
+    font-weight: 600;
+}
+
+.stat-card-info p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #666666;
+}
+
+/* =========================================
+   🏆 สีพิเศษตามอันดับ (Gold, Silver, Bronze)
+========================================= */
+
+/* อันดับ 1: สีทอง */
+.stat-card-container.rank-gold {
+    border-left-color: #FFD700;
+    background: linear-gradient(to right, #fffdf0, #ffffff);
+    /* ไล่สีพื้นหลังอ่อนๆ */
+}
+
+.rank-gold .rank-badge {
+    color: #DAA520;
+    text-shadow: 0 2px 4px rgba(218, 165, 32, 0.3);
+    /* เรืองแสงนิดๆ */
+}
+
+/* อันดับ 2: สีเงิน */
+.stat-card-container.rank-silver {
+    border-left-color: #C0C0C0;
+    background: linear-gradient(to right, #f8f9fa, #ffffff);
+}
+
+.rank-silver .rank-badge {
+    color: #8c8c8c;
+    text-shadow: 0 2px 4px rgba(140, 140, 140, 0.3);
+}
+
+/* อันดับ 3: สีทองแดง */
+.stat-card-container.rank-bronze {
+    border-left-color: #CD7F32;
+    background: linear-gradient(to right, #fffaf5, #ffffff);
+}
+
+.rank-bronze .rank-badge {
+    color: #b87333;
+    text-shadow: 0 2px 4px rgba(205, 127, 50, 0.3);
+}
+
+/* อันดับ 4 เป็นต้นไป: ปกติ */
+.stat-card-container.rank-normal {
+    border-left-color: #e0e0e0;
+}
+
+.rank-normal .rank-badge {
+    font-size: 1.4rem;
+    /* ลดขนาดลงเพราะเป็นตัวเลข ไม่ใช่เหรียญ */
+    color: #999999;
+    font-weight: bold;
+}
+
+.stat-card-percentage,
+.stat-card-upvote {
+    margin-left: auto;
+    /* 🌟 พระเอกอยู่ตรงนี้: ดันตัวเองไปชิดขวาสุด */
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--tbs-green-accent);
+    /* ใส่สีให้ดูโดดเด่น (เปลี่ยนได้ตามชอบ) */
+    background-color: var(--tbs-green-active);
+    /* ใส่พื้นหลังอ่อนๆ ให้เป็นเหมือนป้าย Tag */
+    padding: 5px 12px;
+    border-radius: 20px;
+}
+
+.mobile-sidebar {
+    display: none;
+}
+
+@media (max-width: 820px) {
+
+    /* 💡 1. ซ่อน Sidebar ของหน้า Desktop (เปลี่ยนชื่อคลาสให้ตรงกับที่เฮียใช้ได้เลยครับ) */
+    .desktop-sidebar,
+    .sidebar-container {
+        display: none !important;
+    }
+
+    /* ------------------------------------------------ */
+    /* โค้ดส่วนที่เหลือของเฮีย (ปรับลดขนาด Layout สำหรับจอ 820px ลงมา) */
+    /* ------------------------------------------------ */
+
+    .Statistics-layout,
+    .Statistics-content {
+        padding: 5px;
+    }
+
+    .Statistics-content {
+        padding-top: 50px;
+    }
+
+    .Statistics-layout {
+        display: block !important;
+        width: 100%;
+    }
+
+    /* สันนิษฐานว่าตัวนี้คือแถบเมนูด้านบนของมือถือ (Hamburger Bar) */
+    .mobile-sidebar {
+        display: block !important;
+        height: auto;
+    }
+
+    .sidebar-header {
+        text-align: center;
+        padding: 50px 0 0 0;
+    }
+
+    .sidebar-header img {
+        max-width: 200px;
+        height: auto;
+    }
+
+    .menu-group {
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+        margin: 0;
+    }
+
+    .sidebar-statistics-btn {
+        display: flex;
+        align-items: center;
+        padding: 16px 20px 16px 24px;
+        background-color: #ffffff;
+        border-bottom: 1px solid #f0f0f0;
+        border-left: 4px solid transparent;
+        text-decoration: none;
+        color: #4b5563;
+        font-size: 15px;
+        font-weight: 500;
+        transition: 0.2s ease-in-out;
+        border-radius: 0;
+    }
+
+    .sidebar-statistics-btn:last-child {
+        border-bottom: none;
+    }
+
+    .sidebar-statistics-btn span {
+        order: 1;
+        flex-grow: 1;
+        text-align: left;
+    }
+
+    .nav-icon-stat {
+        order: 2;
+        margin-left: auto;
+        margin-right: 0;
+        font-size: 18px;
+        color: #888;
+    }
+
+    .sidebar-statistics-btn.active {
+        background-color: #eaf5e9 !important;
+        color: var(--tbs-green) !important;
+        font-weight: bold !important;
+        border-left: 4px solid #00a651 !important;
+        border-right: none !important;
+    }
+
+    .sidebar-statistics-btn.active .nav-icon-stat {
+        color: #00a651;
+    }
+
+    /* 💡 2. ตัว Sidebar มือถือ (Off-canvas) ถูกซ่อนไว้ด้วย translateX(-100%) แล้ว รอคลาส .open เพื่อดึงออกมา */
+    .mobile-menu-content {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 280px;
+        height: 100vh;
+        background-color: #ffffff;
+        box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+        z-index: 999;
+        padding-top: 20px;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .mobile-menu-content.open {
+        transform: translateX(0);
+    }
+
+    .mobile-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.4);
+        z-index: 998;
+        opacity: 0;
+        visibility: hidden;
+        transition: 0.3s ease-in-out;
+    }
+
+    .mobile-backdrop.open {
+        opacity: 1;
+        visibility: visible;
+    }
+
+
+    .dashboard-container h1 {
+        font-size: 18px;
+        padding: 5px;
+        text-align: center;
+    }
+
+    .filter-section {
+        padding: 5px;
+        font-size: 14px;
+        align-items: center;
+        text-align: center;
+    }
+
+    .rank-badge {
+        min-width: 10px;
+    }
+
+    .stat-card-percentage,
+    .stat-card-info p {
+        font-size: 12px;
+    }
+
+    .stat-card-info h4 {
+        font-size: 16px;
+    }
+
+    .stat-card-upvote {
+        font-size: 10px;
+        width: 60px;
+        padding: 2px;
+        text-align: center;
+    }
+
+    .statistic-type-of-problem,
+    .dashboard-container h2 {
+        padding-top: 20px;
+    }
+}
+
+@media(max-width: 430px) {
+
+    .Statistics-layout,
+    .Statistics-content {
+        padding: 5px;
+    }
+
+    .Statistics-content {
+        padding-top: 50px;
+    }
+
+    .Statistics-layout {
+        display: block !important;
+        width: 100%;
+    }
+
+    .mobile-sidebar {
+        display: block !important;
+        width: 100%;
+        height: auto;
+    }
+
+
+    .sidebar-header {
+        text-align: center;
+        padding: 50px 0 0 0;
+    }
+
+    .sidebar-header img {
+        max-width: 200px;
+        height: auto;
+    }
+
+    .menu-group {
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+        margin: 0;
+    }
+
+    .sidebar-statistics-btn {
+        display: flex;
+        align-items: center;
+        padding: 16px 20px 16px 24px;
+        background-color: #ffffff;
+        border-bottom: 1px solid #f0f0f0;
+        border-left: 4px solid transparent;
+        text-decoration: none;
+        color: #4b5563;
+        font-size: 15px;
+        font-weight: 500;
+        transition: 0.2s ease-in-out;
+        border-radius: 0;
+    }
+
+    .sidebar-statistics-btn:last-child {
+        border-bottom: none;
+    }
+
+    .sidebar-statistics-btn span {
+        order: 1;
+        flex-grow: 1;
+        text-align: left;
+    }
+
+    .nav-icon-stat {
+        order: 2;
+        margin-left: auto;
+        margin-right: 0;
+        font-size: 18px;
+        color: #888;
+    }
+
+    .sidebar-statistics-btn.active {
+        background-color: #eaf5e9 !important;
+        color: var(--tbs-green) !important;
+        font-weight: bold !important;
+        border-left: 4px solid #00a651 !important;
+        border-right: none !important;
+    }
+
+    .sidebar-statistics-btn.active .nav-icon-stat {
+        color: #00a651;
+    }
+
+    .mobile-menu-content {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 280px;
+        height: 100vh;
+        background-color: #ffffff;
+        box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+        z-index: 999;
+        padding-top: 20px;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .mobile-menu-content.open {
+        transform: translateX(0);
+    }
+
+    .mobile-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.4);
+        z-index: 998;
+        opacity: 0;
+        visibility: hidden;
+        transition: 0.3s ease-in-out;
+    }
+
+    .mobile-backdrop.open {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .Statistics-layout-content {
+        padding: 5px;
+        margin: 5px;
+    }
+
+    .dashboard-container h1 {
+        font-size: 18px;
+        padding: 5px;
+        text-align: center;
+    }
+
+    .filter-section {
+        padding: 5px;
+        font-size: 14px;
+        align-items: center;
+        text-align: center;
+    }
+
+    .rank-badge {
+        min-width: 10px;
+    }
+
+    .stat-card-percentage,
+    .stat-card-info p {
+        font-size: 12px;
+    }
+
+    .stat-card-info h4 {
+        font-size: 16px;
+    }
+
+    .stat-card-upvote {
+        font-size: 10px;
+        width: 60px;
+        padding: 2px;
+        text-align: center;
+    }
+
+    .statistic-type-of-problem,
+    .dashboard-container h2 {
+        padding-top: 20px;
+    }
+}
