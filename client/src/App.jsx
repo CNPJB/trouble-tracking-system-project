@@ -6,7 +6,7 @@ import './index.css';
 
 // Components
 import Navbar from "./components/Navbar.jsx";
-import { AdminLayout } from "./components/componentsAdmin/adminLayout.jsx";
+import { AdminLayout } from "./components/componentsAdmin/AdminLayout.jsx";
 
 // Pages
 import Login from "./pages/Login.jsx";

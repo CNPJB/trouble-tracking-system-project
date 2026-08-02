@@ -7,7 +7,7 @@ import {
   FaMapMarkedAlt,  // 5. จัดการสถานที่
   FaTags           // 6. จัดการประเภทปัญหา
 } from 'react-icons/fa';
-import './AdminSidebar.css'
+import './Adminsidebar.css'
 import { NavLink } from 'react-router-dom';
 import { LuPanelLeftClose } from "react-icons/lu"; 
 
