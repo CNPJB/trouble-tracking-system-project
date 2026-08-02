@@ -7,7 +7,6 @@ import { useLoadingState } from '../../hooks/useLoadingState';
 
 // components
 import { DropdownWithAdd } from '../../components/componentsAdmin/DropdownAdd';
-import { PopupAlert } from '../../components/componentsAdmin/popupAlert';
 import { LoadingSpinner, ToastAlert } from '../../components/LoadingSpinner';
 import { ConfirmButton } from '../../components/ConfirmButton';
 // service
@@ -540,12 +539,6 @@ const LocationManagement = () => {
                         </button>
                         <button className="btn-cancel">ยกเลิก</button>
                     </div>
-                    <PopupAlert
-                        isOpen={alert.isOpen}
-                        type={alert.type}
-                        message={alert.message}
-                        onClose={() => setAlert({ ...alert, isOpen: false })}
-                    />
 
                     {/* Confirm add location */}
                     <ConfirmButton
