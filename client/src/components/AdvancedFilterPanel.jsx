@@ -38,7 +38,7 @@ export const AdvancedFilterPanel = ({
                     className={`btn-toggle-filter ${isOpen ? 'active' : ''} ${activeFilterCount > 0 ? 'has-filters' : ''}`}
                     onClick={() => setIsOpen(!isOpen)}
                 >
-                    <FaFilter /> ตัวกรอง
+                    <FaFilter /> <label className='text-adv-filter-label'>ตัวกรอง</label>
                     {activeFilterCount > 0 && (
                         <span className="badge-count">{activeFilterCount}</span>
                     )}

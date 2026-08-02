@@ -222,7 +222,6 @@
     /* สันนิษฐานว่าตัวนี้คือแถบเมนูด้านบนของมือถือ (Hamburger Bar) */
     .mobile-sidebar {
         display: block !important;
-        width: 100%;
         height: auto;
     }
 

@@ -140,11 +140,9 @@ const IssueManagement = () => {
     return (
         <div className="issue-management-container">
             <div className="top-toolbar-modern">
-                <div className='searchbar-container '>
                     <div className="searchbar">
                         <SearchBar onSearch={handleSearch} />
                     </div>
-                </div>
                 <div className="filter-panel-responsive">
                     <AdvancedFilterPanel
                         onClearAll={handleClearAllFilters}
