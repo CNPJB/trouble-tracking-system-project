@@ -9,7 +9,6 @@ import { useLoadingState } from '../../hooks/useLoadingState';
 import { IssueCategoryService } from '../../services/IssueCategoryService';
 
 // component
-import { PopupAlert } from '../../components/componentsAdmin/popupAlert';
 import { LoadingSpinner, ToastAlert } from '../../components/LoadingSpinner';
 import { ConfirmButton } from '../../components/ConfirmButton';
 
