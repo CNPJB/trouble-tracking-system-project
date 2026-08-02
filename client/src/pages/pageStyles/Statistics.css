@@ -268,7 +268,7 @@
         text-align: left;
     }
 
-    .nav-icon {
+    .nav-icon-stat {
         order: 2;
         margin-left: auto;
         margin-right: 0;
@@ -284,7 +284,7 @@
         border-right: none !important;
     }
 
-    .sidebar-statistics-btn.active .nav-icon {
+    .sidebar-statistics-btn.active .nav-icon-stat {
         color: #00a651;
     }
 
@@ -430,7 +430,7 @@
         text-align: left;
     }
 
-    .nav-icon {
+    .nav-icon-stat {
         order: 2;
         margin-left: auto;
         margin-right: 0;
@@ -446,7 +446,7 @@
         border-right: none !important;
     }
 
-    .sidebar-statistics-btn.active .nav-icon {
+    .sidebar-statistics-btn.active .nav-icon-stat {
         color: #00a651;
     }
 

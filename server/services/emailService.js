@@ -106,9 +106,9 @@ export const sendTicketStatusEmail = async (toEmail, ticketData) => {
             subject: subject,
             html: htmlContent
         });
-        console.log(`[EmailService] Email successfully sent to ${toEmail} for Ticket ${ticketData.ticketId} with status "${ticketData.ticketStatus}"`);
+        console.log(`[EmailService] Email successfully sent for Ticket ${ticketData.ticketId} with status "${ticketData.ticketStatus}"`);
     } catch (error) {
         // บันทึก Log เอาไว้เพื่อให้ระบบตรวจสอบได้ แต่จะไม่โยน Error ออกไปเพื่อหยุด Flow ของระบบหลัก
-        console.error(`[EmailService] Failed to send email to ${toEmail} for Ticket ${ticketData.ticketId}:`, error);
+        console.error(`[EmailService] Failed to send email for Ticket ${ticketData.ticketId}:`, error);
     }
 };

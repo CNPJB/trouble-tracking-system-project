@@ -37,17 +37,17 @@ export const StatisticsSidebar = ({ activeTab, onTabChange }) => {
           <nav className="menu-group">
             <NavLink to="/statistics" className="sidebar-statistics-btn" end onClick={toggleMobile}>
               <span>สถิติปัญหา</span>
-              <FaChartPie className="nav-icon" />
+              <FaChartPie className="nav-icon-stat" />
             </NavLink>
 
             <NavLink to="/statistics/top-categories" className="sidebar-statistics-btn" onClick={toggleMobile}>
               <span>ประเภทปัญหาที่รับแจ้งมากสุด</span>
-              <FaListOl className="nav-icon" />
+              <FaListOl className="nav-icon-stat" />
             </NavLink>
 
             <NavLink to="/statistics/top-upvoted" className="sidebar-statistics-btn" onClick={toggleMobile}>
               <span>ปัญหาที่ได้รับ Upvote มากสุด</span>
-              <FaThumbsUp className="nav-icon" />
+              <FaThumbsUp className="nav-icon-stat" />
             </NavLink>
           </nav>
         </div>
@@ -60,22 +60,22 @@ export const StatisticsSidebar = ({ activeTab, onTabChange }) => {
 
           {/* ใช้ end เพื่อไม่ให้สีค้างเวลาไป path ย่อย (เหมือนโค้ดแรก) */}
           <NavLink to="/statistics" className="sidebar-statistics-btn" end>
-            <FaChartPie className="nav-icon" />
+            <FaChartPie className="nav-icon-stat" />
             <span>สถิติปัญหา</span>
           </NavLink>
 
           <NavLink to="/statistics/top-categories" className="sidebar-statistics-btn">
-            <FaListOl className="nav-icon" />
+            <FaListOl className="nav-icon-stat" />
             <span>ประเภทปัญหาที่รับแจ้งมากสุด</span>
           </NavLink>
 
           {/* <NavLink to="/statistics/top-locations" className="sidebar-statistics-btn">
-          <FaMapMarkerAlt className="nav-icon" />
+          <FaMapMarkerAlt className="nav-icon-stat" />
           <span>สถานที่รับแจ้งมากสุด</span>
         </NavLink> */}
 
           <NavLink to="/statistics/top-upvoted" className="sidebar-statistics-btn">
-            <FaThumbsUp className="nav-icon" />
+            <FaThumbsUp className="nav-icon-stat" />
             <span>ปัญหาที่ได้รับ Upvote มากสุด</span>
           </NavLink>
 

@@ -33,32 +33,32 @@ export const AdminSidebar = () => {
           <nav className="sidebar-nav">
             <NavLink to="/adminPage/AuditIssues" className="nav-item" onClick={toggleMobile}>
               <span>Audit Issues</span>
-              <FaRegFileAlt className="nav-icon" />
+              <FaRegFileAlt className="nav-icon-admin-mb" />
             </NavLink>
 
             <NavLink to="/adminPage/IssueManagement" className="nav-item" end onClick={toggleMobile}>
               <span>Issue Management</span>
-              <FaTools className="nav-icon" />
+              <FaTools className="nav-icon-admin-mb" />
             </NavLink>
 
             <NavLink to="/adminPage/AssetManagement" className="nav-item" onClick={toggleMobile}>
               <span>Asset Management</span>
-              <FaDesktop className="nav-icon" />
+              <FaDesktop className="nav-icon-admin-mb" />
             </NavLink>
 
             <NavLink to="/adminPage/UserManagement" className="nav-item" onClick={toggleMobile}>
               <span>User Management</span>
-              <FaUserCog className="nav-icon" />
+              <FaUserCog className="nav-icon-admin-mb" />
             </NavLink>
 
             <NavLink to="/adminPage/LocationManagement" className="nav-item" onClick={toggleMobile}>
               <span>Location Management</span>
-              <FaMapMarkedAlt className="nav-icon" />
+              <FaMapMarkedAlt className="nav-icon-admin-mb" />
             </NavLink>
 
             <NavLink to="/adminPage/Categories" className="nav-item" onClick={toggleMobile}>
               <span>Issue Categories</span>
-              <FaTags className="nav-icon" />
+              <FaTags className="nav-icon-admin-mb" />
             </NavLink>
           </nav>
         </div>
@@ -71,32 +71,32 @@ export const AdminSidebar = () => {
 
         <nav className="sidebar-nav">
           <NavLink to="/adminPage/AuditIssues" className="nav-item">
-            <FaRegFileAlt className="nav-icon" />
+            <FaRegFileAlt className="nav-icon-admin" />
             <span>Audit Issues</span>
           </NavLink>
 
           <NavLink to="/adminPage/IssueManagement" className="nav-item" end>
-            <FaTools className="nav-icon" />
+            <FaTools className="nav-icon-admin" />
             <span>Issue Management</span>
           </NavLink>
 
           <NavLink to="/adminPage/AssetManagement" className="nav-item">
-            <FaDesktop className="nav-icon" />
+            <FaDesktop className="nav-icon-admin" />
             <span>Asset Management</span>
           </NavLink>
 
           <NavLink to="/adminPage/UserManagement" className="nav-item">
-            <FaUserCog className="nav-icon" />
+            <FaUserCog className="nav-icon-admin" />
             <span>User Management</span>
           </NavLink>
 
           <NavLink to="/adminPage/LocationManagement" className="nav-item">
-            <FaMapMarkedAlt className="nav-icon" />
+            <FaMapMarkedAlt className="nav-icon-admin" />
             <span>Location Management</span>
           </NavLink>
 
           <NavLink to="/adminPage/Categories" className="nav-item">
-            <FaTags className="nav-icon" />
+            <FaTags className="nav-icon-admin" />
             <span>Issue Categories</span>
           </NavLink>
         </nav>

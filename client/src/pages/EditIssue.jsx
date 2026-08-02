@@ -49,7 +49,7 @@ function EditIssue() {
     const [existingImages, setExistingImages] = useState([]);
     const [imagesToDelete, setImagesToDelete] = useState([]); // เก็บ ID ของรูปเก่าที่จะลบ
     const [confirmSubmit, setConfirmSubmit] = useState({ isOpen: false });
-    const { selectedImages, fileInputRef, handleImageChange, removeImage, clearImages } = useImageUpload(3 - existingImages.length, setError);
+    const { selectedImages, fileInputRef, handleImageChange, removeImage, clearImages, isCompressing } = useImageUpload(3 - existingImages.length, setError);
 
     // ตรวจสอบสิทธิ์ - เฉพาะเจ้าของ หรือ admin เท่านั้นที่สามารถแก้ไขได้
     useEffect(() => {
@@ -332,8 +332,11 @@ function EditIssue() {
                             </select>
                         </div>
                         <div className="form-group">
-                            <label>หัวข้อปัญหา <span style={{ color: 'red' }}>*</span></label>
-                            <input type="text" name="title" onChange={handleChange} value={formData.title} required />
+                            <div className="edit-label-with-counter">
+                                <label>หัวข้อปัญหา <span style={{ color: 'red' }}>*</span></label>
+                                <span className="edit-char-counter">{formData.title.length}/20</span>
+                            </div>
+                            <input type="text" name="title" onChange={handleChange} value={formData.title} maxLength={20} required />
                         </div>
                     </div>
 
@@ -362,7 +365,7 @@ function EditIssue() {
                                     ))}
                                 </datalist>
                                 {equipmentValidation.message && (
-                                    <small style={{ position: 'absolute', top: '329px', alignSelf: 'center', color: equipmentValidation.status === 'success' ? 'green' : 'red', marginTop: '5px' }}>
+                                    <small style={{ position: 'static', top: '329px', alignSelf: 'center', color: equipmentValidation.status === 'success' ? 'green' : 'red', marginTop: '5px' }}>
                                         {equipmentValidation.message}
                                     </small>
                                 )}
@@ -420,6 +423,7 @@ function EditIssue() {
                                 onRemoveImage={removeImage}
                                 maxImages={3 - existingImages.length}
                                 minImages={existingImages.length === 0 ? 1 : 0}
+                                isCompressing={isCompressing}
                             />
                         </div>
                     </div>
@@ -431,6 +435,7 @@ function EditIssue() {
                         disabled={
                             loading.isLoading ||
                             isEquipmentInvalid ||
+                            isCompressing ||
                             // ห้ามส่งถ้าไม่มีการเปลี่ยนแปลงข้อมูลเลย
                             (formData.categoryId === (ticket.ticketCtgId?.toString() || '') &&
                                 formData.title === (ticket.title || '') &&

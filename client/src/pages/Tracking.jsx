@@ -82,7 +82,7 @@ const Tracking = () => {
             reporterId: undefined,
             upvoterId: undefined,
             needsReviewBy: undefined,
-            status: allowedStatuses.join(','),
+            status: selectedStatus,
             search: undefined
         };
 

@@ -7,7 +7,8 @@ const ImageUploader = ({
   onImageChange,
   onRemoveImage,
   maxImages = 3,
-  minImages = 0
+  minImages = 0,
+  isCompressing = false
 }) => {
   return (
     <div className="form-group">
@@ -26,25 +27,35 @@ const ImageUploader = ({
           onChange={onImageChange}
           ref={fileInputRef}
           style={{ display: 'none' }}
+          disabled={isCompressing}
         />
-
-        {/* ปุ่มเพิ่มรูปจะแสดงเมื่อรูปยังไม่ครบโควตา */}
-        {selectedImages.length < maxImages && (
-          <button
-            type="button"
-            className="upload-placeholder"
-            onClick={() => fileInputRef.current?.click()}
-            aria-label="เพิ่มรูปภาพ"
-          >
-            <span>+</span>
-          </button>
+        {isCompressing ? (
+          <div className="upload-placeholder loading">
+            <div className="image-spinner"></div>
+          </div>
+        ) : (
+          selectedImages.length < maxImages && (
+            <button
+              type="button"
+              className="upload-placeholder"
+              onClick={() => fileInputRef.current?.click()}
+              aria-label="เพิ่มรูปภาพ"
+            >
+              <span>+</span>
+            </button>
+          )
         )}
 
         {/* พรีวิวรูปภาพ */}
         {selectedImages.map((img, index) => (
           <div key={index} className="image-preview-box">
             <img src={img.previewUrl} alt={`preview-${index}`} />
-            <button type="button" className="btn-remove-image" onClick={() => onRemoveImage(index)}>
+            <button
+              type="button"
+              className="btn-remove-image"
+              onClick={() => onRemoveImage(index)}
+              disabled={isCompressing}
+            >
               &times;
             </button>
           </div>

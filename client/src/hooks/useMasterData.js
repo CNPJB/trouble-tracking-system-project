@@ -15,6 +15,7 @@ export const useMasterData = () => {
         { value: 'resolved', label: 'เสร็จสิ้น' },
         { value: 'rejected', label: 'ปฏิเสธ' },
         { value: 'canceled', label: 'ยกเลิก' },
+        { value: 'duplicate', label: 'ถูกรวม' },
     ];
 
     useEffect(() => {

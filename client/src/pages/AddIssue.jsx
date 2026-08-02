@@ -29,7 +29,7 @@ function AddIssue() {
   const { loading, startLoading, setError, setSuccess, reset, clearError } = useLoadingState();
 
   // --- State for master data and image upload from custom hooks ---
-  const { selectedImages, fileInputRef, handleImageChange, removeImage, clearImages } = useImageUpload(3, setError);
+  const { selectedImages, fileInputRef, handleImageChange, removeImage, clearImages, isCompressing } = useImageUpload(3, setError);
   const { categories, locations, floors, rooms, equipments } = useMasterData();
 
   // --- State for form data ---
@@ -282,7 +282,7 @@ function AddIssue() {
         reset();
         setConfirmSubmit({ isOpen: false });
 
-        navigate('/tracking?tab=mine', {
+        navigate('/tracking', {
           state: {
             showToast: true,
             message: "แจ้งปัญหาสำเร็จเรียบร้อยแล้ว!",
@@ -320,7 +320,7 @@ function AddIssue() {
         reset();
         setConfirmUpvote({ isOpen: false, ticketId: null });
 
-        navigate('/tracking?tab=upvoted', {
+        navigate('/tracking', {
           state: {
             showToast: true,
             message: "โหวตให้ปัญหานี้สำเร็จเรียบร้อยแล้ว!"
@@ -459,6 +459,7 @@ function AddIssue() {
             onRemoveImage={removeImage}
             maxImages={3}
             minImages={1}
+            isCompressing={isCompressing}
           />
 
           <div className="form-actions" style={{ marginTop: '20px' }}>
@@ -476,7 +477,7 @@ function AddIssue() {
             <button
               type="submit"
               className="btn-submit"
-              disabled={loading.isLoading || isEquipmentInvalid}
+              disabled={loading.isLoading || isEquipmentInvalid || isCompressing}
             >
               {loading.isLoading ? 'กำลังบันทึก...' : 'ยืนยัน'}
             </button>
