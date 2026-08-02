@@ -274,18 +274,19 @@ const AssetManagement = () => {
 
   return (
     <div className="assetManagement-container">
-      <div className="filter-assetManagement-container" style={{ justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
+      <div className="filter-assetManagement-container-responsive">
         <div className="searchbar">
           <SearchBar onSearch={(text) => setSearchQuery(text)} />
         </div>
-
-        <AdvancedFilterPanel
-          onClearAll={handleClearAllFilters}
-          activeFilterCount={activeDropdownFiltersCount}
-        >
-          <EquipmentCategoryFilter selectedValue={filterCategory} onChange={setFilterCategory} />
-          <TicketLocationFilter selectedValue={filterLocation} onChange={setFilterLocation} />
-        </AdvancedFilterPanel>
+        <div className='filter-panel-responsive-asset'>
+          <AdvancedFilterPanel
+            onClearAll={handleClearAllFilters}
+            activeFilterCount={activeDropdownFiltersCount}
+          >
+            <EquipmentCategoryFilter selectedValue={filterCategory} onChange={setFilterCategory} />
+            <TicketLocationFilter selectedValue={filterLocation} onChange={setFilterLocation} />
+          </AdvancedFilterPanel>
+        </div>
       </div>
       <div className="main-container">
         <div className="table-responsive-wrapper">

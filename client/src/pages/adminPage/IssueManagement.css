@@ -17,13 +17,6 @@
     align-items: center;
 }
 
-
-.filter-panel-responsive {
-    flex: 3;
-    min-width: 320px;
-    display: flex;
-}
-
 .section-title {
     display: flex;
     align-items: center;
@@ -236,10 +229,6 @@
         padding: 20px;
     }
 
-    .filter-panel-responsive {
-        justify-content: flex-start;
-    }
-
     .top-toolbar-modern {
         margin-bottom: 1rem;
     }
@@ -260,7 +249,7 @@
 @media (max-width: 1200px) {
     .issue-management-container {
         box-sizing: border-box;
-        padding: 10px
+        padding: 10px 0 0 10px
     }
 
     .urgent-section {
@@ -275,7 +264,6 @@
 
     .top-toolbar-modern {
         flex-direction: column;
-        gap: 20px;
     }
 
     .searchbar-container {
@@ -284,8 +272,7 @@
     }
 
     .filter-panel-responsive {
-        width: 100%;
-        min-width: 100%;
+        margin-left: 30%;
     }
 
     .issue-grid {
@@ -340,8 +327,11 @@
     }
 
     .top-toolbar-modern {
-        margin: 1.75rem 0 0.5rem 0;
+        margin: 2.75rem 0 0.5rem 0;
         gap: 10px;
+    }
+    .filter-panel-responsive {
+        margin-left: auto;
     }
 
     .normal-section,

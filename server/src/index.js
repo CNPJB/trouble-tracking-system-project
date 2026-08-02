@@ -9,7 +9,7 @@ import authRoutes from '../routes/authRoutes.js';
 const app = express();
 const port = process.env.PORT || 3000;
 
-// app.set('trust proxy', 1);
+app.set('trust proxy', 1);
 // Middleware
 app.use(cors({
   // origin: process.env.CLIENT_URL, // Allow requests from this origin
@@ -20,7 +20,8 @@ app.use(cors({
     'http://192.168.1.53.nip.io:5173',
     'http://shawl-vertical-depravity.ngrok-free.dev', // ลิงก์หน้าบ้าน ngrok
     'http://nonrestricted-casey-hazelly.ngrok-free.dev',
-  ],
+    process.env.CLIENT_URL // รับ URL หน้าบ้านตอนใช้งานจริง
+  ].filter(Boolean),
   credentials: true
 }));
 app.use(express.json());

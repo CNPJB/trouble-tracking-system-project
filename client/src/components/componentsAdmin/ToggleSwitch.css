@@ -80,3 +80,9 @@
         white-space: nowrap;
     }
 }
+
+@media (max-width: 430px) {
+    .toggle-text {
+        display: none;
+    }
+}

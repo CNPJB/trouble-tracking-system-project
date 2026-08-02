@@ -35,7 +35,7 @@ const Tracking = () => {
     const location = useLocation();
     const [searchParams] = useSearchParams();
     const { loading, startLoading, setError, setSuccess, reset } = useLoadingState();
-    const [selectedStatus, setSelectedStatus] = useState('pending,in_progress,duplicate,resolved,canceled,rejected');
+    const [selectedStatus, setSelectedStatus] = useState('pending,in_progress,duplicate,resolved,rejected');
     const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedLocation, setSelectedLocation] = useState('');
     const {
@@ -49,7 +49,7 @@ const Tracking = () => {
         upvoted: 0,
         review: 0
     });
-    const allowedStatuses = ['pending', 'in_progress', 'duplicate', 'resolved', 'rejected', 'canceled'];
+    const allowedStatuses = ['pending', 'in_progress', 'duplicate', 'resolved', 'rejected'];
     const [confirmCancelVote, setConfirmCancelVote] = useState({
         isOpen: false,
         ticketId: null
@@ -65,7 +65,7 @@ const Tracking = () => {
     const activeDropdownFiltersCount =
         (selectedCategory ? 1 : 0) +
         (selectedLocation ? 1 : 0) +
-        (selectedStatus !== 'pending,in_progress,duplicate,resolved,canceled,rejected' ? 1 : 0);
+        (selectedStatus !== 'pending,in_progress,duplicate,resolved,rejected' ? 1 : 0);
 
 
     const lastTicketElementRef = useInfiniteScroll({
@@ -120,8 +120,8 @@ const Tracking = () => {
     const handleClearAllFilters = () => {
         setSelectedCategory('');
         setSelectedLocation('');
-        setSelectedStatus('pending,in_progress,duplicate,resolved,canceled,rejected');
-        updateFilters({ categoryId: undefined, locationId: undefined, status: 'pending,in_progress,duplicate,resolved,canceled,rejected' });
+        setSelectedStatus('pending,in_progress,duplicate,resolved,rejected');
+        updateFilters({ categoryId: undefined, locationId: undefined, status: 'pending,in_progress,duplicate,resolved,rejected' });
     };
 
     const handleCancelVoteClick = (ticketId) => {
@@ -262,7 +262,7 @@ const Tracking = () => {
                     <div className="searchbar">
                         <SearchBar onSearch={handleSearch} />
                     </div>
-                    <div className="filter-panel-responsive">
+                    <div className="filter-panel-responsive-tracking">
                         <AdvancedFilterPanel
                             onClearAll={handleClearAllFilters}
                             activeFilterCount={activeDropdownFiltersCount}
@@ -270,7 +270,7 @@ const Tracking = () => {
                             {/* ซ่อน Dropdown ทั้งหมดไว้ใน Component นี้ */}
                             <TicketCategoryFilter selectedValue={selectedCategory} onChange={handleCategoryFilter} />
                             <TicketLocationFilter selectedValue={selectedLocation} onChange={handleLocationFilter} />
-                            <TicketStatusFilter selectedValue={selectedStatus} onChange={handleStatusFilter} allOptionValue="pending,in_progress,duplicate,resolved,canceled,rejected" />
+                            <TicketStatusFilter selectedValue={selectedStatus} onChange={handleStatusFilter} allOptionValue="pending,in_progress,duplicate,resolved,rejected" />
                         </AdvancedFilterPanel>
                     </div>
                 </div>

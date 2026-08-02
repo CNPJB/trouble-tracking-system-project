@@ -14,7 +14,7 @@ export const useMasterData = () => {
         { value: 'in_progress', label: 'กำลังดำเนินการ' },
         { value: 'resolved', label: 'เสร็จสิ้น' },
         { value: 'rejected', label: 'ปฏิเสธ' },
-        { value: 'canceled', label: 'ยกเลิก' },
+        // { value: 'canceled', label: 'ยกเลิก' },
         { value: 'duplicate', label: 'ถูกรวม' },
     ];
 
