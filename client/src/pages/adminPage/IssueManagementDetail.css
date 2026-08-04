@@ -119,9 +119,10 @@
 
 .ticket-desc {
     color: #475569;
-    line-height: 1.6;
     font-size: 1.05rem;
-    white-space: pre-wrap;
+    line-height: 1.5em;
+    padding-top: 5px;
+    word-break: break-word;
 }
 
 /* Images (Before & After) */

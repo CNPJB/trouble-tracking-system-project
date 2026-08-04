@@ -23,7 +23,7 @@
 .menu-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
   /* ระยะห่างปุ่มลดลงให้ดูเป็นกลุ่มเดียวกัน */
 }
 
@@ -35,21 +35,35 @@
 /* สไตล์เมนูพื้นฐาน (คลีน เรียบง่าย) */
 .sidebar-menu-btn {
   width: 100%;
-  padding: 12px 16px;
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--text-main);
+  padding: 12px 25px;
+  font-size: 0.95rem;
+  color: #a2a3b7;
   /* สีเทาเข้มอ่านง่าย */
   background-color: transparent;
   /* พื้นหลังใส */
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
-  text-align: left;
   display: flex;
-  justify-content: space-between;
-  /* ดันข้อความไปซ้าย และ Badge ไปขวาสุด */
   align-items: center;
+  justify-content: flex-start;
+  gap: 15px;
+}
+
+/* จัดลำดับองค์ประกอบด้วย flex order สำหรับ Desktop */
+.sidebar-menu-btn .nav-icon-stat {
+  order: 1;
+}
+
+.sidebar-menu-btn label {
+  order: 2;
+  flex: 1;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sidebar-menu-btn .badge-exclamation {
+  order: 3;
 }
 
 /* เอฟเฟกต์ตอน Hover เมาส์ชี้ */
@@ -64,7 +78,7 @@
 .sidebar-menu-btn.active {
   background-color: var(--tbs-green-active);
   color: var(--tbs-green-dark);
-  font-weight: 600;
+  font-weight: bold;
 }
 
 /* เส้นคั่นกลางแบบเนียนตา */
@@ -139,6 +153,25 @@
 }
 
 @media (max-width: 820px) {
+
+  /* Mobile: ข้อความซ้าย, ไอคอนขวาสุด */
+  .sidebar-menu-btn .nav-icon-stat {
+    order: 3;
+  }
+
+  .sidebar-menu-btn.active .nav-icon-stat {
+    color: #00a651;
+  }
+  
+  .sidebar-menu-btn label {
+    order: 1;
+    flex: 1; /* ดันทุกอย่างที่เหลือไปทางขวา */
+  }
+  
+  .sidebar-menu-btn .badge-exclamation {
+    order: 2;
+    margin-right: 10px;
+  }
 
   /* 1.ปุ่มแฮมเบอร์เกอร์ (ถ้าใช้ Navbar ของตัวเอง ลบโค้ดบล็อกนี้ทิ้งได้ครับ) */
   .mobile-hamburger-btn {
@@ -216,7 +249,7 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-    padding: 20px 0 20px 0;
+    padding: 20px 0 35px 0;
   }
 
   .tracking-sidebar-header img {

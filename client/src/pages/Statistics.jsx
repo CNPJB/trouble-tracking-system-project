@@ -151,7 +151,7 @@ const Statistics = () => {
                             
                             <Route path="/top-categories" element={
                                 <div className="statistic-type-of-problem">
-                                    <h2>ประเภทปัญหาที่รับแจ้งมากสุด</h2>
+                                    <h2>ประเภทปัญหารับแจ้งมากสุด</h2>
                                     <div className="stat-cards-wrapper">
                                         {mostCategoriesOfProblems && mostCategoriesOfProblems.map((category, index) => {
                                             const rankClass = getRankStyle(index);

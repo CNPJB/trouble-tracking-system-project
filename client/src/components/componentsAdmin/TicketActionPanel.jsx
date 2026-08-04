@@ -124,12 +124,16 @@ export const TicketActionPanel = ({ ticket, onUpdateStatus, isLoading }) => {
                     ) : (
                         // โหมดกรอกเหตุผลปฏิเสธ
                         <div className="reject-mode-box">
-                            <label>เหตุผลที่ปฏิเสธ <span className="req">*</span></label>
+                            <div className="label-with-counter">
+                                <label>เหตุผลที่ปฏิเสธ <span className="req">*</span></label>
+                                <span className="char-counter">{adminNote.length}/50</span>
+                            </div>
                             <textarea
                                 value={adminNote}
                                 onChange={(e) => setAdminNote(e.target.value)}
                                 placeholder="เช่น แจ้งซ้ำซ้อน, ไม่ใช่งานของแผนก..."
                                 rows="3"
+                                maxLength={50}
                             />
                             {errorMsg && <p className="error-text">{errorMsg}</p>}
                             <div className="button-group-horizontal">
@@ -153,12 +157,16 @@ export const TicketActionPanel = ({ ticket, onUpdateStatus, isLoading }) => {
                     </div>
 
                     <div className="input-group">
-                        <label>บันทึกการแก้ไข / เหตุผล (Admin Note)</label>
+                        <div className="label-with-counter">
+                            <label>บันทึกการแก้ไข / เหตุผล (Admin Note)</label>
+                            <span className="char-counter">{adminNote.length}/50</span>
+                        </div>
                         <textarea
                             value={adminNote}
                             onChange={(e) => setAdminNote(e.target.value)}
                             placeholder="ระบุรายละเอียด หรือสาเหตุที่ปัญหาไม่สามารถดำเนินการได้..."
                             rows="4"
+                            maxLength={50}
                         />
                     </div>
 

@@ -44,28 +44,32 @@ const Login = () => {
         <p className="login-subtitle">
           Please Login with University Email<br />(@mail.rmutk.ac.th)
         </p>
-        {/* Local Login Form */}
-        <form onSubmit={handleLocalSubmit} className="local-login-form">
-          <input
-            type="email"
-            placeholder="Email"
-            value={credentials.email}
-            className="login-input"
-            onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={credentials.password}
-            className="login-input"
-            onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
-            required
-          />
-          <button type="submit" className="login-submit-btn">Login</button>
-        </form>
+        {/* Local Login Form (Show only in Development Mode) */}
+        {import.meta.env.DEV && (
+          <>
+            <form onSubmit={handleLocalSubmit} className="local-login-form">
+              <input
+                type="email"
+                placeholder="Email"
+                value={credentials.email}
+                className="login-input"
+                onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
+                required
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                value={credentials.password}
+                className="login-input"
+                onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+                required
+              />
+              <button type="submit" className="login-submit-btn">Login</button>
+            </form>
 
-        <div className="divider"><span>Login with Google Account</span></div>
+            <div className="divider"><span>Login with Google Account</span></div>
+          </>
+        )}
 
         {/* Google Login Button */}
         <div className="google-btn-wrapper">
