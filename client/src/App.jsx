@@ -30,7 +30,15 @@ function App() {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <div style={{ textAlign: 'center', marginTop: '50px' }}>Loading...</div>;
+    return (
+      <div className="app-loading-screen">
+        <div className="loader-container">
+          <div className="tbs-spinner"></div>
+          <h2 className="loading-text">กำลังโหลดระบบ...</h2>
+          <p className="loading-subtext">Trouble Tracking System</p>
+        </div>
+      </div>
+    );
   }
 
   return (

@@ -49,17 +49,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 6px;
-}
-
-.label-with-counter label {
-  margin-bottom: 0;
 }
 
 .char-counter {
   font-size: 12px;
   color: #888;
-  margin-bottom: 6px;
 }
 
 .form-group textarea {
@@ -214,14 +208,13 @@
 
 @media (max-width: 430px) {
   .add-issue-container {
-    padding: 10px;
-    margin-top: 90px;
+    padding: 10px 0;
+    margin-top: 90px auto;
   }
 
   .form-section {
     max-width: 100vw;
     padding: 15px;
-    margin-left: -5px;
   }
 }
 

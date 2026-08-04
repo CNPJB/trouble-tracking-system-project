@@ -57,9 +57,23 @@
 
 /* ส่วนโลโก้ซ้าย */
 .navbar-logo {
-  font-size: 22px;
-  font-weight: bold;
+  width: 55px;
+  height: 55px;
   cursor: pointer;
+  background-color: #d0d7dc;
+  border-radius: 50px;
+  align-content: center;
+  transition: ease 0.3s;
+}
+.navbar-logo:hover{
+  background-color: #ffffff;
+}
+
+.img-logo-navbar{
+    display: flex;
+    width: 40px;
+    height: 40px;
+    margin: 0 auto;
 }
 
 .navbar-menu {
@@ -162,12 +176,21 @@
 
   .navbar-container {
     justify-content: space-between;
-    margin-left: 35px;
     padding: 0;
   }
 
-  .navbar-user-section,
   .navbar-logo {
+    background-color: #ffffff;
+    width: 50px;
+    height: 50px;
+  }
+
+  .img-logo-navbar {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .navbar-user-section {
     display: none;
   }
   .nav-toggle-icon {
@@ -189,7 +212,9 @@
     font-size: 12px;
   }
 
-
+  .navbar-logo {
+    display: none;
+  }
 
 }
 

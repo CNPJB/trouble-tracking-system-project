@@ -21,7 +21,9 @@ const Navbar = () => {
                 {/* Logo */}
                 {/* <div style={{ display: 'flex', alignItems: 'center', gap: '30px' }}> */}
                 <div className="navbar-logo">
-                    MyWeb App
+                    <NavLink to="/">
+                    <img className="img-logo-navbar" src="/tts_logo_1-removebg-preview.png" alt="Logo" />
+                    </NavLink>
                 </div>
                 <nav>
                     <button className="navbar-toggle" id="navbar-toggle" onClick={toggleMobile}>

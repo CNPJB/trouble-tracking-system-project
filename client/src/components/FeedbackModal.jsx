@@ -126,7 +126,10 @@ export const FeedbackModal = ({ isOpen, onClose, onSubmit, ticketId, isLoading }
                     </div>
                     {errorMsg && <p className="feedback-error-text">{errorMsg}</p>}
 
-                    <label className="feedback-label mt-4">ข้อเสนอแนะเพิ่มเติม (ถ้ามี)</label>
+                    <div className="label-with-counter">
+                        <label className="feedback-label mt-4">ข้อเสนอแนะเพิ่มเติม (ถ้ามี)</label>
+                        <span className="char-counter">{comment.length}/50</span>
+                    </div>
                     <textarea 
                         className="feedback-textarea"
                         placeholder="เขียนคำติชม หรือข้อเสนอแนะเพื่อให้เราปรับปรุงบริการให้ดียิ่งขึ้น..."
@@ -134,7 +137,8 @@ export const FeedbackModal = ({ isOpen, onClose, onSubmit, ticketId, isLoading }
                         onChange={(e) => setComment(e.target.value)}
                         rows="4"
                         disabled={isLoading}
-                    />
+                        maxLength={50}
+                        />
                 </div>
 
                 <div className="feedback-actions">

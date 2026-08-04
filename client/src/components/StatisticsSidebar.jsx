@@ -46,7 +46,7 @@ export const StatisticsSidebar = ({ activeTab, onTabChange }) => {
             </NavLink>
 
             <NavLink to="/statistics/top-upvoted" className="sidebar-statistics-btn" onClick={toggleMobile}>
-              <span>ปัญหาที่ได้รับ Upvote มากสุด</span>
+              <span>ปัญหาที่ Upvote มากสุด</span>
               <FaThumbsUp className="nav-icon-stat" />
             </NavLink>
           </nav>

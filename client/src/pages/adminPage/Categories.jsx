@@ -91,7 +91,7 @@ const Categories = () => {
                 onDismiss={reset}
             />
             <div className="categories-main-container">
-                <div className="table-responsive-wrapper">
+                <div className="table-category-responsive-wrapper">
                     <table className="layout-table">
                         <thead>
                             <tr>
