@@ -43,9 +43,6 @@
 
 .ticket-description {
     line-height: 1.5em;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
     overflow: hidden;
     padding-top: 5px;
     word-break: break-word;
@@ -256,16 +253,8 @@
     /* แดงเข้มขึ้นตอนชี้ */
 }
 
-/* .roadmap-working .main-comment p {
-    line-height: 2;
-} */
-
 .main-comment {
-    line-height: 2em;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    line-height: 1.75em;
     word-break: break-word;
 }
 
@@ -387,7 +376,7 @@
     margin: 0;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 1536px) {
     .container-detail {
         height: 100%;
         min-height: 350px;
