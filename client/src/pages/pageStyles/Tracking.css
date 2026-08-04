@@ -292,10 +292,14 @@
 @media (max-width: 1536px) {
     .ticket-grid {
         gap: 12px;
+        padding: 10px;
     }
 }
 
 @media (max-width: 1200px) {
+    .ticket-grid {
+        padding: 0;
+    }
     .tracking-main-content {
         padding: 15px 20px;
     }

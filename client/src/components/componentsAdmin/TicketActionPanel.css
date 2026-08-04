@@ -72,7 +72,8 @@
 /* ==================
    Inputs & Forms
    ================== */
-.input-group label {
+.input-group label,
+.reject-mode-box label {
     display: block;
     font-size: 14px;
     font-weight: 600;
@@ -158,4 +159,13 @@
     font-size: 14px;
     color: #334155;
 }
-.admin-note-display p { margin: 5px 0 0 0; }
+.admin-note-display p { 
+    margin: 5px 0 0 0; 
+    line-height: 1.5em;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    padding-top: 5px;
+    word-break: break-word;
+}

@@ -391,8 +391,11 @@ function EditIssue() {
                     </div>
 
                     <div className="form-group">
-                        <label>หมายเหตุ / รายละเอียดเพิ่มเติม</label>
-                        <textarea name="description" onChange={handleChange} value={formData.description} rows="2" style={{ resize: 'none' }}></textarea>
+                        <div className="label-with-counter">
+                            <label>หมายเหตุ / รายละเอียดเพิ่มเติม</label>
+                            <span className="char-counter">{formData.description.length}/150</span>
+                        </div>
+                        <textarea name="description" onChange={handleChange} value={formData.description} rows="2" style={{ resize: 'none' }} maxLength={150}></textarea>
                     </div>
                 </div>
 

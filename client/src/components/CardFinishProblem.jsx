@@ -31,10 +31,12 @@ export const CardFinishProblem = ({ data }) => {
         </div>
         <div className="review-card">
           <StarRating rating={data?.rating || 0} />
-          <p className='text-limit'><img
-            src="description.png"
-            alt=""
-            style={{ width: '20px', height: '20px', gap: '10px' }} />{data.comment}</p>
+          <p className='text-limit'>
+            <img
+              src="description.png"
+              alt=""
+              style={{ width: '20px', height: '20px', gap: '10px', margin: '10px 10px 0 0' }} />{data.comment || '-'}
+          </p>
 
         </div>
       </div>

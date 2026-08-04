@@ -4,7 +4,7 @@
 
 .main-container {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 2fr 1fr;
 }
 
 .filter-assetManagement-container-responsive {
@@ -25,7 +25,6 @@
   /* ซ่อนใน Firefox */
   max-height: 665px;
   overflow-y: auto;
-  margin: 1rem 0;
   box-shadow: var(--shadow-md);
   border-radius: 8px;
   padding-left: 1rem;
@@ -102,8 +101,8 @@
 }
 
 .manage-container {
-  margin: 1rem;
-  width: 70%;
+  margin-left: 1rem;
+  width: 100%;
   background-color: #ffffff;
   border-radius: 10px;
   box-shadow: var(--shadow-md);
@@ -222,6 +221,10 @@
 
 /* รองรับหน้าจอมือถือ (Responsive) */
 @media (max-width: 480px) {
+  .main-container {
+    gap: 10px;
+  }
+  
   .floors-rooms {
     flex-wrap: wrap;
     gap: 15px;
@@ -269,7 +272,21 @@
   .assetManagement-container {
     padding: 10px;
   }
+  .main-container {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .layout-table {
+
+  }
+  .manage-container {
+    width: 100%;
+    margin: 0;
+  }
 }
 
 @media (max-width: 1536px) {
+  .main-container {
+    margin-top: 20px;
+  }
 }

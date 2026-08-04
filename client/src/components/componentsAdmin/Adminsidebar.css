@@ -38,6 +38,7 @@
 
 .admin-navbar-toggle {
     display: flex;
+    position: fixed;
     align-items: center;
     justify-content: flex-start;
     background-color: azure;

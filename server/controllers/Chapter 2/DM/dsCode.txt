@@ -1,0 +1,90 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.metrics import classification_report, accuracy_score, confusion_matrix
+from sklearn.preprocessing import LabelEncoder
+
+%matplotlib inline
+
+df = pd.read_csv("C:/Users/chitn/OneDrive/Desktop/y3 lets gooo/Chapter 2/DM/HybridDataset.csv")
+
+print(df.isnull().sum())
+
+selected_columns = [
+    'what is your age group?', 
+    'how many hours per day do you spend online?',
+    'which social media platforms do you use regularly?',
+    'what do you primarily use the internet for?',
+    'which activities do you engage in most on social media?',
+    'how often do you find yourself distracted while working or studying due to social media?',
+    'what types of notifications or distractions affect you the most?',
+    'do you feel like attention is being monetized by platforms?',
+    'category'  # นี่คือ Target
+]
+
+df_selected = df[selected_columns].copy()
+
+column_mapping = {
+    'what is your age group?': 'age_group',
+    'how many hours per day do you spend online?': 'hours_online',
+    'which social media platforms do you use regularly?': 'regular_platforms',
+    'what do you primarily use the internet for?': 'primary_use',
+    'which activities do you engage in most on social media?': 'sm_activities',
+    'how often do you find yourself distracted while working or studying due to social media?': 'distraction_freq',
+    'what types of notifications or distractions affect you the most?': 'distraction_types',
+    'do you feel like attention is being monetized by platforms?': 'monetization_awareness',
+    'category': 'target'
+}
+
+df_selected = df_selected.rename(columns=column_mapping)
+
+df_selected.head()
+
+# จัดการข้อมูลรายการ (Count Features)
+list_cols = ['regular_platforms', 'primary_use', 'sm_activities', 'distraction_types']
+for col in list_cols:
+    df_selected[f'{col}_count'] = df_selected[col].apply(lambda x: len(str(x).split(',')))
+
+# ลบคอลัมน์ข้อความเดิมและทำ Encoding
+df_final = df_selected.drop(columns=list_cols)
+le = LabelEncoder()
+for col in df_final.select_dtypes(include=['object']).columns:
+    df_final[col] = le.fit_transform(df_final[col].astype(str))
+
+# สร้างและทดสอบโมเดล
+X = df_final.drop('target', axis=1)
+y = df_final['target']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+model = DecisionTreeClassifier(max_depth=5, random_state=42)
+model.fit(X_train, y_train)
+
+# ดูผลความแม่นยำ
+print(f"Accuracy: {model.score(X_test, y_test)*100:.2f}%")
+
+print("\nClassification Report:\n", classification_report(y_test, y_pred=model.predict(X_test)))
+sns.set(style="whitegrid")
+
+# แสดงกราฟต้นไม่การตัดสินใจ
+plt.figure(figsize=(15,8))
+plot_tree(model, feature_names=X.columns, class_names=['Unaware', 'Mod Aware', 'High Aware'], filled=True)
+plt.show()
+
+# ความสัมพันธ์ระหว่าง ชั่วโมงออนไลน์ กับ ระดับความตระหนักรู้
+plt.figure(figsize=(10, 6))
+# ใช้ df_selected เพื่อให้กราฟแสดงเป็นชื่อข้อความ (ยังไม่ถูก encode เป็นตัวเลข)
+sns.countplot(data=df_selected, x='hours_online', hue='target', palette='viridis')
+plt.title('Relationship: Hours Online vs Awareness Level')
+plt.xticks(rotation=45)
+plt.legend(title='Awareness')
+plt.tight_layout()
+plt.show()
+
+# วิเคราะห์จำนวนแพลตฟอร์มที่ใช้ (Count Features) เทียบกับ Target
+plt.figure(figsize=(8, 5))
+sns.boxplot(data=df_selected, x='target', y='regular_platforms_count', hue='target', palette='coolwarm', legend=False)
+plt.title('Number of Regular Platforms Used by Awareness Level')
+plt.show()

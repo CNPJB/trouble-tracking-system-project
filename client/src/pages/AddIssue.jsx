@@ -444,8 +444,11 @@ function AddIssue() {
           </div>
 
           <div className="form-group">
-            <label>หมายเหตุ</label>
-            <textarea name="description" onChange={handleChange} value={formData.description} placeholder="ระบุรายละเอียดเพิ่มเติม" rows="4"></textarea>
+            <div className="label-with-counter">
+              <label>หมายเหตุ</label>
+              <span className="char-counter">{formData.description.length}/150</span>
+            </div>
+            <textarea name="description" onChange={handleChange} value={formData.description} placeholder="ระบุรายละเอียดเพิ่มเติม" rows="4" maxLength={150}></textarea>
           </div>
 
           {/* ส่วน UI Upload รูปภาพ */}
