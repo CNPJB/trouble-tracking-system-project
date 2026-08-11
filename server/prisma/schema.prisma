@@ -127,6 +127,7 @@ model Ticket {
   locationId          Int            @map("location_id")
   floorId             Int?           @map("floor_id")
   roomId              Int?           @map("room_id")
+  equipmentName       String?        @map("equipment_name") @db.VarChar(100)
   equipmentId         Int?           @map("equipment_id")
   title               String         @db.VarChar(100)
   description         String

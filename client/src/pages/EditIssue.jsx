@@ -42,6 +42,7 @@ function EditIssue() {
         floorId: '',
         roomId: '',
         equipmentCode: '',
+        equipmentName: '',
         description: '',
     });
 
@@ -71,6 +72,7 @@ function EditIssue() {
                 floorId: ticket.floorId?.toString() || '',
                 roomId: ticket.roomId?.toString() || '',
                 equipmentCode: ticket.equipment?.equipmentCode || '',
+                equipmentName: ticket.equipmentName || ticket.equipment?.equipmentName || '',
                 description: ticket.description || '',
             });
 
@@ -98,44 +100,53 @@ function EditIssue() {
 
     // Logic Auto-fill
     useEffect(() => {
-        if (isEquipmentCategory && equipmentValidation.status === 'success' && equipmentValidation.roomId) {
+        if (isEquipmentCategory && equipmentValidation.status === 'success') {
 
-            // เช็คว่าผู้ใช้กำลังแก้ไขตั๋วโดยใช้รหัสครุภัณฑ์ "เดิม" ที่บันทึกไว้หรือไม่?
-            // ถ้าใช่แปลว่านี่คือจังหวะเปิดหน้าเว็บโหลดข้อมูลครั้งแรก ห้าม! นำที่อยู่เดิมไปทับเด็ดขาด
             const isOriginalEquipment = normalizeEquipmentCode(formData.equipmentCode) === normalizeEquipmentCode(ticket?.equipment?.equipmentCode);
 
+            // ถ้าเป็นครุภัณฑ์รหัสเดิม ให้แค่ดึงชื่อมาใส่ให้ปลอดภัย แล้วข้ามการเซตสถานที่
             if (isOriginalEquipment) {
-                return; // ข้ามการทำงานไปเลย ให้ใช้ locationId, roomId จากตั๋วเดิม
+                setFormData(prev => ({
+                    ...prev,
+                    equipmentName: ticket.equipmentName || ticket.equipment?.equipmentName || ''
+                }));
+                return;
             }
 
-            const eqRoomId = equipmentValidation.roomId;
-            const foundRoom = rooms.find(r => r.roomId === eqRoomId);
+            // หากมีการพิมพ์รหัสใหม่ ให้ Auto-fill ทับ
+            setFormData(prev => ({
+                ...prev,
+                equipmentName: equipmentValidation.equipmentName
+            }));
 
-            if (foundRoom) {
-                const eqFloorId = foundRoom.floorId;
-                const foundFloor = floors.find(f => f.floorId === eqFloorId);
+            if (equipmentValidation.roomId) {
+                const eqRoomId = equipmentValidation.roomId;
+                const foundRoom = rooms.find(r => r.roomId === eqRoomId);
 
-                if (foundFloor) {
-                    const eqLocationId = foundFloor.locationId;
+                if (foundRoom) {
+                    const eqFloorId = foundRoom.floorId;
+                    const foundFloor = floors.find(f => f.floorId === eqFloorId);
 
-                    setFormData(prev => {
-                        if (prev.locationId === eqLocationId.toString() &&
-                            prev.floorId === eqFloorId.toString() &&
-                            prev.roomId === eqRoomId.toString()) {
-                            return prev;
-                        }
-
-                        return {
-                            ...prev,
-                            locationId: eqLocationId.toString(),
-                            floorId: eqFloorId.toString(),
-                            roomId: eqRoomId.toString()
-                        };
-                    });
+                    if (foundFloor) {
+                        const eqLocationId = foundFloor.locationId;
+                        setFormData(prev => {
+                            if (prev.locationId === eqLocationId.toString() &&
+                                prev.floorId === eqFloorId.toString() &&
+                                prev.roomId === eqRoomId.toString()) {
+                                return prev;
+                            }
+                            return {
+                                ...prev,
+                                locationId: eqLocationId.toString(),
+                                floorId: eqFloorId.toString(),
+                                roomId: eqRoomId.toString()
+                            };
+                        });
+                    }
                 }
             }
         }
-    }, [equipmentValidation.status, equipmentValidation.equipmentId, rooms, floors, isEquipmentCategory, ticket]);
+    }, [equipmentValidation.status, equipmentValidation.equipmentId, equipmentValidation.roomId, equipmentValidation.equipmentName, rooms, floors, isEquipmentCategory, ticket]);
 
     // ฟังก์ชันจัดการรูปภาพเก่าที่จะลบ (กดกากบาทลบรูปเก่า)
     const handleRemoveExistingImage = (imageId) => {
@@ -159,6 +170,13 @@ function EditIssue() {
                 newData.roomId = '';
             }
 
+            if (name === 'categoryId') {
+                if (!isEquipmentCategory) {
+                    newData.equipmentName = '';
+                    newData.equipmentCode = '';
+                }
+            }
+
             return newData;
         });
     };
@@ -169,9 +187,15 @@ function EditIssue() {
 
         const hasEquipmentSelection = Boolean(formData.equipmentCode && formData.equipmentCode.trim());
 
-        if (isEquipmentCategory && hasEquipmentSelection && equipmentValidation.status !== 'success') {
-            setError(equipmentValidation.message || "กรุณาเลือกรหัสครุภัณฑ์ที่มีในระบบหรือเลือก 'ไม่ระบุ'", "warning");
-            return;
+        if (isEquipmentCategory) {
+            if (hasEquipmentSelection && equipmentValidation.status !== 'success') {
+                setError(equipmentValidation.message || "กรุณาเลือกรหัสครุภัณฑ์ที่มีในระบบ หรือไม่ระบุ", "warning");
+                return;
+            }
+            if (!formData.equipmentName.trim()) {
+                setError("กรุณาระบุชื่อครุภัณฑ์ที่พบปัญหา", "warning");
+                return;
+            }
         }
 
         if (!formData.title.trim()) {
@@ -202,13 +226,17 @@ function EditIssue() {
             if (formData.floorId) submitData.append('floorId', formData.floorId);
             if (formData.roomId) submitData.append('roomId', formData.roomId);
 
-            // แนบข้อมูล Equipment ID (ต้องค้นหาจาก equipmentCode ที่ผู้ใช้กรอก)
-            if (isEquipmentCategory && formData.equipmentCode) {
-                const foundEq = equipments.find(
-                    eq => normalizeEquipmentCode(eq.equipmentCode) === normalizeEquipmentCode(formData.equipmentCode)
-                );
-                if (foundEq) {
-                    submitData.append('equipmentId', foundEq.equipmentId);
+            // แนบข้อมูล Equipment ID และ Name
+            if (isEquipmentCategory) {
+                submitData.append('equipmentName', formData.equipmentName.trim());
+
+                if (formData.equipmentCode) {
+                    const foundEq = equipments.find(
+                        eq => normalizeEquipmentCode(eq.equipmentCode) === normalizeEquipmentCode(formData.equipmentCode)
+                    );
+                    if (foundEq) {
+                        submitData.append('equipmentId', foundEq.equipmentId);
+                    }
                 }
             }
 
@@ -340,6 +368,45 @@ function EditIssue() {
                         </div>
                     </div>
 
+                    {isEquipmentCategory && (
+                        <div className="form-row">
+
+                            <div className='form-group'>
+                                <label>ชื่อครุภัณฑ์ที่พบปัญหา <span style={{ color: 'red' }}>*</span></label>
+                                <input
+                                    type="text"
+                                    name="equipmentName"
+                                    onChange={handleChange}
+                                    value={formData.equipmentName}
+                                    placeholder="เช่น คอมพิวเตอร์, โต๊ะทำงาน, เครื่องปรับอากาศ"
+                                    required={isEquipmentCategory}
+                                    disabled={equipmentValidation.status === 'success'} // ป้องกันแก้ชื่อถ้าใช้รหัสที่ถูกต้อง
+                                />
+                            </div>
+
+                            <div className='form-group'>
+                                <label>รหัสครุภัณฑ์ <span className='secondary-label'> (ไม่บังคับ - ใช้ค้นหาข้อมูลอัตโนมัติ)</span></label>
+                                <input
+                                    type="text"
+                                    list={`equipment-codes-${formData.roomId || 'none'}`}
+                                    name="equipmentCode"
+                                    onChange={handleChange}
+                                    value={formData.equipmentCode}
+                                    placeholder="พิมพ์รหัสครุภัณฑ์ (ถ้ามี)"
+                                />
+                                <datalist id={`equipment-codes-${formData.roomId || 'none'}`}>
+                                    {availableEquipmentOptions.map(eq => (
+                                        <option key={eq.equipmentId} value={eq.equipmentCode} />
+                                    ))}
+                                </datalist>
+                                {equipmentValidation.message && (
+                                    <small style={{ color: equipmentValidation.status === 'success' ? 'green' : 'red', display: 'block', marginTop: '5px' }}>
+                                        {equipmentValidation.message}
+                                    </small>
+                                )}
+                            </div>
+                        </div>
+                    )}
                     <div className="form-row">
                         <div className="form-group">
                             <label>สถานที่ <span style={{ color: 'red' }}>*</span></label>
@@ -348,32 +415,9 @@ function EditIssue() {
                                 {activeLocations.map(l => <option key={l.locationId} value={l.locationId}>{l.locationName}</option>)}
                             </select>
                         </div>
-                        {isEquipmentCategory && (
-                            <div className="form-group">
-                                <label>รหัสครุภัณฑ์</label>
-                                <input
-                                    type="text"
-                                    list={`equipment-codes-${formData.roomId || 'none'}`}
-                                    name="equipmentCode"
-                                    onChange={handleChange}
-                                    value={formData.equipmentCode}
-                                    placeholder="พิมพ์รหัสครุภัณฑ์"
-                                />
-                                <datalist id={`equipment-codes-${formData.roomId || 'none'}`}>
-                                    {availableEquipmentOptions.map(eq => (
-                                        <option key={eq.equipmentId} value={eq.equipmentCode} />
-                                    ))}
-                                </datalist>
-                                {equipmentValidation.message && (
-                                    <small style={{ position: 'static', top: '329px', alignSelf: 'center', color: equipmentValidation.status === 'success' ? 'green' : 'red', marginTop: '5px' }}>
-                                        {equipmentValidation.message}
-                                    </small>
-                                )}
-                            </div>
-                        )}
                     </div>
 
-                    <div className="form-row">
+                    <div className="form-row form-row-responsive">
                         <div className="form-group">
                             <label>ชั้น</label>
                             <select name="floorId" onChange={handleChange} value={formData.floorId} disabled={!formData.locationId}>
@@ -447,6 +491,7 @@ function EditIssue() {
                                 formData.roomId === (ticket.roomId?.toString() || '') &&
                                 formData.description === (ticket.description || '') &&
                                 formData.equipmentCode === (ticket.equipment?.equipmentCode || '') &&
+                                formData.equipmentName === (ticket.equipmentName || ticket.equipment?.equipmentName || '') &&
                                 (imagesToDelete.length === 0 && selectedImages.length === 0))
                         }>
                         <FaSave style={{ position: 'relative', top: '3.5px' }} /> บันทึกการเแก้ไข

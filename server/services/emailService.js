@@ -1,4 +1,8 @@
 import nodemailer from 'nodemailer';
+import dns from 'dns';
+
+// บังคับให้ Node.js ใช้ IPv4 เป็นหลักเพื่อแก้ปัญหาเครือข่าย ENETUNREACH (IPv6)
+dns.setDefaultResultOrder('ipv4first');
 
 // สร้าง Transporter สำหรับเชื่อมต่อกับ Server ของ Gmail
 const transporter = nodemailer.createTransport({
@@ -101,7 +105,7 @@ export const sendTicketStatusEmail = async (toEmail, ticketData) => {
     // 4. ส่งอีเมลออกไปแบบมีโครงสร้างดักข้อผิดพลาด
     try {
         await transporter.sendMail({
-            from: `"TTS Notification" <${process.env.EMAIL_USER}>`,
+            from: `TTS Notification`,
             to: toEmail,
             subject: subject,
             html: htmlContent
