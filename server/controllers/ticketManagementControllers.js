@@ -341,27 +341,31 @@ export const updateTicketStatusAdmin = async (req, res) => {
             return res.status(400).json({ success: false, message: "กรุณาระบุเหตุผลการปฏิเสธ" });
         }
 
-        // 4. บังคับอัปโหลดรูปภาพ กรณี Resolved
-        if (ticketStatus === 'resolved' && (!files || files.length === 0)) {
-            return res.status(400).json({ success: false, message: "กรุณาแนบรูปภาพเพื่อเป็นหลักฐานการแก้ไขอย่างน้อย 1 รูป" });
-        }
-
-        // 5. จัดการอัปโหลดรูปภาพ (เฉพาะกรณี Resolved และมีไฟล์แนบมา)
+        // 4. จัดการอัปโหลดรูปภาพ (เฉพาะกรณี Resolved)
         const uploadedImagesData = [];
-        if (ticketStatus === 'resolved' && files && files.length > 0) {
-            // ใช้เทคนิค Promise.all เหมือนใน addTicket[cite: 27]
-            const uploadPromises = files.map((file) => uploadToCloudinary(file.buffer, 'TTS-img'));
-            const cloudinaryResults = await Promise.all(uploadPromises);
+        if (ticketStatus === 'resolved') {
+            if (files && files.length > 0) {
+                // ใช้เทคนิค Promise.all เหมือนใน addTicket
+                const uploadPromises = files.map((file) => uploadToCloudinary(file.buffer, 'TTS-img'));
+                const cloudinaryResults = await Promise.all(uploadPromises);
 
-            cloudinaryResults.forEach((result) => {
-                uploadedImagesData.push({
-                    imageUrl: result.secure_url,
-                    imageType: "after", // กำหนดว่าเป็นรูป "หลังซ่อม"
-                    imagePublicId: result.public_id,
+                cloudinaryResults.forEach((result) => {
+                    uploadedImagesData.push({
+                        imageUrl: result.secure_url,
+                        imageType: "after", // กำหนดว่าเป็นรูป "หลังซ่อม"
+                        imagePublicId: result.public_id,
+                    });
+                    // เก็บ Public ID ไว้เผื่อ Database พัง จะได้ตามไปลบทิ้งได้
+                    uploadedImagesForRollback.push(result.public_id);
                 });
-                // เก็บ Public ID ไว้เผื่อ Database พัง จะได้ตามไปลบทิ้งได้[cite: 27]
-                uploadedImagesForRollback.push(result.public_id);
-            });
+            } else {
+                // ถ้าแอดมินไม่ได้อัปโหลดรูป ให้ใช้รูป default อัตโนมัติ
+                uploadedImagesData.push({
+                    imageUrl: '/default-noimage-admin-1.jpg',
+                    imageType: "after",
+                    imagePublicId: 'default-noimage'
+                });
+            }
         }
 
         // 5. เริ่ม Transaction เพื่ออัปเดตข้อมูลทุกตารางพร้อมกัน

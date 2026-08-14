@@ -40,10 +40,6 @@ export const TicketActionPanel = ({ ticket, onUpdateStatus, isLoading }) => {
 
     // 2. ปิดงาน (In Progress -> Resolved)
     const handleResolve = () => {
-        if (selectedImages.length === 0) {
-            setErrorMsg('กรุณาอัปโหลดรูปภาพอย่างน้อย 1 รูปเพื่อเป็นหลักฐานการซ่อมแซม');
-            return;
-        }
         setErrorMsg('');
 
         const rawFiles = selectedImages.map(img => img.file);
@@ -176,7 +172,6 @@ export const TicketActionPanel = ({ ticket, onUpdateStatus, isLoading }) => {
                         onImageChange={handleImageChange}
                         onRemoveImage={removeImage}
                         maxImages={3}
-                        minImages={1}
                         isCompressing={isCompressing}
                     />
 
