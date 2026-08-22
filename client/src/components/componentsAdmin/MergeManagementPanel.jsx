@@ -180,7 +180,7 @@ export const MergeManagementPanel = ({
 
                                                                 <button
                                                                     className="btn-unlink-sub"
-                                                                    onClick={() => onUnmergeAction({ subTicketId: sub.ticketId })}
+                                                                    onClick={() => onUnmergeAction({ subTicketId: sub.ticketId, mainTicketId: group.ticketId })}
                                                                     title="แยกรายการนี้ออกจากกลุ่ม"
                                                                 >
                                                                     <FaUnlink /> <p className="p-unlink-text">แยกออก</p>

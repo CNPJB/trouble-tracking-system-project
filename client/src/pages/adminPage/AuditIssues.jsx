@@ -29,7 +29,8 @@ import { ticketService } from '../../services/ticketService.js'
 const AuditIssues = () => {
     const { user } = useAuth();
     const { tickets, isLoading, isFetchingNextPage, pagination,
-        changePage, updateFilters, refetch, removeTicket, updateTicketStatus
+        changePage, updateFilters, refetch, removeTicket, updateTicketStatus,
+        updateTicketAfterMerge, updateTicketAfterUnmerge
     } = useTickets({ status: 'pending' });
     const { loading, startLoading, setError, setSuccess, reset } = useLoadingState();
     const [selectedMergeTickets, setSelectedMergeTickets] = useState([]);
@@ -122,7 +123,12 @@ const AuditIssues = () => {
                 setSuccess(`รวมกลุ่มปัญหาสำเร็จ! ข้อมูลถูกโอนย้ายไปยังตั๋วหลัก ${primaryTicketId} เรียบร้อยแล้ว`);
                 setConfirmMergeModal({ isOpen: false });
                 setSelectedMergeTickets([]);
-                await Promise.all([refetch(), refetchGroups()]);
+                
+                // ใช้ Optimistic Update ทำงานแบบ Real-time โดยไม่ต้องรีเฟรช
+                updateTicketAfterMerge(primaryTicketId, duplicateTicketIds);
+                
+                // ดึงข้อมูลแค่กลุ่มด้านขวาใหม่ให้เป็นปัจจุบัน
+                await refetchGroups();
             }
         } catch (error) {
             console.error("Error merging tickets:", error);
@@ -141,13 +147,24 @@ const AuditIssues = () => {
         startLoading(); // แสดงหน้าจอโหลด
 
         try {
-            const result = await ticketService.unmergeTickets(confirmUnmergeModal.payload);
+            // ดึงข้อมูลออกมาจาก payload
+            const { subTicketId, mainTicketId } = confirmUnmergeModal.payload;
+            
+            // เตรียม payload ส่งให้ API (ส่งตัวใดตัวหนึ่งเท่านั้น)
+            const apiPayload = confirmUnmergeModal.type === 'single' ? { subTicketId } : { mainTicketId };
+
+            const result = await ticketService.unmergeTickets(apiPayload);
 
             if (result.success) {
                 setSuccess(result.message || "ดำเนินการแยกกลุ่มปัญหาสำเร็จ");
                 setConfirmUnmergeModal({ isOpen: false, payload: null, type: null });
 
-                await Promise.all([refetch(), refetchGroups()]);
+                // 🚀 ใช้ Optimistic Update ทำงานแบบ Real-time โดยไม่ต้องรีเฟรช 🚀
+                const targetMainTicketId = confirmUnmergeModal.type === 'single' ? mainTicketId : apiPayload.mainTicketId;
+                updateTicketAfterUnmerge(targetMainTicketId, result.unmergedTickets, confirmUnmergeModal.type === 'single');
+
+                // ดึงข้อมูลแค่กลุ่มด้านขวาใหม่ให้เป็นปัจจุบัน
+                await refetchGroups();
             }
         } catch (error) {
             console.error("Error unmerging tickets:", error);

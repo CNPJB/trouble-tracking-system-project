@@ -183,6 +183,7 @@ export const unmergeTickets = async (req, res) => {
 
         let resultCount = 0;
         let actionMessage = "";
+        let unmergedTicketsData = [];
 
         // แยกออกทีละใบ (Remove Single Sub-ticket)
         if (subTicketId) {
@@ -199,27 +200,46 @@ export const unmergeTickets = async (req, res) => {
             }
 
             // คืนสถานะกลับเป็น pending และล้างร่องรอยการรวมกลุ่ม
-            await prisma.ticket.update({
+            const updatedTicket = await prisma.ticket.update({
                 where: { ticketId: subTicketId },
                 data: {
                     ticketStatus: 'pending',
                     parentTicketId: null,
                     updatedAt: new Date()
+                },
+                include: {
+                    location: true, floor: true, room: true, category: true, admin: true, images: true
                 }
             });
 
+            unmergedTicketsData = [updatedTicket];
             resultCount = 1;
             actionMessage = `แยกรายการปัญหา ${subTicketId} ออกจากกลุ่มสำเร็จ`;
         }
 
         // ยุบทั้งกลุ่ม (Disband Entire Group)
         if (mainTicketId) {
-            // ใช้ updateMany เพื่อความเร็ว: อัปเดตตั๋วทุกใบที่ผูกกับแม่คนนี้
-            const updateResult = await prisma.ticket.updateMany({
+            // หาตั๋วลูกทั้งหมดก่อนอัปเดต
+            const ticketsToUpdate = await prisma.ticket.findMany({
                 where: {
                     parentTicketId: mainTicketId,
                     ticketStatus: 'duplicate'
                 },
+                select: { ticketId: true }
+            });
+
+            if (ticketsToUpdate.length === 0) {
+                return res.status(404).json({
+                    success: false,
+                    message: "ไม่พบตั๋วลูกที่ถูกรวมอยู่ในกลุ่มปัญหานี้ หรือกลุ่มนี้ถูกยุบไปแล้ว"
+                });
+            }
+
+            const ticketIds = ticketsToUpdate.map(t => t.ticketId);
+
+            // อัปเดตตั๋วทั้งหมด
+            await prisma.ticket.updateMany({
+                where: { ticketId: { in: ticketIds } },
                 data: {
                     ticketStatus: 'pending',
                     parentTicketId: null,
@@ -227,20 +247,23 @@ export const unmergeTickets = async (req, res) => {
                 }
             });
 
-            if (updateResult.count === 0) {
-                return res.status(404).json({
-                    success: false,
-                    message: "ไม่พบตั๋วลูกที่ถูกรวมอยู่ในกลุ่มปัญหานี้ หรือกลุ่มนี้ถูกยุบไปแล้ว"
-                });
-            }
+            // ดึงข้อมูลที่อัปเดตแล้วแบบเต็มรูปแบบเพื่อส่งกลับไปให้ Frontend
+            unmergedTicketsData = await prisma.ticket.findMany({
+                where: { ticketId: { in: ticketIds } },
+                include: {
+                    location: true, floor: true, room: true, category: true, admin: true, images: true
+                },
+                orderBy: { createdAt: 'desc' }
+            });
 
-            resultCount = updateResult.count;
+            resultCount = ticketIds.length;
             actionMessage = `ยุบกลุ่มปัญหาหลัก ${mainTicketId} สำเร็จ (แยกตั๋วลูกจำนวน ${resultCount} รายการ)`;
         }
 
         res.status(200).json({
             success: true,
-            message: actionMessage
+            message: actionMessage,
+            unmergedTickets: unmergedTicketsData
         });
 
     } catch (error) {
@@ -314,7 +337,7 @@ export const updateTicketStatusAdmin = async (req, res) => {
                 adminId: true,
                 title: true,
                 subTickets: {
-                    select: { equipmentId: true }
+                    select: { ticketId: true, equipmentId: true }
                 }
             }
         });
@@ -401,13 +424,27 @@ export const updateTicketStatusAdmin = async (req, res) => {
 
             // 5.2 เซฟรูปลง Database (ถ้ามี)
             if (uploadedImagesData.length > 0) {
+                // รวบรวม ID ของตั๋วทั้งหมด (แม่ + ลูกทุกใบ)
+                const allTicketIdsForImage = [id];
+                if (ticket.subTickets && ticket.subTickets.length > 0) {
+                    ticket.subTickets.forEach(sub => allTicketIdsForImage.push(sub.ticketId));
+                }
+
+                // สร้าง Array ของรูปภาพที่ต้อง Insert โดยทำซ้ำสำหรับทุกตั๋ว
+                const allImagesToInsert = [];
+                allTicketIdsForImage.forEach(ticketIdToBind => {
+                    uploadedImagesData.forEach(img => {
+                        allImagesToInsert.push({
+                            ticketId: ticketIdToBind,
+                            imageUrl: img.imageUrl,
+                            imageType: img.imageType,
+                            imagePublicId: img.imagePublicId
+                        });
+                    });
+                });
+
                 await tx.ticketImage.createMany({
-                    data: uploadedImagesData.map(img => ({
-                        ticketId: id,
-                        imageUrl: img.imageUrl,
-                        imageType: img.imageType,
-                        imagePublicId: img.imagePublicId
-                    }))
+                    data: allImagesToInsert
                 });
             }
 
