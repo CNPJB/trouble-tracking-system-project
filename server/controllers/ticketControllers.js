@@ -538,13 +538,25 @@ export const cancelTicket = async (req, res) => {
 export const submitFeedback = async (req, res) => {
     try {
         const { id } = req.params;
-        const { rating, comment } = req.body;
+        const { rating, ratingSpeed, ratingCompleteness, ratingCommunication, comment } = req.body;
         const userId = req.user.userId;
         // เช็คว่าส่งคะแนนมาถูกต้องไหม (อนุญาต 0.5 - 5 ดาว)
         if (rating === undefined || rating === null || rating < 0.5 || rating > 5) {
             return res.status(400).json({ 
                 success: false, 
                 message: "กรุณาระบุคะแนนประเมินระหว่าง 0.5 ถึง 5 ดาว" 
+            });
+        }
+        
+        // เช็คคะแนนหมวดหมู่ย่อย
+        if (
+            ratingSpeed === undefined || ratingSpeed < 0.5 || ratingSpeed > 5 ||
+            ratingCompleteness === undefined || ratingCompleteness < 0.5 || ratingCompleteness > 5 ||
+            ratingCommunication === undefined || ratingCommunication < 0.5 || ratingCommunication > 5
+        ) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "กรุณาระบุคะแนนประเมินทุกหมวดหมู่ให้ครบถ้วน" 
             });
         }
 
@@ -565,6 +577,9 @@ export const submitFeedback = async (req, res) => {
             where: { ticketId: id },
             data: {
                 rating: parseFloat(rating),
+                ratingSpeed: parseFloat(ratingSpeed),
+                ratingCompleteness: parseFloat(ratingCompleteness),
+                ratingCommunication: parseFloat(ratingCommunication),
                 comment: comment ? comment.trim() : null, // ถ้าไม่ได้พิมพ์อะไรมาให้เก็บเป็น null
                 updatedAt: new Date()
             }
