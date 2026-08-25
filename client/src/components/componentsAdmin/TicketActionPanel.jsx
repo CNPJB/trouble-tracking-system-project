@@ -40,10 +40,6 @@ export const TicketActionPanel = ({ ticket, onUpdateStatus, isLoading }) => {
 
     // 2. ปิดงาน (In Progress -> Resolved)
     const handleResolve = () => {
-        if (selectedImages.length === 0) {
-            setErrorMsg('กรุณาอัปโหลดรูปภาพอย่างน้อย 1 รูปเพื่อเป็นหลักฐานการซ่อมแซม');
-            return;
-        }
         setErrorMsg('');
 
         const rawFiles = selectedImages.map(img => img.file);
@@ -71,6 +67,15 @@ export const TicketActionPanel = ({ ticket, onUpdateStatus, isLoading }) => {
         onUpdateStatus({
             ticketStatus: 'rejected',
             adminNote: adminNote
+        });
+    };
+
+    // 4. ยกเลิกปัญหา (Pending / In Progress -> Canceled) - สำหรับปัญหาก่อกวน ไม่ส่งอีเมล
+    const handleCancel = () => {
+        setErrorMsg('');
+        onUpdateStatus({
+            ticketStatus: 'canceled',
+            adminNote: adminNote.trim() ? adminNote : 'ถูกยกเลิกโดยผู้ดูแลระบบ'
         });
     };
 
@@ -119,6 +124,14 @@ export const TicketActionPanel = ({ ticket, onUpdateStatus, isLoading }) => {
                                 disabled={isLoading}
                             >
                                 <FaTimes /> ปฏิเสธรายการนี้ (Reject)
+                            </button>
+                            <button
+                                className="btn-action subtle"
+                                onClick={handleCancel}
+                                disabled={isLoading}
+                                title="ยกเลิกตั๋วกรณีที่เป็นสแปมหรือก่อกวน (จะไม่ส่งอีเมลแจ้งเตือน)"
+                            >
+                                ยกเลิกปัญหา (Spam/ก่อกวน)
                             </button>
                         </div>
                     ) : (
@@ -176,7 +189,6 @@ export const TicketActionPanel = ({ ticket, onUpdateStatus, isLoading }) => {
                         onImageChange={handleImageChange}
                         onRemoveImage={removeImage}
                         maxImages={3}
-                        minImages={1}
                         isCompressing={isCompressing}
                     />
 
@@ -196,6 +208,14 @@ export const TicketActionPanel = ({ ticket, onUpdateStatus, isLoading }) => {
                             disabled={isLoading}
                         >
                             <FaTimes /> ยกเลิก/ปฏิเสธงานซ่อม (Reject)
+                        </button>
+                        <button
+                            className="btn-action subtle"
+                            onClick={handleCancel}
+                            disabled={isLoading}
+                            title="ยกเลิกตั๋วกรณีที่เป็นสแปมหรือก่อกวน (จะไม่ส่งอีเมลแจ้งเตือน)"
+                        >
+                            ยกเลิกปัญหา (Spam/ก่อกวน)
                         </button>
                     </div>
                 </div>

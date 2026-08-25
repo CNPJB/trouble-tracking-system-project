@@ -46,6 +46,12 @@ export const MergeManagementPanel = ({
                 >
                     จัดการกลุ่มของปัญหา
                 </button>
+                <button
+                    className={`panel-tab urgent-tab ${activeTab === 'urgent' ? 'active' : ''}`}
+                    onClick={() => onTabChange('urgent')}
+                >
+                    จัดการตั๋วด่วน
+                </button>
             </div>
 
             {/* 2. ส่วนเนื้อหา */}
@@ -107,6 +113,52 @@ export const MergeManagementPanel = ({
                                                         <p>ห้อง: {ticket.room?.roomName || '-'}</p>
                                                     </div>
                                                 </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </>
+                            )}
+                        </div>
+                    </>
+                )}
+
+                {activeTab === 'urgent' && (
+                    <>
+                        <div className="selection-header selection-header-urgent">
+                            ตั๋วที่เลือกเป็นตั๋วด่วน ({selectedTickets.length})
+                        </div>
+
+                        <div className="selected-tickets-list">
+                            {selectedTickets.length === 0 ? (
+                                <div className="empty-selection">
+                                    <p>กรุณาเลือกรายการปัญหาจากด้านซ้าย เพื่อตั้งเป็นตั๋วด่วน</p>
+                                </div>
+                            ) : (
+                                <>
+                                    {selectedTickets.map(ticket => (
+                                        <div key={ticket.ticketId} className="ticket-list-item ticket-list-item-urgent">
+                                            <button
+                                                className="btn-remove-selected"
+                                                onClick={() => onRemoveTicket(ticket.ticketId)}
+                                                title="นำออกจากรายการ"
+                                            >
+                                                <FaTimes />
+                                            </button>
+                                            <div className="item-badge item-badge-urgent">Urgent: {ticket.ticketId}</div>
+                                            <div className="item-details">
+                                                <p className="item-title">{ticket.title}</p>
+                                                <div className="item-meta">
+                                                    <span>สถานที่: {ticket.location?.locationName}</span>
+                                                    <div className='floor-room-info'>
+                                                        <p>ชั้น: {ticket.floor?.floorLevel || '-'} </p>
+                                                        <p>ห้อง: {ticket.room?.roomName || '-'}</p>
+                                                    </div>
+                                                </div>
+                                                {ticket._count?.subTickets > 0 && (
+                                                    <div className="urgent-sub-ticket-info">
+                                                        <FaLayerGroup /> รวมตั๋วลูกที่จะเป็นตั๋วด่วนด้วย ({ticket._count.subTickets} รายการ)
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     ))}
@@ -180,7 +232,7 @@ export const MergeManagementPanel = ({
 
                                                                 <button
                                                                     className="btn-unlink-sub"
-                                                                    onClick={() => onUnmergeAction({ subTicketId: sub.ticketId })}
+                                                                    onClick={() => onUnmergeAction({ subTicketId: sub.ticketId, mainTicketId: group.ticketId })}
                                                                     title="แยกรายการนี้ออกจากกลุ่ม"
                                                                 >
                                                                     <FaUnlink /> <p className="p-unlink-text">แยกออก</p>
@@ -214,14 +266,17 @@ export const MergeManagementPanel = ({
             {/* 3. ส่วนปุ่มควบคุม (Footer) */}
             {activeTab === 'merge' && (
                 <div className="merge-panel-actions">
-                    <button className="btn-icon-search" title="ค้นหาเฉพาะ"><FaSearch /></button>
                     <button className="btn-reset-selection" onClick={onReset} disabled={selectedTickets.length === 0 || isLoading}>รีเซ็ต</button>
                     <button className="btn-confirm-merge" onClick={onConfirm} disabled={selectedTickets.length < 2 || isLoading}>{isLoading ? 'กำลังบันทึก...' : 'บันทึก'}</button>
                 </div>
             )}
-
-
-
+            
+            {activeTab === 'urgent' && (
+                <div className="merge-panel-actions merge-panel-actions-urgent">
+                    <button className="btn-reset-selection" onClick={onReset} disabled={selectedTickets.length === 0 || isLoading}>รีเซ็ต</button>
+                    <button className="btn-confirm-merge btn-confirm-urgent" onClick={onConfirm} disabled={selectedTickets.length === 0 || isLoading}>{isLoading ? 'กำลังบันทึก...' : 'ตั้งเป็นตั๋วด่วน'}</button>
+                </div>
+            )}
         </div>
     );
 };

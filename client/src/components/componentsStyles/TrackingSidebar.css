@@ -11,7 +11,6 @@
   transition: all 0.3s;
   box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
 }
-
 .tracking-sidebar-header img {
   width: 100%;
   object-fit: contain;
@@ -97,6 +96,7 @@
   background-color: #fff0f0;
   /* สีแดงอ่อนมากตอน Hover */
   color: var(--status-red);
+  border-right: 4px solid red;
 }
 
 .sidebar-menu-btn.review-btn.active {
@@ -136,6 +136,7 @@
 
 .mobile-hamburger-btn {
   display: none;
+  
 }
 
 .close-btn {
@@ -157,10 +158,6 @@
   /* Mobile: ข้อความซ้าย, ไอคอนขวาสุด */
   .sidebar-menu-btn .nav-icon-stat {
     order: 3;
-  }
-
-  .sidebar-menu-btn.active .nav-icon-stat {
-    color: #00a651;
   }
   
   .sidebar-menu-btn label {

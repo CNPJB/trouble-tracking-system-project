@@ -40,6 +40,7 @@ function AddIssue() {
     floorId: '',
     roomId: '',
     equipmentCode: '',
+    equipmentName: '',
     description: '',
   });
 
@@ -100,37 +101,44 @@ function AddIssue() {
   // Logic Auto-fill สถานที่
   useEffect(() => {
     // ถ้าหมวดหมู่ถูกต้อง หาครุภัณฑ์เจอ
-    if (isEquipmentCategory && equipmentValidation.status === 'success' && equipmentValidation.roomId) {
-      const eqRoomId = equipmentValidation.roomId;
+    if (isEquipmentCategory && equipmentValidation.status === 'success') {
 
-      // ย้อนรอยหาชั้นและสถานที่จาก Master Data
-      const foundRoom = rooms.find(r => r.roomId === eqRoomId);
-      if (foundRoom) {
-        const eqFloorId = foundRoom.floorId;
-        const foundFloor = floors.find(f => f.floorId === eqFloorId);
+      setFormData(prev => ({
+        ...prev,
+        equipmentName: equipmentValidation.equipmentName
+      }));
 
-        if (foundFloor) {
-          const eqLocationId = foundFloor.locationId;
+      if (equipmentValidation.roomId) {
+        const eqRoomId = equipmentValidation.roomId;
+        const foundRoom = rooms.find(r => r.roomId === eqRoomId);
 
-          setFormData(prev => {
-            // เช็คก่อนว่าเปลี่ยนจริงไหม เพื่อไม่ให้ State อัปเดตรัวๆ รบกวนผู้ใช้
-            if (prev.locationId === eqLocationId.toString() &&
-              prev.floorId === eqFloorId.toString() &&
-              prev.roomId === eqRoomId.toString()) {
-              return prev;
-            }
+        if (foundRoom) {
+          const eqFloorId = foundRoom.floorId;
+          const foundFloor = floors.find(f => f.floorId === eqFloorId);
 
-            return {
-              ...prev,
-              locationId: eqLocationId.toString(),
-              floorId: eqFloorId.toString(),
-              roomId: eqRoomId.toString()
-            };
-          });
+          if (foundFloor) {
+            const eqLocationId = foundFloor.locationId;
+
+            setFormData(prev => {
+              // เช็คก่อนว่าเปลี่ยนจริงไหม เพื่อไม่ให้ State อัปเดตรัวๆ รบกวนผู้ใช้
+              if (prev.locationId === eqLocationId.toString() &&
+                prev.floorId === eqFloorId.toString() &&
+                prev.roomId === eqRoomId.toString()) {
+                return prev;
+              }
+
+              return {
+                ...prev,
+                locationId: eqLocationId.toString(),
+                floorId: eqFloorId.toString(),
+                roomId: eqRoomId.toString()
+              };
+            });
+          }
         }
       }
     }
-  }, [equipmentValidation.status, equipmentValidation.equipmentId, rooms, floors, isEquipmentCategory]);
+  }, [equipmentValidation.status, equipmentValidation.equipmentId, equipmentValidation.equipmentName, rooms, floors, isEquipmentCategory]);
 
   // --- Logic to handle form input changes ---
   const handleChange = (e) => {
@@ -155,6 +163,14 @@ function AddIssue() {
 
       if (name === 'floorId') {
         newData.roomId = '';
+      }
+
+      // Reset equipmentName and equipmentCode when category changes
+      if (name === 'categoryId') {
+        if (!isEquipmentCategory) {
+          newData.equipmentName = '';
+          newData.equipmentCode = '';
+        }
       }
 
       return newData;
@@ -212,9 +228,15 @@ function AddIssue() {
     const hasEquipmentSelection = Boolean(formData.equipmentCode && formData.equipmentCode.trim());
 
     // Equipment code validation before submission
-    if (isEquipmentCategory && hasEquipmentSelection && equipmentValidation.status !== 'success') {
-      setError(equipmentValidation.message || "กรุณาเลือกรหัสครุภัณฑ์ที่มีในระบบหรือเลือก 'ไม่ระบุ'", "warning");
-      return;
+    if (isEquipmentCategory) {
+      if (hasEquipmentSelection && equipmentValidation.status !== 'success') {
+        setError(equipmentValidation.message || "กรุณาเลือกรหัสครุภัณฑ์ที่มีในระบบ หรือไม่ระบุ", "warning");
+        return;
+      }
+      if (!formData.equipmentName.trim()) {
+        setError("กรุณาระบุชื่อครุภัณฑ์ที่พบปัญหา", "warning");
+        return;
+      }
     }
 
     if (!formData.title.trim()) {
@@ -260,12 +282,16 @@ function AddIssue() {
       if (formData.roomId) submitData.append('roomId', formData.roomId);
 
       // ถ้าเป็นหมวดอุปกรณ์และมีรหัสครุภัณฑ์ที่ถูกต้อง ให้ส่ง equipmentId ไปด้วย
-      if (isEquipmentCategory && formData.equipmentCode) {
-        const foundEq = equipments.find(
-          eq => normalizeEquipmentCode(eq.equipmentCode) === normalizeEquipmentCode(formData.equipmentCode)
-        );
-        if (foundEq) {
-          submitData.append('equipmentId', foundEq.equipmentId);
+      if (isEquipmentCategory) {
+        submitData.append('equipmentName', formData.equipmentName.trim());
+
+        if (formData.equipmentCode) {
+          const foundEq = equipments.find(
+            eq => normalizeEquipmentCode(eq.equipmentCode) === normalizeEquipmentCode(formData.equipmentCode)
+          );
+          if (foundEq) {
+            submitData.append('equipmentId', foundEq.equipmentId);
+          }
         }
       }
 
@@ -383,17 +409,28 @@ function AddIssue() {
             </div>
           </div>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label>สถานที่ <span style={{ color: 'red' }}>*</span></label>
-              <select name="locationId" onChange={handleChange} value={formData.locationId} required>
-                <option value="">เลือกสถานที่</option>
-                {activeLocations.map(l => <option key={l.locationId} value={l.locationId}>{l.locationName}</option>)}
-              </select>
-            </div>
+          {isEquipmentCategory && (
+            <div className="form-row">
+              {/* ชื่อครุภัณฑ์ */}
+              <div className="form-group">
+                <div className="label-with-counter">
+                  <label>ชื่อครุภัณฑ์ <span style={{ color: 'red' }}>*</span></label>
+                  <span className="char-counter">{formData.equipmentName.length}/20</span>
+                </div>
+                <input
+                  type="text"
+                  name="equipmentName"
+                  onChange={handleChange}
+                  value={formData.equipmentName}
+                  placeholder="เช่น คอมพิวเตอร์, เมาส์, คีย์บอร์ด"
+                  maxLength={20}
+                  required={isEquipmentCategory}
+                  disabled={equipmentValidation.status === 'success'} // ป้องกันแก้ชื่อถ้าใช้รหัสที่ถูกต้อง
+                />
+              </div>
 
-            {isEquipmentCategory && (
-              <div className="form-group highlight-field">
+              {/* รหัสครุภัณฑ์ */}
+              <div className="form-group">
                 <label>รหัสครุภัณฑ์ <span className='secondary-label'> (ถ้ามี)</span> </label>
                 <input
                   type="text"
@@ -408,17 +445,26 @@ function AddIssue() {
                     <option key={eq.equipmentId} value={eq.equipmentCode} />
                   ))}
                 </datalist>
-                {/* แสดงผลลัพธ์การตรวจสอบ */}
                 {equipmentValidation.message && (
-                  <small style={{ color: equipmentValidation.status === 'success' ? 'green' : 'red', marginTop: '5px' }}>
+                  <small style={{ color: equipmentValidation.status === 'success' ? 'green' : 'red', display: 'block', marginTop: '5px' }}>
                     {equipmentValidation.message}
                   </small>
                 )}
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
           <div className="form-row">
+            <div className="form-group">
+              <label>สถานที่ <span style={{ color: 'red' }}>*</span></label>
+              <select name="locationId" onChange={handleChange} value={formData.locationId} required>
+                <option value="">เลือกสถานที่</option>
+                {activeLocations.map(l => <option key={l.locationId} value={l.locationId}>{l.locationName}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <div className="form-row form-row-responsive">
             <div className="form-group">
               <label>ชั้น</label>
               <select name="floorId" onChange={handleChange} value={formData.floorId} disabled={!formData.locationId}>
@@ -428,6 +474,7 @@ function AddIssue() {
                 ))}
               </select>
             </div>
+
             <div className="form-group">
               <label>ห้อง</label>
               <select

@@ -16,6 +16,7 @@ model User {
   role           UserRole? @default(user)
   createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt      DateTime  @updatedAt @map("updated_at") @db.Timestamp(6)
+  is_delete      Boolean   @default(false)
   ticketsManaged Ticket[]  @relation("AdminTickets")
   ticketsCreated Ticket[]  @relation("UserTickets")
   upvotes        Upvote[]
@@ -29,6 +30,7 @@ model Location {
   locationStatus LocationStatus @default(active) @map("location_status")
   createdAt      DateTime       @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt      DateTime       @updatedAt @map("updated_at") @db.Timestamp(6)
+  is_delete      Boolean        @default(false)
   equipments     Equipment[]
   floors         Floor[]
   tickets        Ticket[]
@@ -43,8 +45,9 @@ model Floor {
   floorStatus LocationStatus @default(active) @map("floor_status")
   createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt   DateTime       @updatedAt @map("updated_at") @db.Timestamp(6)
-  location    Location       @relation(fields: [locationId], references: [locationId], onDelete: Cascade)
+  is_delete   Boolean        @default(false)
   equipments  Equipment[]
+  location    Location       @relation(fields: [locationId], references: [locationId], onDelete: Cascade)
   rooms       Room[]
   tickets     Ticket[]
 
@@ -58,6 +61,7 @@ model Room {
   roomStatus LocationStatus @default(active) @map("room_status")
   createdAt  DateTime       @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt  DateTime       @updatedAt @map("updated_at") @db.Timestamp(6)
+  is_delete  Boolean        @default(false)
   equipments Equipment[]
   floor      Floor          @relation(fields: [floorId], references: [floorId], onDelete: Cascade)
   tickets    Ticket[]
@@ -84,14 +88,15 @@ model Equipment {
   equipmentStatus   EquipmentStatus   @default(active) @map("equipment_status")
   equipmentCtgId    Int               @map("equipment_ctg_id")
   roomId            Int?              @map("room_id")
-  floorId           Int?              @map("floor_id")
-  locationId        Int?              @map("location_id")
   createdAt         DateTime          @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt         DateTime          @updatedAt @map("updated_at") @db.Timestamp(6)
+  floorId           Int?              @map("floor_id")
+  locationId        Int?              @map("location_id")
+  is_delete         Boolean           @default(false)
   category          EquipmentCategory @relation(fields: [equipmentCtgId], references: [equipmentCtgId])
-  room              Room?             @relation(fields: [roomId], references: [roomId], onDelete: Cascade)
   floor             Floor?            @relation(fields: [floorId], references: [floorId])
   location          Location?         @relation(fields: [locationId], references: [locationId])
+  room              Room?             @relation(fields: [roomId], references: [roomId], onDelete: Cascade)
   tickets           Ticket[]
 
   @@map("equipments")
@@ -115,6 +120,7 @@ model TicketCategory {
   ticketCtgStatus CategoryStatus @default(enable) @map("ticket_ctg_status")
   createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt       DateTime       @updatedAt @map("updated_at") @db.Timestamp(6)
+  is_delete       Boolean        @default(false)
   tickets         Ticket[]
 
   @@map("ticket_categories")
@@ -127,6 +133,7 @@ model Ticket {
   locationId          Int            @map("location_id")
   floorId             Int?           @map("floor_id")
   roomId              Int?           @map("room_id")
+  equipmentName       String?        @map("equipment_name") @db.VarChar(100)
   equipmentId         Int?           @map("equipment_id")
   title               String         @db.VarChar(100)
   description         String
@@ -135,11 +142,15 @@ model Ticket {
   adminId             Int?           @map("admin_id")
   adminNote           String?        @map("admin_note")
   rating              Float?
+  ratingSpeed         Float?         @map("rating_speed")
+  ratingCompleteness  Float?         @map("rating_completeness")
+  ratingCommunication Float?         @map("rating_communication")
   comment             String?
   createdAt           DateTime       @default(now()) @map("created_at") @db.Timestamp(6)
   updatedAt           DateTime       @updatedAt @map("updated_at") @db.Timestamp(6)
   timestampInprogress DateTime?      @map("timestamp_inprogress") @db.Timestamp(6)
   timestampFinished   DateTime?      @map("timestamp_finished") @db.Timestamp(6)
+  isUrgent            Boolean        @default(false) @map("is_urgent")
   images              TicketImage[]
   admin               User?          @relation("AdminTickets", fields: [adminId], references: [userId])
   equipment           Equipment?     @relation(fields: [equipmentId], references: [equipmentId])
@@ -152,8 +163,8 @@ model Ticket {
   user                User           @relation("UserTickets", fields: [userId], references: [userId])
   upvotes             Upvote[]
 
-  @@index([title(ops: raw("gin_trgm_ops"))], type: Gin, name: "ticket_title_trgm_idx")
-  @@index([description(ops: raw("gin_trgm_ops"))], type: Gin, name: "ticket_desc_trgm_idx")
+  @@index([title(ops: raw("gin_trgm_ops"))], map: "ticket_title_trgm_idx", type: Gin)
+  @@index([description(ops: raw("gin_trgm_ops"))], map: "ticket_desc_trgm_idx", type: Gin)
   @@map("tickets")
 }
 

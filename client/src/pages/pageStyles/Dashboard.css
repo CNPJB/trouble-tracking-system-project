@@ -1,28 +1,25 @@
-.card-FinishProblem-grid {
-    display: flex;
-    gap: 1rem;
-    width: 100%;
-    height: auto;
-    overflow-x: auto;
-    position: relative;
-    padding: 3rem 2rem 2rem 2rem;
-    margin-left: auto;
-    margin-right: auto;
-    scrollbar-width: none;
+.dashboard-header {
+    padding: 20px;
 }
+.dashboard-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--text-color-main);
+    padding-bottom: 10px;
+    padding-left: 10px;
 
-.card-FinishProblem-grid::-webkit-scrollbar {
-    display: none;
 }
-
 .carousel-container {
     position: relative;
     width: 90%;
     margin: 0 auto;
     display: flex;
     align-items: center;
+    padding: 20px ;
 }
-
+.swiper-wrapper {
+    padding-bottom: 10px;
+}
 .scroll-btn {
     position: absolute;
     top: 50%;
@@ -57,7 +54,6 @@
     flex-direction: column;
     gap: 20px;
     width: 100%;
-    padding: 20px 0;
 }
 
 /* ปัญหาที่รอดำเนินการ */
@@ -70,7 +66,8 @@
 }
 
 .no-result {
-    grid-column: 1 / -1; /* ให้กล่อง No Result กินพื้นที่เต็มแถว */
+    grid-column: 1 / -1;
+    /* ให้กล่อง No Result กินพื้นที่เต็มแถว */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -94,6 +91,7 @@
     .ticket-pending-list {
         grid-template-columns: repeat(3, 1fr);
     }
+
     .ticket-pending-list {
         gap: 15px;
         padding: 10px 80px;
@@ -136,12 +134,11 @@
         gap: 15px;
     }
 
-    .problem-pending-container{
+    .problem-pending-container {
         padding: 0;
         gap: 5px;
     }
 
-    .filter-container{
-    }
+    .filter-container {}
 
 }

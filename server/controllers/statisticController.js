@@ -70,82 +70,68 @@ export const getTicketStats = async (req, res) => {
             const startDate = new Date(targetYear, 0, 1);
             const endDate = new Date(targetYear + 1, 0, 1);
 
-            // 1. ดึงเฉพาะกราฟเส้นที่ 1 (ปัญหาที่แจ้ง) ยึดตาม createdAt
-            const createdTickets = await prisma.ticket.findMany({
+            // 1. ดึงตั๋วทั้งหมดที่ "ถูกสร้าง" ในปีนั้น แค่รอบเดียว
+            const tickets = await prisma.ticket.findMany({
                 where: { createdAt: { gte: startDate, lt: endDate } },
-                select: { createdAt: true } 
+                select: { createdAt: true, ticketStatus: true } 
             });
 
-            // 2. ดึงเฉพาะกราฟเส้นที่ 2 (ปัญหาที่ทำเสร็จ) ยึดตาม updatedAt หรือ resolvedAt
-            const resolvedTickets = await prisma.ticket.findMany({
-                where: { 
-                    ticketStatus: 'resolved',
-                    updatedAt: { gte: startDate, lt: endDate } // **แก้ updatedAt เป็นชื่อคอลัมน์ที่คุณใช้เก็บวันที่ทำเสร็จใน DB
-                },
-                select: { updatedAt: true } 
-            });
-
+            // ตะกร้า 12 เดือนสำหรับแต่ละเส้นกราฟ
             const created = Array(12).fill(0);
             const resolved = Array(12).fill(0);
+            const rejected = Array(12).fill(0); // เพิ่มตะกร้า Reject
 
-            // จัดลงตะกร้า 12 เดือนของเส้น Created
-            createdTickets.forEach(ticket => {
+            // 2. จัดลงตะกร้าโดยยึดตาม createdAt เป็นหลัก
+            tickets.forEach(ticket => {
                 const m = ticket.createdAt.getMonth(); 
+                
+                // นับยอดสร้าง (นับทุกใบ)
                 created[m] += 1;
+
+                // นับยอดที่แก้ไขเสร็จ หรือ ถูกปฏิเสธ โดยใส่ในเดือนเดียวกับที่แจ้ง
+                if (ticket.ticketStatus === 'resolved') {
+                    resolved[m] += 1;
+                } else if (ticket.ticketStatus === 'rejected') {
+                    rejected[m] += 1;
+                }
             });
 
-            // จัดลงตะกร้า 12 เดือนของเส้น Resolved
-            resolvedTickets.forEach(ticket => {
-                const m = ticket.updatedAt.getMonth(); 
-                resolved[m] += 1;
-            });
-
-            return res.status(200).json({ created, resolved });
-        }
-
-        else{
+            return res.status(200).json({ created, resolved, rejected });
+        } 
+        else {
             const targetMonth = parseInt(month);
             const startDate = new Date(targetYear, targetMonth, 1);
             const endDate = new Date(targetYear, targetMonth + 1, 1);
 
-            // 1. ดึงเฉพาะกราฟเส้นที่ 1 (ปัญหาที่แจ้ง)
-            const createdTickets = await prisma.ticket.findMany({
+            // 1. ดึงตั๋วทั้งหมดที่ "ถูกสร้าง" ในเดือนนั้น แค่รอบเดียว
+            const tickets = await prisma.ticket.findMany({
                 where: { createdAt: { gte: startDate, lt: endDate } },
-                select: { createdAt: true } 
+                select: { createdAt: true, ticketStatus: true } 
             });
 
-            // 2. ดึงเฉพาะกราฟเส้นที่ 2 (ปัญหาที่ทำเสร็จ)
-            const resolvedTickets = await prisma.ticket.findMany({
-                where: { 
-                    ticketStatus: 'resolved',
-                    updatedAt: { gte: startDate, lt: endDate } // **แก้ updatedAt เป็นชื่อคอลัมน์ที่คุณใช้เก็บวันที่ทำเสร็จ
-                },
-                select: { updatedAt: true } 
-            });
-
-            // ตะกร้า 5 ใบ (สัปดาห์ 1 - 5)
+            // ตะกร้า 5 ใบ (สัปดาห์ 1 - 5) สำหรับแต่ละเส้นกราฟ
             const created = Array(5).fill(0);
             const resolved = Array(5).fill(0);
+            const rejected = Array(5).fill(0); // เพิ่มตะกร้า Reject
 
-            createdTickets.forEach(ticket => {
+            // 2. จัดลงตะกร้าสัปดาห์โดยยึดตาม createdAt
+            tickets.forEach(ticket => {
                 const dayOfMonth = ticket.createdAt.getDate();
                 let weekIndex = Math.floor((dayOfMonth - 1) / 7);
                 if (weekIndex > 4) weekIndex = 4; 
 
+                // นับยอดสร้าง (นับทุกใบ)
                 created[weekIndex] += 1;
+
+                // นับยอดที่แก้ไขเสร็จ หรือ ถูกปฏิเสธ โดยใส่ในสัปดาห์เดียวกับที่แจ้ง
+                if (ticket.ticketStatus === 'resolved') {
+                    resolved[weekIndex] += 1;
+                } else if (ticket.ticketStatus === 'rejected') {
+                    rejected[weekIndex] += 1;
+                }
             });
 
-            resolvedTickets.forEach(ticket => {
-                const dayOfMonth = ticket.updatedAt.getDate(); // ใช้ updatedAt สำหรับการลงตะกร้าสัปดาห์
-                let weekIndex = Math.floor((dayOfMonth - 1) / 7);
-                if (weekIndex > 4) weekIndex = 4; 
-
-                resolved[weekIndex] += 1;
-            });
-
-            return res.status(200).json({ created, resolved });
-        }{
-
+            return res.status(200).json({ created, resolved, rejected });
         }
 
     } catch (error) {

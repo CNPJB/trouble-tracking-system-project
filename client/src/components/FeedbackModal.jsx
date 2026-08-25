@@ -2,88 +2,39 @@ import React, { useState, useEffect } from 'react';
 import { FaStar, FaStarHalfAlt, FaRegStar, FaTimes } from 'react-icons/fa';
 import './componentsStyles/FeedbackModal.css';
 
-export const FeedbackModal = ({ isOpen, onClose, onSubmit, ticketId, isLoading }) => {
-    // --- States ---
-    const [rating, setRating] = useState(0); // คะแนนจริงที่กดเลือก
-    const [hoverRating, setHoverRating] = useState(0); // คะแนนชั่วคราวตอนเอาเมาส์ชี้
-    const [comment, setComment] = useState('');
-    const [errorMsg, setErrorMsg] = useState('');
+const RatingRow = ({ label, rating, onRatingChange }) => {
+    const [hoverRating, setHoverRating] = useState(0);
 
-    // รีเซ็ตฟอร์มทุกครั้งที่ Modal ถูกเปิดขึ้นมาใหม่
-    useEffect(() => {
-        if (isOpen) {
-            setRating(0);
-            setHoverRating(0);
-            setComment('');
-            setErrorMsg('');
-        }
-    }, [isOpen]);
-    
-    if (!isOpen) return null; // ถ้าไม่ได้เปิด Modal ให้ return null
-
-    // --- Logic คำนวณดาวแบบครึ่งดวง ---
     const handleMouseMove = (e, index) => {
-        // หาความกว้างของไอคอนดาว และตำแหน่ง X ที่เมาส์ชี้อยู่
         const { left, width } = e.currentTarget.getBoundingClientRect();
         const x = e.clientX - left;
-        // ถ้าเมาส์อยู่ครึ่งซ้าย = ครึ่งดาว (.5), ถ้าอยู่ครึ่งขวา = เต็มดวง
         const isHalf = x < width / 2;
         setHoverRating(index - (isHalf ? 0.5 : 0));
     };
 
     const handleMouseLeave = () => {
-        setHoverRating(0); // เอาเมาส์ออก คืนค่าเป็น 0 เพื่อโชว์คะแนนจริงที่เลือกไว้
+        setHoverRating(0);
     };
 
     const handleStarClick = (e, index) => {
         const { left, width } = e.currentTarget.getBoundingClientRect();
         const x = e.clientX - left;
         const isHalf = x < width / 2;
-        setRating(index - (isHalf ? 0.5 : 0));
-        setErrorMsg(''); // ล้าง Error ถ้ามีการกดให้คะแนนแล้ว
+        onRatingChange(index - (isHalf ? 0.5 : 0));
     };
 
-    // --- Action Handlers ---
-    const handleReset = () => {
-        setRating(0);
-        setComment('');
-        setErrorMsg('');
-    };
-
-    const handleClose = () => {
-        handleReset();
-        onClose();
-    };
-
-    const handlePreSubmit = async () => {
-        // Validation อย่างรัดกุมก่อนไปถึง Backend
-        if (rating < 0.5) {
-            setErrorMsg('กรุณาให้คะแนนอย่างน้อย 0.5 ดาวครับ');
-            return;
-        }
-
-        await handleConfirmSubmit();
-    };
-
-    const handleConfirmSubmit = async () => {
-        // ส่งข้อมูลกลับไปให้หน้า Tracking จัดการ API ต่อ
-        await onSubmit(ticketId, { rating, comment });
-    };
-
-    // ฟังก์ชันวาดดาว 5 ดวง
     const renderStars = () => {
         return [1, 2, 3, 4, 5].map((index) => {
-            // เช็คว่าจะโชว์คะแนน hover หรือ คะแนนจริง
             const fillValue = hoverRating || rating; 
             
-            let StarIcon = FaRegStar; // ค่าเริ่มต้นคือดาวเปล่า
-            let color = "#e4e5e9"; // สีเทา
+            let StarIcon = FaRegStar;
+            let color = "#e4e5e9";
             
             if (fillValue >= index) {
-                StarIcon = FaStar; // ดาวเต็ม
-                color = "#fcd271"; // สีเหลืองทอง
+                StarIcon = FaStar;
+                color = "#fcd271";
             } else if (fillValue >= index - 0.5) {
-                StarIcon = FaStarHalfAlt; // ดาวครึ่งดวง
+                StarIcon = FaStarHalfAlt;
                 color = "#fcd271";
             }
 
@@ -95,12 +46,84 @@ export const FeedbackModal = ({ isOpen, onClose, onSubmit, ticketId, isLoading }
                     onMouseLeave={handleMouseLeave}
                     onClick={(e) => handleStarClick(e, index)}
                 >
-                    <StarIcon color={color} size={32} className="star-icon-svg" />
+                    <StarIcon color={color} size={28} className="star-icon-svg" />
                 </div>
             );
         });
     };
+
+    return (
+        <div className="rating-row">
+            <span className="rating-row-label">{label}</span>
+            <div className="star-rating-container">
+                {renderStars()}
+                <span className="rating-text">
+                    {hoverRating > 0 ? hoverRating : rating} / 5
+                </span>
+            </div>
+        </div>
+    );
+};
+
+export const FeedbackModal = ({ isOpen, onClose, onSubmit, ticketId, isLoading }) => {
+    // --- States ---
+    const [ratingSpeed, setRatingSpeed] = useState(0);
+    const [ratingCompleteness, setRatingCompleteness] = useState(0);
+    const [ratingCommunication, setRatingCommunication] = useState(0);
+    const [comment, setComment] = useState('');
+    const [errorMsg, setErrorMsg] = useState('');
+
+    // รีเซ็ตฟอร์มทุกครั้งที่ Modal ถูกเปิดขึ้นมาใหม่
+    useEffect(() => {
+        if (isOpen) {
+            setRatingSpeed(0);
+            setRatingCompleteness(0);
+            setRatingCommunication(0);
+            setComment('');
+            setErrorMsg('');
+        }
+    }, [isOpen]);
     
+    if (!isOpen) return null; // ถ้าไม่ได้เปิด Modal ให้ return null
+
+    // --- Action Handlers ---
+    const handleReset = () => {
+        setRatingSpeed(0);
+        setRatingCompleteness(0);
+        setRatingCommunication(0);
+        setComment('');
+        setErrorMsg('');
+    };
+
+    const handleClose = () => {
+        handleReset();
+        onClose();
+    };
+
+    const handlePreSubmit = async () => {
+        // Validation อย่างรัดกุมก่อนไปถึง Backend
+        if (ratingSpeed < 0.5 || ratingCompleteness < 0.5 || ratingCommunication < 0.5) {
+            setErrorMsg('กรุณาให้คะแนนอย่างน้อย 0.5 ดาวในทุกหมวดหมู่ครับ');
+            return;
+        }
+
+        await handleConfirmSubmit();
+    };
+
+    const handleConfirmSubmit = async () => {
+        // คำนวณคะแนนเฉลี่ย
+        const averageRating = parseFloat(((ratingSpeed + ratingCompleteness + ratingCommunication) / 3).toFixed(1));
+        
+        // ส่งข้อมูลกลับไปให้หน้า Tracking จัดการ API ต่อ
+        await onSubmit(ticketId, { 
+            rating: averageRating,
+            ratingSpeed,
+            ratingCompleteness,
+            ratingCommunication,
+            comment 
+        });
+    };
+
     return (
         <div className="feedback-modal-overlay" onClick={handleClose}>
             {/* e.stopPropagation() ป้องกันไม่ให้คลิกที่เนื้อหาแล้ว Modal ปิด */}
@@ -118,12 +141,23 @@ export const FeedbackModal = ({ isOpen, onClose, onSubmit, ticketId, isLoading }
 
                 <div className="feedback-body">
                     <label className="feedback-label">คะแนนการแก้ปัญหา <span className="req">*</span></label>
-                    <div className="star-rating-container">
-                        {renderStars()}
-                        <span className="rating-text">
-                            {hoverRating > 0 ? hoverRating : rating} / 5
-                        </span>
-                    </div>
+                    
+                    <RatingRow 
+                        label="ความรวดเร็วในการรับเรื่องและแก้ไข" 
+                        rating={ratingSpeed} 
+                        onRatingChange={(v) => { setRatingSpeed(v); setErrorMsg(''); }} 
+                    />
+                    <RatingRow 
+                        label="ความสมบูรณ์ของการแก้ไข" 
+                        rating={ratingCompleteness} 
+                        onRatingChange={(v) => { setRatingCompleteness(v); setErrorMsg(''); }} 
+                    />
+                    <RatingRow 
+                        label="การแจ้งผลและสื่อสาร" 
+                        rating={ratingCommunication} 
+                        onRatingChange={(v) => { setRatingCommunication(v); setErrorMsg(''); }} 
+                    />
+
                     {errorMsg && <p className="feedback-error-text">{errorMsg}</p>}
 
                     <div className="label-with-counter">

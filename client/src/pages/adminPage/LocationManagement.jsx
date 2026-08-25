@@ -31,6 +31,7 @@ const LocationManagement = () => {
     const [confirmSubmitFloor, setConfirmSubmitFloor] = useState({ isOpen: false, level: '' });
     const [confirmSubmitRoom, setConfirmSubmitRoom] = useState({ isOpen: false, name: '' });
     const [confirmSaveStatus, setConfirmSaveStatus] = useState({ isOpen: false, type: '', message: '' });
+    const [confirmDelete, setConfirmDelete] = useState({ isOpen: false, type: '', id: null, titleName: '' });
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
@@ -73,16 +74,16 @@ const LocationManagement = () => {
         setSelectedId(selectedItem.locationId);
     };
 
- const toggleLocation = (locationId) => {
-    setOpenLocations((prev) => {
-        if (prev.includes(locationId)) {
-            return [];
-        } else {
-            setOpenFloors([]); 
-            return [locationId];
-        }
-    });
-};
+    const toggleLocation = (locationId) => {
+        setOpenLocations((prev) => {
+            if (prev.includes(locationId)) {
+                return [];
+            } else {
+                setOpenFloors([]);
+                return [locationId];
+            }
+        });
+    };
 
     const toggleFloor = (floorId) => {
         setOpenFloors((prev) =>
@@ -111,27 +112,52 @@ const LocationManagement = () => {
 
     }, [locations, floors, rooms]);
 
-    const handleDeleteRoom = async (locationId, floorId, roomId, e) => {
-        e.stopPropagation();
+    const handleDeleteClick = () => {
+        if (formData.room) {
+            const selectedRoom = rooms?.find(r => String(r.roomId) === String(formData.room));
+            setConfirmDelete({ isOpen: true, type: 'ห้อง', id: formData.room, titleName: selectedRoom?.roomName || '' });
+        } else if (formData.floor) {
+            const selectedFloor = floors?.find(f => String(f.floorId) === String(formData.floor));
+            setConfirmDelete({ isOpen: true, type: 'ชั้น', id: formData.floor, titleName: selectedFloor?.floorLevel || '' });
+        } else if (formData.locationId) {
+            const selectedLoc = locations?.find(l => String(l.locationId) === String(formData.locationId));
+            setConfirmDelete({ isOpen: true, type: 'สถานที่', id: formData.locationId, titleName: selectedLoc?.locationName || '' });
+        } else {
+            setError("กรุณาเลือกข้อมูลที่ต้องการลบฝั่งซ้ายมือก่อน", "warning");
+        }
+    }
 
-        if (window.confirm("ยืนยันการลบห้องนี้?")) {
-            try {
-                await locationService.deleteRoomApi(roomId);
-
+    const executeDelete = async () => {
+        startLoading();
+        try {
+            if (confirmDelete.type === 'ห้อง') {
+                await locationService.deleteRoomApi(confirmDelete.id);
                 await fetchRooms();
+                setFormData(prev => ({ ...prev, room: '', roomStatus: '' }));
 
-                if (formData?.room === String(roomId)) {
-                    setFormData(prev => ({ ...prev, room: '' }));
-                }
+            } else if (confirmDelete.type === 'ชั้น') {
+                await locationService.deleteFloorApi(confirmDelete.id); // *ต้องมี API ตัวนี้ใน locationService
+                await fetchFloors();
+                setFormData(prev => ({ ...prev, floor: '', floorStatus: '', room: '', roomStatus: '' }));
 
-                alert("ลบห้องสำเร็จเรียบร้อย!");
-
-            } catch (error) {
-                console.error("ลบข้อมูลไม่สำเร็จ:", error);
-                alert(`เกิดข้อผิดพลาด: ${error.response?.data?.error || error.message}`);
+            } else if (confirmDelete.type === 'สถานที่') {
+                await locationService.deleteLocationApi(confirmDelete.id); // *ต้องมี API ตัวนี้ใน locationService
+                await fetchLocations();
+                setFormData({ location: '', locationId: '', floor: '', room: '', locationStatus: '', floorStatus: '', roomStatus: '' });
+                setOpenLocations([]);
             }
+
+            setSuccess(`ลบ${confirmDelete.type}สำเร็จ`);
+            setConfirmDelete({ isOpen: false, type: '', id: null, titleName: '' });
+            setSelectedId(null);
+
+        } catch (error) {
+            console.error("ลบข้อมูลไม่สำเร็จ:", error);
+            setError(error.response?.data?.error || "ลบข้อมูลไม่สำเร็จ อาจมีครุภัณฑ์ผูกอยู่", "error");
+            setConfirmDelete({ isOpen: false, type: '', id: null, titleName: '' });
         }
     };
+
     const handleConfirmAddNewRoom = async (roomName) => {
         if (!roomName || String(roomName).trim() === '') {
             setError("กรุณากรอกรายการห้อง", "warning");
@@ -395,14 +421,7 @@ const LocationManagement = () => {
                                                                             <span>
                                                                                 ห้อง {room.roomName} {room.roomStatus === 'active' ? '(ใช้งาน)' : '(ปิดใช้งาน)'}
                                                                             </span>
-                                                                            <button
-                                                                                type="button"
-                                                                                onClick={(e) => handleDeleteRoom(item.locationId, floor.floorId, room.roomId, e)}
-                                                                                style={{ background: 'red', borderRadius: '50%', border: 'none', fontSize: '18px', width: '25px', height: '25px', cursor: 'pointer', color: 'white' }}
-                                                                                title="ลบห้องนี้"
-                                                                            >
-                                                                                -
-                                                                            </button>
+                                                                    
                                                                         </li>
                                                                     ))}
                                                                 </ul>
@@ -537,7 +556,7 @@ const LocationManagement = () => {
                         <button className="btn-confirm" onClick={handleConfirmSaveStatus}>
                             บันทึก
                         </button>
-                        <button className="btn-cancel">ยกเลิก</button>
+                        <button type="button" className="btn-cancel" onClick={handleDeleteClick}>ลบ</button>
                     </div>
 
                     {/* Confirm add location */}
@@ -580,6 +599,16 @@ const LocationManagement = () => {
                         onConfirm={handleSaveStatus}
                         onCancel={() => setConfirmSaveStatus({ isOpen: false, type: '', message: '' })}
                         confirmText={loading.isLoading ? "กำลังบันทึก..." : "ยืนยัน"}
+                        cancelText={loading.isLoading ? "ปิด" : "ยกเลิก"}
+                        isLoading={loading.isLoading}
+                    />
+                    <ConfirmButton
+                        isOpen={confirmDelete.isOpen}
+                        title={`ยืนยันการลบ${confirmDelete.type}`}
+                        message={`คุณแน่ใจหรือไม่ว่าต้องการลบ${confirmDelete.type} "${confirmDelete.titleName}"? หากลบแล้วข้อมูลที่เกี่ยวข้องอาจได้รับผลกระทบ`}
+                        onConfirm={executeDelete}
+                        onCancel={() => setConfirmDelete({ isOpen: false, type: '', id: null, titleName: '' })}
+                        confirmText={loading.isLoading ? "กำลังลบ..." : "ยืนยันลบ"}
                         cancelText={loading.isLoading ? "ปิด" : "ยกเลิก"}
                         isLoading={loading.isLoading}
                     />

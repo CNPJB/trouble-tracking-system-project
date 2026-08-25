@@ -2,51 +2,28 @@ import React from 'react'
 import ReactApexChart from 'react-apexcharts';
 
 export const ChartForStatistic = ({ series, categories }) => {
-const options = {
-        chart: { 
-            type: 'area', 
-            height: 350,
-            toolbar: { show: false },
-            background: 'transparent',
-            dropShadow: {
-                enabled: true,
-                top: 3,
-                left: 2,
-                blur: 4,
-                opacity: 0.1
-            },
-            zoom: {
-                enabled: false
+    const options = {
+        chart: {
+            width: '100%',
+            type: 'bar', // 👈 เปลี่ยนเป็น bar
+            toolbar: { show: false }
+        },
+        colors: ['#008FFB', '#00E396', '#FF4560'],
+        plotOptions: {
+            bar: {
+                horizontal: false,  // false = กราฟแนวตั้ง (ถ้าอยากได้แนวนอนเปลี่ยนเป็น true)
+                columnWidth: '55%', // ความกว้างของแท่งกราฟ
+                borderRadius: 4,    // ลบมุมแท่งกราฟให้มนๆ ดูทันสมัยขึ้น
             },
         },
-        colors: ['#f50b0b', '#10B981'],       
-        fill: {
-            type: 'gradient',
-            gradient: {
-                shadeIntensity: 1,
-                opacityFrom: 0.4, // ความเข้มด้านบน
-                opacityTo: 0.5,  // ค่อยๆ จางลงด้านล่าง
-                stops: [0, 90, 100]
-            }
+        dataLabels: { 
+            enabled: false // ปิดตัวเลขบนแท่ง
         },
-        
-        dataLabels: { enabled: false }, // ปิดตัวเลขบนเส้นกราฟให้ดูคลีนๆ
-        
         stroke: {
-            curve: 'smooth',
-            width: [3, 3] ,
-            colors: ['#f50b0b', '#10B981'],  
+            show: true,
+            width: 2,
+            colors: ['transparent'] // เว้นระยะห่างระหว่างแท่งสีแดงกับเขียว
         },
-    
-        legend: {
-            position: 'top',
-            horizontalAlign: 'right',
-            offsetY: -20, // ขยับขึ้นนิดนึง
-            markers: {
-                radius: 12 // ทำให้จุดบอกสีกลมป๊อก
-            }
-        },
-
         xaxis: { 
             categories: categories, 
             labels: {
@@ -58,14 +35,31 @@ const options = {
                 style: { colors: '#64748b' } 
             }
         },
-        
+        legend: {
+            position: 'top',
+            horizontalAlign: 'right',
+            offsetY: -10,
+            markers: {
+                radius: 12 
+            }
+        },
+        fill: {
+            opacity: 1
+        },
+        tooltip: {
+            y: {
+                formatter: function (val) {
+                    return val + " รายการ" 
+                }
+            }
+        }
     };
 
     return (
         <ReactApexChart
             options={options}
             series={series}
-            type="area"
+            type="bar" 
             height={350}
         />
     );

@@ -46,16 +46,36 @@ const DetailTicket = () => {
                             <div className="header-ticket-title">
                                 <h2 >{ticket.title}</h2>
                             </div>
-                            <div className="starRating">
-                                {ticket?.rating > 0 ? (
-                                    <div className="star">
-                                        <StarRating rating={ticket?.rating || 0} />
-                                    </div>
-                                ) : (
-                                    <p className="no-rating"></p>
-                                )
-                                }
-                                <p>{formatDate(ticket.createdAt)}</p>
+                            <div className="starRating-container-wrapper">
+                                <div className="starRating">
+                                    {ticket?.rating > 0 ? (
+                                        <div className="star-wrapper-main">
+                                            <div className="star">
+                                                <StarRating rating={ticket?.rating || 0} />
+                                            </div>
+                                            {ticket.ratingSpeed && (
+                                                <div className="sub-ratings-detail">
+                                                    <div className="sub-rating-item">
+                                                        <span className="sub-rating-label">ความรวดเร็ว:</span> 
+                                                        <StarRating rating={ticket.ratingSpeed} />
+                                                    </div>
+                                                    <div className="sub-rating-item">
+                                                        <span className="sub-rating-label">ความสมบูรณ์:</span> 
+                                                        <StarRating rating={ticket.ratingCompleteness} />
+                                                    </div>
+                                                    <div className="sub-rating-item">
+                                                        <span className="sub-rating-label">การสื่อสาร:</span> 
+                                                        <StarRating rating={ticket.ratingCommunication} />
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <p className="no-rating"></p>
+                                    )
+                                    }
+                                    <p>{formatDate(ticket.createdAt)}</p>
+                                </div>
                             </div>
                             <div className="location">
                                 <div className="building">

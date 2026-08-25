@@ -183,6 +183,7 @@ export const unmergeTickets = async (req, res) => {
 
         let resultCount = 0;
         let actionMessage = "";
+        let unmergedTicketsData = [];
 
         // แยกออกทีละใบ (Remove Single Sub-ticket)
         if (subTicketId) {
@@ -199,27 +200,46 @@ export const unmergeTickets = async (req, res) => {
             }
 
             // คืนสถานะกลับเป็น pending และล้างร่องรอยการรวมกลุ่ม
-            await prisma.ticket.update({
+            const updatedTicket = await prisma.ticket.update({
                 where: { ticketId: subTicketId },
                 data: {
                     ticketStatus: 'pending',
                     parentTicketId: null,
                     updatedAt: new Date()
+                },
+                include: {
+                    location: true, floor: true, room: true, category: true, admin: true, images: true
                 }
             });
 
+            unmergedTicketsData = [updatedTicket];
             resultCount = 1;
             actionMessage = `แยกรายการปัญหา ${subTicketId} ออกจากกลุ่มสำเร็จ`;
         }
 
         // ยุบทั้งกลุ่ม (Disband Entire Group)
         if (mainTicketId) {
-            // ใช้ updateMany เพื่อความเร็ว: อัปเดตตั๋วทุกใบที่ผูกกับแม่คนนี้
-            const updateResult = await prisma.ticket.updateMany({
+            // หาตั๋วลูกทั้งหมดก่อนอัปเดต
+            const ticketsToUpdate = await prisma.ticket.findMany({
                 where: {
                     parentTicketId: mainTicketId,
                     ticketStatus: 'duplicate'
                 },
+                select: { ticketId: true }
+            });
+
+            if (ticketsToUpdate.length === 0) {
+                return res.status(404).json({
+                    success: false,
+                    message: "ไม่พบตั๋วลูกที่ถูกรวมอยู่ในกลุ่มปัญหานี้ หรือกลุ่มนี้ถูกยุบไปแล้ว"
+                });
+            }
+
+            const ticketIds = ticketsToUpdate.map(t => t.ticketId);
+
+            // อัปเดตตั๋วทั้งหมด
+            await prisma.ticket.updateMany({
+                where: { ticketId: { in: ticketIds } },
                 data: {
                     ticketStatus: 'pending',
                     parentTicketId: null,
@@ -227,20 +247,23 @@ export const unmergeTickets = async (req, res) => {
                 }
             });
 
-            if (updateResult.count === 0) {
-                return res.status(404).json({
-                    success: false,
-                    message: "ไม่พบตั๋วลูกที่ถูกรวมอยู่ในกลุ่มปัญหานี้ หรือกลุ่มนี้ถูกยุบไปแล้ว"
-                });
-            }
+            // ดึงข้อมูลที่อัปเดตแล้วแบบเต็มรูปแบบเพื่อส่งกลับไปให้ Frontend
+            unmergedTicketsData = await prisma.ticket.findMany({
+                where: { ticketId: { in: ticketIds } },
+                include: {
+                    location: true, floor: true, room: true, category: true, admin: true, images: true
+                },
+                orderBy: { createdAt: 'desc' }
+            });
 
-            resultCount = updateResult.count;
+            resultCount = ticketIds.length;
             actionMessage = `ยุบกลุ่มปัญหาหลัก ${mainTicketId} สำเร็จ (แยกตั๋วลูกจำนวน ${resultCount} รายการ)`;
         }
 
         res.status(200).json({
             success: true,
-            message: actionMessage
+            message: actionMessage,
+            unmergedTickets: unmergedTicketsData
         });
 
     } catch (error) {
@@ -274,7 +297,8 @@ export const getUrgentTickets = async (req, res) => {
         const scoredTickets = pendingTickets.map(ticket => {
             const subCount = ticket._count?.subTickets || 0;
             const voteCount = ticket.upvotes?.length || 0;
-            const score = (subCount * 5) + voteCount;
+            // ให้บวกคะแนนเพิ่ม 1000 ถ้าแอดมินเซ็ตตั๋วนี้เป็นตั๋วด่วน (Manual Urgent)
+            const score = (subCount * 5) + voteCount + (ticket.isUrgent ? 999 : 0);
 
             // ลบ upvotes ทิ้งเพื่อไม่ให้ payload บวมเกินความจำเป็น
             const { upvotes, ...ticketData } = ticket;
@@ -296,6 +320,43 @@ export const getUrgentTickets = async (req, res) => {
     }
 };
 
+export const markUrgentTickets = async (req, res) => {
+    try {
+        const { ticketIds } = req.body;
+
+        if (!ticketIds || !Array.isArray(ticketIds) || ticketIds.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "กรุณาระบุรหัสตั๋วที่ต้องการตั้งเป็นตั๋วด่วน"
+            });
+        }
+
+        // อัปเดตตั๋วที่อยู่ในลิสต์ให้เป็นตั๋วด่วน (isUrgent = true) รวมถึงตั๋วลูก (sub-tickets) ทั้งหมดที่ถูกรวมอยู่ด้วย
+        const updated = await prisma.ticket.updateMany({
+            where: {
+                OR: [
+                    { ticketId: { in: ticketIds } },
+                    { parentTicketId: { in: ticketIds } }
+                ],
+                isUrgent: false // กรองอัปเดตเฉพาะตั๋วที่ยังไม่ด่วน เพื่อลดภาระ DB
+            },
+            data: { isUrgent: true, updatedAt: new Date() }
+        });
+
+        res.status(200).json({
+            success: true,
+            message: `ตั้งค่าตั๋วด่วนสำเร็จจำนวน ${updated.count} รายการ`
+        });
+    } catch (error) {
+        console.error('Error marking urgent tickets:', error);
+        res.status(500).json({
+            success: false,
+            message: 'เกิดข้อผิดพลาดในการตั้งตั๋วด่วน',
+            error: error.message
+        });
+    }
+};
+
 export const updateTicketStatusAdmin = async (req, res) => {
     let uploadedImagesForRollback = []; // เตรียม Array ไว้เก็บ ID รูปเผื่อต้อง Rollback
 
@@ -314,7 +375,7 @@ export const updateTicketStatusAdmin = async (req, res) => {
                 adminId: true,
                 title: true,
                 subTickets: {
-                    select: { equipmentId: true }
+                    select: { ticketId: true, equipmentId: true }
                 }
             }
         });
@@ -326,11 +387,11 @@ export const updateTicketStatusAdmin = async (req, res) => {
         const currentStatus = ticket.ticketStatus;
 
         // 2. State Machine Validation
-        if (currentStatus === 'pending' && !['in_progress', 'rejected'].includes(ticketStatus)) {
-            return res.status(400).json({ success: false, message: "สถานะ 'รอรับเรื่อง' สามารถเปลี่ยนเป็น 'กำลังดำเนินการ' หรือ 'ปฏิเสธ' ได้เท่านั้น" });
+        if (currentStatus === 'pending' && !['in_progress', 'rejected', 'canceled'].includes(ticketStatus)) {
+            return res.status(400).json({ success: false, message: "สถานะ 'รอรับเรื่อง' สามารถเปลี่ยนเป็น 'กำลังดำเนินการ', 'ปฏิเสธ' หรือ 'ยกเลิก' ได้เท่านั้น" });
         }
-        if (currentStatus === 'in_progress' && !['resolved', 'rejected'].includes(ticketStatus)) {
-            return res.status(400).json({ success: false, message: "สถานะ 'กำลังดำเนินการ' สามารถเปลี่ยนเป็น 'เสร็จสิ้น' หรือ 'ปฏิเสธ' ได้เท่านั้น" });
+        if (currentStatus === 'in_progress' && !['resolved', 'rejected', 'canceled'].includes(ticketStatus)) {
+            return res.status(400).json({ success: false, message: "สถานะ 'กำลังดำเนินการ' สามารถเปลี่ยนเป็น 'เสร็จสิ้น', 'ปฏิเสธ' หรือ 'ยกเลิก' ได้เท่านั้น" });
         }
         if (['resolved', 'rejected', 'duplicate', 'canceled'].includes(currentStatus)) {
             return res.status(400).json({ success: false, message: "รายการนี้ถูกปิดไปแล้ว ไม่สามารถเปลี่ยนสถานะได้อีก" });
@@ -341,27 +402,31 @@ export const updateTicketStatusAdmin = async (req, res) => {
             return res.status(400).json({ success: false, message: "กรุณาระบุเหตุผลการปฏิเสธ" });
         }
 
-        // 4. บังคับอัปโหลดรูปภาพ กรณี Resolved
-        if (ticketStatus === 'resolved' && (!files || files.length === 0)) {
-            return res.status(400).json({ success: false, message: "กรุณาแนบรูปภาพเพื่อเป็นหลักฐานการแก้ไขอย่างน้อย 1 รูป" });
-        }
-
-        // 5. จัดการอัปโหลดรูปภาพ (เฉพาะกรณี Resolved และมีไฟล์แนบมา)
+        // 4. จัดการอัปโหลดรูปภาพ (ทั้งกรณี Resolved และ Rejected)
         const uploadedImagesData = [];
-        if (ticketStatus === 'resolved' && files && files.length > 0) {
-            // ใช้เทคนิค Promise.all เหมือนใน addTicket[cite: 27]
-            const uploadPromises = files.map((file) => uploadToCloudinary(file.buffer, 'TTS-img'));
-            const cloudinaryResults = await Promise.all(uploadPromises);
+        if (ticketStatus === 'resolved' || ticketStatus === 'rejected') {
+            if (files && files.length > 0) {
+                // ใช้เทคนิค Promise.all เหมือนใน addTicket
+                const uploadPromises = files.map((file) => uploadToCloudinary(file.buffer, 'TTS-img'));
+                const cloudinaryResults = await Promise.all(uploadPromises);
 
-            cloudinaryResults.forEach((result) => {
-                uploadedImagesData.push({
-                    imageUrl: result.secure_url,
-                    imageType: "after", // กำหนดว่าเป็นรูป "หลังซ่อม"
-                    imagePublicId: result.public_id,
+                cloudinaryResults.forEach((result) => {
+                    uploadedImagesData.push({
+                        imageUrl: result.secure_url,
+                        imageType: "after", // กำหนดว่าเป็นรูป "หลังซ่อม" หรือ "ผลการปฏิบัติงาน"
+                        imagePublicId: result.public_id,
+                    });
+                    // เก็บ Public ID ไว้เผื่อ Database พัง จะได้ตามไปลบทิ้งได้
+                    uploadedImagesForRollback.push(result.public_id);
                 });
-                // เก็บ Public ID ไว้เผื่อ Database พัง จะได้ตามไปลบทิ้งได้[cite: 27]
-                uploadedImagesForRollback.push(result.public_id);
-            });
+            } else {
+                // ถ้าแอดมินไม่ได้อัปโหลดรูป ให้ใช้รูป default อัตโนมัติ (แยกตามสถานะ)
+                uploadedImagesData.push({
+                    imageUrl: ticketStatus === 'rejected' ? '/default-noimage-admin-reject.jpg' : '/default-noimage-admin-1.jpg',
+                    imageType: "after",
+                    imagePublicId: 'default-noimage'
+                });
+            }
         }
 
         // 5. เริ่ม Transaction เพื่ออัปเดตข้อมูลทุกตารางพร้อมกัน
@@ -397,13 +462,27 @@ export const updateTicketStatusAdmin = async (req, res) => {
 
             // 5.2 เซฟรูปลง Database (ถ้ามี)
             if (uploadedImagesData.length > 0) {
+                // รวบรวม ID ของตั๋วทั้งหมด (แม่ + ลูกทุกใบ)
+                const allTicketIdsForImage = [id];
+                if (ticket.subTickets && ticket.subTickets.length > 0) {
+                    ticket.subTickets.forEach(sub => allTicketIdsForImage.push(sub.ticketId));
+                }
+
+                // สร้าง Array ของรูปภาพที่ต้อง Insert โดยทำซ้ำสำหรับทุกตั๋ว
+                const allImagesToInsert = [];
+                allTicketIdsForImage.forEach(ticketIdToBind => {
+                    uploadedImagesData.forEach(img => {
+                        allImagesToInsert.push({
+                            ticketId: ticketIdToBind,
+                            imageUrl: img.imageUrl,
+                            imageType: img.imageType,
+                            imagePublicId: img.imagePublicId
+                        });
+                    });
+                });
+
                 await tx.ticketImage.createMany({
-                    data: uploadedImagesData.map(img => ({
-                        ticketId: id,
-                        imageUrl: img.imageUrl,
-                        imageType: img.imageType,
-                        imagePublicId: img.imagePublicId
-                    }))
+                    data: allImagesToInsert
                 });
             }
 
@@ -434,6 +513,8 @@ export const updateTicketStatusAdmin = async (req, res) => {
                     newEqStatus = 'active'; // ซ่อมเสร็จ -> กลับมาพร้อมใช้งาน
                 } else if (ticketStatus === 'rejected') {
                     newEqStatus = 'broken'; // ปฏิเสธการซ่อม -> คืนค่ากลับไป broken
+                } else if (ticketStatus === 'canceled') {
+                    newEqStatus = 'active'; // ยกเลิกปัญหาก่อกวน -> สมมติว่าของไม่ได้พังจริง ให้คืนเป็น active
                 }
 
                 if (newEqStatus) {

@@ -24,7 +24,56 @@
     display: flex;
     gap: 10px;
     /* border-bottom: 2px solid #eeeeee; */
-    padding-bottom: 12px;
+    padding-bottom: 20px;
+}
+
+/* Urgent Tab specific styles */
+.panel-tab.urgent-tab.active {
+    color: #ef4444;
+    border-bottom: 2px solid #ef4444;
+}
+.panel-tab.urgent-tab:hover {
+    color: #ef4444;
+    border-bottom-color: #ef4444;
+}
+
+.selection-header-urgent {
+    border-bottom-color: #ef4444;
+}
+
+.ticket-list-item-urgent {
+    border-left-color: #ef4444;
+    background-color: #fef2f2;
+}
+
+.item-badge-urgent {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+.merge-panel-actions-urgent {
+    justify-content: flex-end;
+}
+
+.btn-confirm-urgent {
+    background-color: #ef4444;
+}
+
+.btn-confirm-urgent:hover:not(:disabled) {
+    background-color: #dc2626;
+}
+
+.urgent-sub-ticket-info {
+    margin-top: 6px;
+    font-size: 0.8rem;
+    color: #b91c1c;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #fee2e2;
+    padding: 4px 8px;
+    border-radius: 6px;
+    width: fit-content;
 }
 
 .panel-tab {

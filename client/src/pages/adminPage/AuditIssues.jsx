@@ -29,13 +29,15 @@ import { ticketService } from '../../services/ticketService.js'
 const AuditIssues = () => {
     const { user } = useAuth();
     const { tickets, isLoading, isFetchingNextPage, pagination,
-        changePage, updateFilters, refetch, removeTicket, updateTicketStatus
+        changePage, updateFilters, refetch, removeTicket, updateTicketStatus,
+        updateTicketAfterMerge, updateTicketAfterUnmerge
     } = useTickets({ status: 'pending' });
     const { loading, startLoading, setError, setSuccess, reset } = useLoadingState();
     const [selectedMergeTickets, setSelectedMergeTickets] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedLocation, setSelectedLocation] = useState('');
     const [confirmMergeModal, setConfirmMergeModal] = useState({ isOpen: false });
+    const [confirmUrgentModal, setConfirmUrgentModal] = useState({ isOpen: false });
     const [activePanelTab, setActivePanelTab] = useState('merge');
     const { ticketGroups, isLoadingGroups, refetchGroups } = useTicketGroups();
     const [confirmUnmergeModal, setConfirmUnmergeModal] = useState({
@@ -58,6 +60,11 @@ const AuditIssues = () => {
     });
 
     const handleSelectTicket = (ticket) => {
+        if (activePanelTab === 'urgent' && ticket.isUrgent) {
+            setError("ตั๋วนี้ถูกตั้งเป็นตั๋วด่วนอยู่แล้ว ไม่จำเป็นต้องเลือกซ้ำ", "warning");
+            return;
+        }
+
         setSelectedMergeTickets(prevSelected => {
             // เช็คว่าตั๋วใบนี้ถูกเลือกไว้แล้วหรือยัง?
             const isAlreadySelected = prevSelected.some(t => t.ticketId === ticket.ticketId);
@@ -99,6 +106,19 @@ const AuditIssues = () => {
         setConfirmMergeModal({ isOpen: true });
     };
 
+    const handleTabChange = (tab) => {
+        if (activePanelTab !== tab) {
+            setActivePanelTab(tab);
+            setSelectedMergeTickets([]); // ล้างรายการที่เลือกเมื่อสลับแท็บ
+            reset(); // ล้างข้อความแจ้งเตือน
+        }
+    };
+
+    const handleConfirmUrgent = () => {
+        if (selectedMergeTickets.length === 0) return;
+        setConfirmUrgentModal({ isOpen: true });
+    };
+
     const submitMerge = async () => {
         startLoading(); // แสดงหน้าจอโหลด
 
@@ -122,7 +142,12 @@ const AuditIssues = () => {
                 setSuccess(`รวมกลุ่มปัญหาสำเร็จ! ข้อมูลถูกโอนย้ายไปยังตั๋วหลัก ${primaryTicketId} เรียบร้อยแล้ว`);
                 setConfirmMergeModal({ isOpen: false });
                 setSelectedMergeTickets([]);
-                await Promise.all([refetch(), refetchGroups()]);
+                
+                // ใช้ Optimistic Update ทำงานแบบ Real-time โดยไม่ต้องรีเฟรช
+                updateTicketAfterMerge(primaryTicketId, duplicateTicketIds);
+                
+                // ดึงข้อมูลแค่กลุ่มด้านขวาใหม่ให้เป็นปัจจุบัน
+                await refetchGroups();
             }
         } catch (error) {
             console.error("Error merging tickets:", error);
@@ -141,18 +166,50 @@ const AuditIssues = () => {
         startLoading(); // แสดงหน้าจอโหลด
 
         try {
-            const result = await ticketService.unmergeTickets(confirmUnmergeModal.payload);
+            // ดึงข้อมูลออกมาจาก payload
+            const { subTicketId, mainTicketId } = confirmUnmergeModal.payload;
+            
+            // เตรียม payload ส่งให้ API (ส่งตัวใดตัวหนึ่งเท่านั้น)
+            const apiPayload = confirmUnmergeModal.type === 'single' ? { subTicketId } : { mainTicketId };
+
+            const result = await ticketService.unmergeTickets(apiPayload);
 
             if (result.success) {
                 setSuccess(result.message || "ดำเนินการแยกกลุ่มปัญหาสำเร็จ");
                 setConfirmUnmergeModal({ isOpen: false, payload: null, type: null });
 
-                await Promise.all([refetch(), refetchGroups()]);
+                // 🚀 ใช้ Optimistic Update ทำงานแบบ Real-time โดยไม่ต้องรีเฟรช 🚀
+                const targetMainTicketId = confirmUnmergeModal.type === 'single' ? mainTicketId : apiPayload.mainTicketId;
+                updateTicketAfterUnmerge(targetMainTicketId, result.unmergedTickets, confirmUnmergeModal.type === 'single');
+
+                // ดึงข้อมูลแค่กลุ่มด้านขวาใหม่ให้เป็นปัจจุบัน
+                await refetchGroups();
             }
         } catch (error) {
             console.error("Error unmerging tickets:", error);
             setError(error.response?.data?.message || "เกิดข้อผิดพลาดในการแยกกลุ่มปัญหา", "error");
             setConfirmUnmergeModal({ isOpen: false, payload: null, type: null });
+        }
+    };
+
+    const submitUrgentTickets = async () => {
+        if (selectedMergeTickets.length === 0) return;
+        startLoading();
+
+        try {
+            const ticketIds = selectedMergeTickets.map(t => t.ticketId);
+            const result = await ticketService.markUrgentTickets(ticketIds);
+            
+            if (result.success) {
+                setSuccess(`ตั้งค่าตั๋วด่วนสำเร็จ!`);
+                setSelectedMergeTickets([]);
+                setConfirmUrgentModal({ isOpen: false });
+                refetch();
+            }
+        } catch (error) {
+            console.error("Error setting urgent tickets:", error);
+            setError(error.response?.data?.message || "เกิดข้อผิดพลาดในการตั้งค่าตั๋วด่วน", "error");
+            setConfirmUrgentModal({ isOpen: false });
         }
     };
 
@@ -222,7 +279,7 @@ const AuditIssues = () => {
                             >
                                 <CardPendingProblem
                                     data={ticket}
-                                    isMergeMode={activePanelTab === 'merge'}
+                                    isMergeMode={activePanelTab === 'merge' || activePanelTab === 'urgent'}
                                     isSelected={isSelected}
                                     onSelect={() => handleSelectTicket(ticket)}
                                     showSubTicketBadge={true}
@@ -261,14 +318,14 @@ const AuditIssues = () => {
 
                         <MergeManagementPanel
                             activeTab={activePanelTab}
-                            onTabChange={setActivePanelTab}
+                            onTabChange={handleTabChange}
                             allTickets={tickets}
                             selectedTickets={selectedMergeTickets}
                             groupedTicketsFromApi={ticketGroups}
                             isLoadingGroups={isLoadingGroups}
                             onUnmergeAction={handleUnmergeAction}
                             onReset={handleResetSelection}
-                            onConfirm={handleConfirmMerge}
+                            onConfirm={activePanelTab === 'urgent' ? handleConfirmUrgent : handleConfirmMerge}
                             onRemoveTicket={handleRemoveSelectedTicket}
                             isLoading={false}
                         />
@@ -319,6 +376,25 @@ const AuditIssues = () => {
                 cancelText="ปิด"
                 isLoading={loading.isLoading}
             />
+
+            {/* ตัวแปรช่วยคำนวณจำนวนตั๋วลูกเพื่อแสดงใน Modal */}
+            {(() => {
+                const totalSubTickets = selectedMergeTickets.reduce((sum, t) => sum + (t._count?.subTickets || 0), 0);
+                const subTicketMessage = totalSubTickets > 0 ? ` (และตั๋วลูกที่เกี่ยวข้องกันอีก ${totalSubTickets} รายการ)` : '';
+
+                return (
+                    <ConfirmButton
+                        isOpen={confirmUrgentModal.isOpen}
+                        title="ยืนยันการตั้งเป็นตั๋วด่วน"
+                        message={`คุณแน่ใจหรือไม่ว่าต้องการตั้งค่าตั๋วจำนวน ${selectedMergeTickets.length} รายการ${subTicketMessage} ให้เป็นตั๋วด่วนพิเศษ?`}
+                        onConfirm={submitUrgentTickets}
+                        onCancel={() => setConfirmUrgentModal({ isOpen: false })}
+                        confirmText={loading.isLoading ? "กำลังประมวลผล..." : "ยืนยัน"}
+                        cancelText="ปิด"
+                        isLoading={loading.isLoading}
+                    />
+                );
+            })()}
         </div>
     )
 }

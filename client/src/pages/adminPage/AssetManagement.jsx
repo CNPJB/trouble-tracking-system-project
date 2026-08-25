@@ -27,9 +27,9 @@ const AssetManagement = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [isUpdateConfirmOpen, setIsUpdateConfirmOpen] = useState({ isOpen: false });
-  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState({ isOpen: false });
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState( false );
   const { loading, startLoading, setError, setSuccess, reset, clearError } = useLoadingState();
-  const { equipment, filterCategory, setFilterCategory, filterLocation, setFilterLocation, searchQuery, setSearchQuery, deleteEquipment, refetch, EquipmentCtgs } = useEquipment();
+  const { equipment, filterCategory, setFilterCategory, filterLocation, setFilterLocation, searchQuery, setSearchQuery, softDeleteEquipment, refetch, EquipmentCtgs } = useEquipment();
   const [selectedDetails, setSelectedDetails] = useState([]);
   const formatStatus = {
     'active': 'ใช้งาน',
@@ -247,24 +247,44 @@ const AssetManagement = () => {
     }
   }
   const handleDelete = async () => {
+    // 🌟 ดึง ID ทั้งหมดที่ต้องการลบ (รองรับทั้งการติ๊ก Checkbox หลายอัน และการคลิกเลือกทีละอัน)
+    const targetIds = selectedEquipments.length > 0 ? selectedEquipments : (selectedId ? [String(selectedId)] : []);
 
-    if (!selectedId) {
+    if (targetIds.length === 0) {
       setIsDeleteConfirmOpen(false);
-      alert("กรุณาเลือกครุภัณฑ์ที่ต้องการลบ");
+      // แนะนำให้ใช้ setError แทน alert เพื่อให้ UI เป็นไปในทางเดียวกันครับ
+      setError("กรุณาเลือกครุภัณฑ์ที่ต้องการลบ", "warning"); 
       return;
     }
+
     if (isSubmitting) return;
 
     setIsDeleteConfirmOpen(false);
     setIsSubmitting(true);
+    startLoading(); // แสดงสถานะกำลังโหลด
 
     try {
-      await deleteEquipment(selectedId);
+      // วนลูปส่งคำสั่ง Soft Delete ไปที่ API ตามจำนวน ID ที่เลือก
+      for (const id of targetIds) {
+        await softDeleteEquipment(id); 
+      }
+      
+      setSuccess(`ลบข้อมูลสำเร็จจำนวน ${targetIds.length} รายการ`);
+      await refetch(); // รีเฟรชตาราง ข้อมูลที่ลบจะหายไปทันที
+
+      // ล้างค่าที่เลือกไว้ทั้งหมด
       setSelectedId(null);
+      setSelectedEquipments([]);
+      setSelectedDetails([]);
+
+    } catch (error) {
+      console.error("Delete Error:", error);
+      setError("เกิดข้อผิดพลาดในการลบข้อมูล", "error");
     } finally {
       setIsSubmitting(false);
     }
   }
+
   const activeDropdownFiltersCount = (filterCategory ? 1 : 0) + (filterLocation ? 1 : 0);
 
   const handleClearAllFilters = () => {
@@ -488,7 +508,7 @@ const AssetManagement = () => {
             }}>
               ลบ
             </button>
-            {/* <ConfirmButton
+            <ConfirmButton
               isOpen={isDeleteConfirmOpen}
               title="ยืนยันการลบ"
               message={`ยืนยันที่จะลบครุภัณฑ์หรือไม่`}
@@ -497,7 +517,25 @@ const AssetManagement = () => {
               onConfirm={handleDelete}
               onCancel={() => setIsDeleteConfirmOpen(false)}
               disabled={isSubmitting}
-            /> */}
+            />
+          </div>
+
+          {/* 🌟 ส่วนปุ่มนำเข้า และ ลิงก์ดาวน์โหลดที่เพิ่มใหม่ */}
+          <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+
+            {/* ลิงก์ดาวน์โหลดไฟล์ตัวอย่าง */}
+            <a
+              href="/template-equipment.csv"
+              download="template-equipment.csv"
+              style={{
+                color: '#6c757d', /* สีเทาเข้ม หรือเปลี่ยนเป็นสีฟ้า #2196f3 ก็ได้ */
+                fontSize: '14px',
+                textDecoration: 'underline',
+                cursor: 'pointer'
+              }}
+            >
+              📥 ดาวน์โหลดไฟล์ตัวอย่างสำหรับนำเข้า (.csv หรือ .xlsx)
+            </a>
           </div>
           <div className='btn-import'>
             <ImportEquipments />
