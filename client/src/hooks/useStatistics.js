@@ -32,7 +32,8 @@ export const useStatistics = (year, month) => {
             const response = await axios.get(`/api/manage/getTicket-stats?year=${year}&month=${month}`);
             setTicketStats({
                 created: response.data.created,
-                resolved: response.data.resolved
+                resolved: response.data.resolved,
+                rejected: response.data.rejected
             });
         } catch (error) {
             console.error('Error fetching getTicket-stats', error);

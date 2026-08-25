@@ -1,14 +1,14 @@
 import express from 'express';
 import multer from 'multer';
 import {
-        addTicketCategory, getTicketCategories,updateTicketCategories,
+        addTicketCategory, getTicketCategories,updateTicketCategories,deleteTicketCategory,
         addLocation, getLocations,deleteLocation,updateLocationStatus,
         addFloor, getFloors,deleteFloor,updateFloorStatus,
         addRoom, getRooms,deleteRoom, updateRoomStatus,
         getUsers,updateRoleUsers,
         addEquipmentCtg, getEquipmentCtgs,
 } from '../controllers/managementControllers.js';
-import { getEquipment, addEquipment,deleteEquipment, uploadEquipments,updateEquipment,updateMultipleEquipments } from '../controllers/EquipmentControllers.js';
+import { getEquipment, addEquipment,deleteEquipment, uploadEquipments,updateEquipment,updateMultipleEquipments,softDeleteEquipment } from '../controllers/EquipmentControllers.js';
 import { getMostCategoriesOfProblems, MostUpvotedTickets, getTicketStats} from '../controllers/statisticController.js';
 import { verifyToken, requireAdmin } from '../middleware/authMiddleware.js';
 
@@ -18,6 +18,7 @@ const router = express.Router();
 router.post('/addTicketCategory', verifyToken, requireAdmin, addTicketCategory);
 router.get('/getTicketCategories', verifyToken, getTicketCategories);
 router.put('/updateTicketCategories', verifyToken, requireAdmin, updateTicketCategories);
+router.delete('/deleteTicketCategory/:id', verifyToken, requireAdmin, deleteTicketCategory);
 
 router.post('/addLocation', verifyToken, requireAdmin, addLocation);
 router.get('/getLocations', verifyToken, getLocations);
@@ -45,8 +46,9 @@ router.get('/getEquipment', verifyToken, getEquipment);
 router.get('/getEquipmentByadmin', verifyToken, requireAdmin, getEquipment);
 router.delete('/deleteEquipment/:id', verifyToken, requireAdmin, deleteEquipment);      
 router.post('/uploadEquipments', verifyToken, requireAdmin, upload.single('file'), uploadEquipments);
-router.put('/updateEquipment', verifyToken, requireAdmin,updateEquipment)
-router.put('/updateMultipleEquipments', verifyToken, requireAdmin,updateMultipleEquipments)
+router.put('/updateEquipment', verifyToken, requireAdmin,updateEquipment);
+router.put('/updateMultipleEquipments', verifyToken, requireAdmin,updateMultipleEquipments);
+router.put('/softDeleteEquipment/:id', verifyToken, requireAdmin, softDeleteEquipment);
 
 router.get('/getMostCategoriesOfProblems', verifyToken, getMostCategoriesOfProblems);
 router.get('/getMostUpvotedTickets', verifyToken, MostUpvotedTickets);

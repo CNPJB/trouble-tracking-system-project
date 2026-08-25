@@ -1,8 +1,12 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation } from 'swiper/modules';
 // Styles
 import "./pageStyles/Dashboard.css"
+import 'swiper/css';
+import 'swiper/css/navigation';
 // Components
 import { SearchBar } from '../components/SearchBar.jsx';
 import { CardFinishProblem, SkeletonCardFinishProblem } from '../components/CardFinishProblem'
@@ -58,32 +62,44 @@ const Dashboard = () => {
   return (
     <>
       {/* การ์ดแก้ไขสำเร็จด้านบน */}
-      <div className="carousel-container">
-        <button className="scroll-btn left" onClick={() =>
-          scrollRef.current?.scrollBy({ left: -370, behavior: 'smooth' })}>
-          <FaChevronLeft />
-        </button>
-        {/* ใช้ Hooks เรียกตรงๆจาก Backend ได้เลย ไม่ต้องกรองสถานะเอง */}
-        <div className="card-FinishProblem-grid" ref={scrollRef}>
-          {/* 3. เปลี่ยนจาก tickets.filter เป็น resolvedTickets.map ได้เลย */}
-          {isLoadingResolved ? (
-            // <div style={{ padding: '20px', color: 'gray' }}>กำลังโหลดตั๋วที่แก้ไขสำเร็จ...</div>
-            Array.from({ length: 4 }).map((_, index) => (
-              <SkeletonCardFinishProblem key={`skeleton-${index}`} />
-            ))
-          ) : resolvedTickets.length > 0 ? (
-            resolvedTickets.map((ticket, index) => (
-              <CardFinishProblem key={ticket.ticketId || index} data={ticket} />
-            ))
-          ) : (
-            <div style={{ padding: '20px', color: 'gray' }}>ยังไม่มีรายการที่แก้ไขสำเร็จที่ได้รับการประเมิน</div>
-          )}
-        </div>
+      <div className="dashboard-header">
+        <div className="carousel-container" >
+          {/* ปุ่มเลื่อนซ้าย */}
+          <button className="scroll-btn left">
+            <FaChevronLeft />
+          </button>
 
-        <button className="scroll-btn right" onClick={() =>
-          scrollRef.current.scrollBy({ left: 370, behavior: 'smooth' })}>
-          <FaChevronRight />
-        </button>
+          <Swiper
+            modules={[Navigation]}
+            navigation={{
+              prevEl: '.scroll-btn.left',
+              nextEl: '.scroll-btn.right',
+            }}
+            spaceBetween={15} // ระยะห่างระหว่างการ์ด (ปรับได้ตามต้องการ)
+            slidesPerView={'auto'} // ให้ความกว้างการ์ดเป็นตัวกำหนด (หรือใส่ตัวเลขเช่น 3, 4)
+          >
+            {isLoadingResolved ? (
+              Array.from({ length: 4 }).map((_, index) => (
+                <SwiperSlide key={`skeleton-${index}`} style={{ width: 'auto' }}>
+                  <SkeletonCardFinishProblem />
+                </SwiperSlide>
+              ))
+            ) : resolvedTickets.length > 0 ? (
+              resolvedTickets.map((ticket, index) => (
+                <SwiperSlide key={ticket.ticketId || index} style={{ width: 'auto' }}>
+                  <CardFinishProblem data={ticket} />
+                </SwiperSlide>
+              ))
+            ) : (
+              <div style={{ padding: '20px', color: 'gray' }}>ยังไม่มีรายการที่แก้ไขสำเร็จที่ได้รับการประเมิน</div>
+            )}
+          </Swiper>
+
+          {/* ปุ่มเลื่อนขวา */}
+          <button className="scroll-btn right">
+            <FaChevronRight />
+          </button>
+        </div>
       </div>
 
       {/* ปุ่มกรองตามสถานะ */}

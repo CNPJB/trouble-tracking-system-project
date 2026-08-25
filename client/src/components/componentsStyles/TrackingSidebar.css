@@ -11,7 +11,6 @@
   transition: all 0.3s;
   box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
 }
-
 .tracking-sidebar-header img {
   width: 100%;
   object-fit: contain;
@@ -136,6 +135,7 @@
 
 .mobile-hamburger-btn {
   display: none;
+  
 }
 
 .close-btn {

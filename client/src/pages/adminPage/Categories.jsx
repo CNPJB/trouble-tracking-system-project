@@ -17,6 +17,7 @@ const Categories = () => {
     const [selectedId, setSelectedId] = useState(null);
     const { loading, startLoading, setError, setSuccess, reset, clearError } = useLoadingState();
     const [confirmSubmit, setConfirmSubmit] = useState({ "isOpen": false, "message": "" });
+    const [confirmDelete, setConfirmDelete] = useState({ "isOpen": false, "id": null });
     const [formData, setFormData] = useState({
         ticketCtgId: '',
         ticketCtgIdName: '',
@@ -47,7 +48,7 @@ const Categories = () => {
             setError('กรุณากรอกข้อมูลให้ครบถ้วน');
             return;
         }
-        setConfirmSubmit({ isOpen: true,});
+        setConfirmSubmit({ isOpen: true, });
     };
 
     const handleSaveCategory = async () => {
@@ -71,12 +72,47 @@ const Categories = () => {
                 setSuccess('เพิ่มประเภทปัญหาใหม่สำเร็จ');
             }
             await fetchCategories();
-            setFormData({});
+            setFormData({ ticketCtgId: '', ticketCtgName: '', ticketCtgStatus: '' });
+            setSelectedId(null);
             setConfirmSubmit({ isOpen: false, message: '' });
         } catch (error) {
             console.error("บันทึกข้อมูลไม่สำเร็จ:", error);
             setError('เพิ่มข้อมูลไม่สำเร็จ', 'error');
         }
+    };
+    const handleCOnfirmDeleteCategory = (e) => {
+        if (e) e.preventDefault();
+        setConfirmDelete({ isOpen: true, id: selectedId });
+    };
+    const handleDeleteCategory = async () => {
+        if (!selectedId) {
+            setError('กรุณาเลือกประเภทปัญหาที่ต้องการลบ');
+            return;
+        }
+        try {
+            await IssueCategoryService.deleteIssueCategoryApi(selectedId);
+            setSuccess('ลบประเภทปัญหาสำเร็จ');
+            await fetchCategories();
+            setSelectedId(null);
+        } catch (error) {
+            console.error("ลบข้อมูลไม่สำเร็จ:", error);
+            setError('ลบข้อมูลไม่สำเร็จ', 'error');
+        }
+        setConfirmDelete({ isOpen: false, id: null });
+        setFormData({
+            ticketCtgId: '',
+            ticketCtgName: '',
+            ticketCtgStatus: ''
+        });
+        setSelectedId(null);
+    };
+    const handleClearField = () => {
+        setFormData({
+            ticketCtgId: '',
+            ticketCtgName: '',
+            ticketCtgStatus: ''
+        });
+        setSelectedId(null);
     };
     return (
         <div className="Categories-management">
@@ -128,6 +164,26 @@ const Categories = () => {
                                 value={formData.ticketCtgName || ''}
                                 onChange={handleInputChange}
                             />
+                            {formData.ticketCtgName && (
+                                <button
+                                    type="button"
+                                    onClick={handleClearField}
+                                    style={{
+                                        position: 'absolute',
+                                        right: '10px',
+                                        top: '38px', // ปรับตำแหน่งความสูงตามดีไซน์ของคุณ
+                                        background: 'transparent',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        fontSize: '16px',
+                                        color: '#888',
+                                        fontWeight: 'bold'
+                                    }}
+                                    title="เคลียร์ข้อความ"
+                                >
+                                    ✕
+                                </button>
+                            )}
                         </div>
                         <select
                             value={formData.ticketCtgStatus || ''}
@@ -145,7 +201,9 @@ const Categories = () => {
                         <button className="btn-confirm" onClick={handleConfirmSaveCategory}>
                             บันทึก
                         </button>
-                        <button className="btn-cancel" onClick={() => setFormData({})}>ลบ</button>
+                        <button className="btn-cancel" onClick={handleCOnfirmDeleteCategory}>
+                            ลบ
+                        </button>
                     </div>
                     <ConfirmButton
                         isOpen={confirmSubmit.isOpen}
@@ -154,6 +212,16 @@ const Categories = () => {
                         onConfirm={handleSaveCategory}
                         onCancel={() => setConfirmSubmit({ isOpen: false, message: '' })}
                         confirmText={loading.isLoading ? "กำลังบันทึก..." : "ยืนยัน"}
+                        cancelText={loading.isLoading ? "ปิด" : "ยกเลิก"}
+                        isLoading={loading.isLoading}
+                    />
+                    <ConfirmButton
+                        isOpen={confirmDelete.isOpen}
+                        title="ยืนยันการลบประเภทปัญหา"
+                        message="คุณแน่ใจหรือไม่ว่าต้องการลบประเภทปัญหานี้? โปรดตรวจสอบข้อมูลให้ถูกต้องก่อนยืนยัน"
+                        onConfirm={handleDeleteCategory}
+                        onCancel={() => setConfirmDelete({ isOpen: false, id: null })}
+                        confirmText={loading.isLoading ? "กำลังลบ..." : "ยืนยัน"}
                         cancelText={loading.isLoading ? "ปิด" : "ยกเลิก"}
                         isLoading={loading.isLoading}
                     />
