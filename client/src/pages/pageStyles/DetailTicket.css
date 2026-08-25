@@ -6,7 +6,7 @@
     background-color: var(--card-bg);
     border-radius: 20px;
     box-shadow: var(--shadow-md);
-    height: 350px;
+    height: 420px;
     line-height: 2;
 }
 
@@ -534,4 +534,37 @@
         display: grid;
         grid-template-columns: 1fr;
     }
+}
+
+/* Feedback Sub-Ratings */
+.starRating-container-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.star-wrapper-main {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.sub-ratings-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 12px;
+    color: #64748b;
+    margin: 5px 0;
+    width: 220px;
+}
+
+.sub-rating-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.sub-rating-label {
+    font-weight: 500;
 }

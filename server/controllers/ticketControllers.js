@@ -13,6 +13,7 @@ export const addTicket = async (req, res) => {
             floorId,
             roomId,
             equipmentId,
+            equipmentName,
             title,
             description,
         } = req.body;
@@ -72,6 +73,33 @@ export const addTicket = async (req, res) => {
             }
         }
 
+        // ---------------------------------------------------------------------------
+        // ป้องกันการส่งข้อมูลซ้ำ (Double Submit / Network Drop Retry)
+        // ตรวจสอบว่าผู้ใช้นี้ เพิ่งส่งปัญหาหัวข้อและรายละเอียดเดิม มาภายใน 2 นาทีที่ผ่านมาหรือไม่
+        // ---------------------------------------------------------------------------
+        const timeForwardMinutes = new Date(Date.now() - 2 * 60 * 1000);
+        const duplicateTicket = await prisma.ticket.findFirst({
+            where: {
+                userId: userId,
+                title: title.trim(),
+                description: description.trim(),
+                locationId: parseInt(locationId),
+                ...(floorId && { floorId: parseInt(floorId) }),
+                ...(roomId && { roomId: parseInt(roomId) }),
+                createdAt: {
+                    gte: timeForwardMinutes
+                }
+            }
+        });
+
+        if (duplicateTicket) {
+            return res.status(200).json({
+                success: true,
+                message: "ปัญหาของคุณได้ถูกบันทึกเข้าระบบเรียบร้อยแล้ว",
+                data: duplicateTicket
+            });
+        }
+
         const uploadedImages = [];
         if (files && files.length > 0) {
             const uploadPromises = files.map((file) =>
@@ -95,6 +123,7 @@ export const addTicket = async (req, res) => {
             ticketId: customTicketId,
             title,
             description,
+            equipmentName: equipmentName ? equipmentName.trim() : null,
             user: { connect: { userId: userId } },
             category: { connect: { ticketCtgId: parseInt(ticketCtgId) } },
             location: { connect: { locationId: parseInt(locationId) } },
@@ -173,7 +202,7 @@ export const updateTicket = async (req, res) => {
         const { id } = req.params;
         console.log(req.body)
         const {
-            ticketCtgId, locationId, floorId, roomId, equipmentId,
+            ticketCtgId, locationId, floorId, roomId, equipmentId, equipmentName,
             title, description,ticketStatus, // เพิ่ม ticketStatus เข้ามาเพื่อให้แอดมินสามารถแก้ไขสถานะได้ในกรณีที่ต้องการเปลี่ยนจาก pending เป็น in_progress หรือ resolved ได้เลย
             imagesToDelete // หน้าบ้านจะส่งเป็น Array String มา เช่น "[12, 15]" (ID ของ TicketImage ที่จะลบ)
         } = req.body;
@@ -285,6 +314,10 @@ export const updateTicket = async (req, res) => {
             description: description || existingTicket.description,
             ticketStatus: ticketStatus || existingTicket.ticketStatus,// อัปเดตสถานะถ้ามีการส่งมา ถ้าไม่ส่งมาจะคงสถานะเดิมไว้
         };
+
+        if (equipmentName !== undefined) {
+            dataToUpdate.equipmentName = equipmentName ? equipmentName.trim() : null;
+        }
 
         // 2. จัดการฟิลด์บังคับ (ใช้วิธี connect เข้ากับ ID เดิมหรือ ID ใหม่)
         if (ticketCtgId) {
@@ -505,13 +538,25 @@ export const cancelTicket = async (req, res) => {
 export const submitFeedback = async (req, res) => {
     try {
         const { id } = req.params;
-        const { rating, comment } = req.body;
+        const { rating, ratingSpeed, ratingCompleteness, ratingCommunication, comment } = req.body;
         const userId = req.user.userId;
         // เช็คว่าส่งคะแนนมาถูกต้องไหม (อนุญาต 0.5 - 5 ดาว)
         if (rating === undefined || rating === null || rating < 0.5 || rating > 5) {
             return res.status(400).json({ 
                 success: false, 
                 message: "กรุณาระบุคะแนนประเมินระหว่าง 0.5 ถึง 5 ดาว" 
+            });
+        }
+        
+        // เช็คคะแนนหมวดหมู่ย่อย
+        if (
+            ratingSpeed === undefined || ratingSpeed < 0.5 || ratingSpeed > 5 ||
+            ratingCompleteness === undefined || ratingCompleteness < 0.5 || ratingCompleteness > 5 ||
+            ratingCommunication === undefined || ratingCommunication < 0.5 || ratingCommunication > 5
+        ) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "กรุณาระบุคะแนนประเมินทุกหมวดหมู่ให้ครบถ้วน" 
             });
         }
 
@@ -532,6 +577,9 @@ export const submitFeedback = async (req, res) => {
             where: { ticketId: id },
             data: {
                 rating: parseFloat(rating),
+                ratingSpeed: parseFloat(ratingSpeed),
+                ratingCompleteness: parseFloat(ratingCompleteness),
+                ratingCommunication: parseFloat(ratingCommunication),
                 comment: comment ? comment.trim() : null, // ถ้าไม่ได้พิมพ์อะไรมาให้เก็บเป็น null
                 updatedAt: new Date()
             }

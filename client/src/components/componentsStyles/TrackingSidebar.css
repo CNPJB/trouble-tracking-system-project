@@ -96,6 +96,7 @@
   background-color: #fff0f0;
   /* สีแดงอ่อนมากตอน Hover */
   color: var(--status-red);
+  border-right: 4px solid red;
 }
 
 .sidebar-menu-btn.review-btn.active {
@@ -157,10 +158,6 @@
   /* Mobile: ข้อความซ้าย, ไอคอนขวาสุด */
   .sidebar-menu-btn .nav-icon-stat {
     order: 3;
-  }
-
-  .sidebar-menu-btn.active .nav-icon-stat {
-    color: #00a651;
   }
   
   .sidebar-menu-btn label {

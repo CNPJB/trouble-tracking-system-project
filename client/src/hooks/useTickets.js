@@ -105,6 +105,64 @@ export const useTickets = (initialParams = {}, mode = 'infinite') => {
         );
     }, []);
 
+    // ฟังก์ชันอัปเดต UI หลังจากยุบรวมกลุ่มปัญหา (Optimistic Update)
+    const updateTicketAfterMerge = useCallback((primaryTicketId, duplicateTicketIds) => {
+        setTickets(prev => {
+            // 1. ซ่อน (ลบ) ตั๋วที่ถูกรวมไปแล้วออกจากกระดาน
+            const filtered = prev.filter(ticket => !duplicateTicketIds.includes(ticket.ticketId));
+            
+            // 2. ไปเพิ่มตัวเลข Badge ให้กับตั๋วหลัก
+            return filtered.map(ticket => {
+                if (ticket.ticketId === primaryTicketId) {
+                    const currentCount = ticket._count?.subTickets || 0;
+                    return {
+                        ...ticket,
+                        _count: {
+                            ...ticket._count,
+                            subTickets: currentCount + duplicateTicketIds.length
+                        }
+                    };
+                }
+                return ticket;
+            });
+        });
+    }, []);
+
+    // ฟังก์ชันอัปเดต UI หลังจากแยกกลุ่มปัญหา (Optimistic Update)
+    const updateTicketAfterUnmerge = useCallback((mainTicketId, unmergedTickets, isSingleUnmerge = false) => {
+        setTickets(prev => {
+            let nextTickets = [...prev];
+            
+            // 1. ไปลดตัวเลข Badge ให้กับตั๋วหลัก
+            if (mainTicketId) {
+                nextTickets = nextTickets.map(ticket => {
+                    if (ticket.ticketId === mainTicketId) {
+                        const currentCount = ticket._count?.subTickets || 0;
+                        const newCount = isSingleUnmerge ? Math.max(0, currentCount - 1) : 0;
+                        return {
+                            ...ticket,
+                            _count: {
+                                ...ticket._count,
+                                subTickets: newCount
+                            }
+                        };
+                    }
+                    return ticket;
+                });
+            }
+
+            // 2. เอาตั๋วที่ถูกแยกออกมา แทรกกลับเข้าไปบนกระดานด้านซ้าย
+            if (unmergedTickets && unmergedTickets.length > 0) {
+                const uniqueUnmerged = unmergedTickets.filter(
+                    newTicket => !nextTickets.some(existing => existing.ticketId === newTicket.ticketId)
+                );
+                return [...uniqueUnmerged, ...nextTickets];
+            }
+            
+            return nextTickets;
+        });
+    }, []);
+
     // ฟังก์ชันดึงข้อมูลใหม่ (ทำให้ return Promise เพื่อให้รอได้)
     const refetch = useCallback(() => {
         return new Promise(resolve => {
@@ -123,6 +181,8 @@ export const useTickets = (initialParams = {}, mode = 'infinite') => {
         changePage,
         updateFilters,
         removeTicket,
-        updateTicketStatus
+        updateTicketStatus,
+        updateTicketAfterMerge,
+        updateTicketAfterUnmerge
     };
 };

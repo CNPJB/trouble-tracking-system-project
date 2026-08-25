@@ -75,6 +75,12 @@ const IssueManagementDetail = () => {
                     message: `คุณแน่ใจหรือไม่ว่าต้องการ 'ปฏิเสธ' รายการนี้ด้วยเหตุผล: "${confirmModal.payload?.adminNote}" ?`,
                     confirmText: "ยืนยันการปฏิเสธ"
                 };
+            case 'canceled':
+                return {
+                    title: "ยืนยันการยกเลิกปัญหาก่อกวน",
+                    message: `คุณแน่ใจหรือไม่ว่าต้องการ 'ยกเลิก' ปัญหานี้? (การยกเลิกจะไม่สามารถย้อนกลับได้ และจะไม่มีการส่งอีเมลแจ้งเตือนผู้ใช้${ticket?._count?.subTickets > 0 ? ` รวมทั้งตั๋วลูกจำนวน ${ticket._count.subTickets} ใบก็จะถูกยกเลิกไปด้วย` : ''})`,
+                    confirmText: "ยืนยันการยกเลิก"
+                };
             default:
                 return { title: "ยืนยัน", message: "คุณแน่ใจหรือไม่?", confirmText: "ยืนยัน" };
         }

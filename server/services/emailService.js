@@ -1,4 +1,8 @@
 import nodemailer from 'nodemailer';
+import dns from 'dns';
+
+// บังคับให้ Node.js ใช้ IPv4 เป็นหลักเพื่อแก้ปัญหาเครือข่าย ENETUNREACH (IPv6)
+dns.setDefaultResultOrder('ipv4first');
 
 // สร้าง Transporter สำหรับเชื่อมต่อกับ Server ของ Gmail
 const transporter = nodemailer.createTransport({

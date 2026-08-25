@@ -28,7 +28,7 @@ import { AdvancedFilterPanel } from '../../components/AdvancedFilterPanel.jsx';
 const IssueManagement = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
-    const [selectedStatus, setSelectedStatus] = useState('pending,in_progress,resolved');
+    const [selectedStatus, setSelectedStatus] = useState('pending,in_progress');
     const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedLocation, setSelectedLocation] = useState('');
     const [searchKeyword, setSearchKeyword] = useState('');
@@ -46,7 +46,7 @@ const IssueManagement = () => {
     const activeDropdownFiltersCount =
         (selectedCategory ? 1 : 0) +
         (selectedLocation ? 1 : 0) +
-        (selectedStatus !== 'pending,in_progress,resolved' ? 1 : 0);
+        (selectedStatus !== 'pending,in_progress' ? 1 : 0);
 
     const hasActiveFilter = Boolean(
         searchKeyword || selectedCategory || selectedLocation || isMyTasksOnly
@@ -86,8 +86,8 @@ const IssueManagement = () => {
     const handleClearAllFilters = () => {
         setSelectedCategory('');
         setSelectedLocation('');
-        setSelectedStatus('pending,in_progress,resolved');
-        updateFilters({ categoryId: undefined, locationId: undefined, status: 'pending,in_progress,resolved' });
+        setSelectedStatus('pending,in_progress');
+        updateFilters({ categoryId: undefined, locationId: undefined, status: 'pending,in_progress' });
     };
 
     const handleCardClick = (ticketId) => {
@@ -159,7 +159,7 @@ const IssueManagement = () => {
                         {/* ซ่อน Dropdown ทั้งหมดไว้ใน Component นี้ */}
                         <TicketCategoryFilter selectedValue={selectedCategory} onChange={handleCategoryFilter} />
                         <TicketLocationFilter selectedValue={selectedLocation} onChange={handleLocationFilter} />
-                        <TicketStatusFilter selectedValue={selectedStatus} onChange={handleStatusFilter} allowedStatuses={['pending', 'in_progress', 'resolved']} allOptionValue="pending,in_progress,resolved" />
+                        <TicketStatusFilter selectedValue={selectedStatus} onChange={handleStatusFilter} allowedStatuses={['pending', 'in_progress']} allOptionValue="pending,in_progress" />
                     </AdvancedFilterPanel>
                 </div>
             </div>

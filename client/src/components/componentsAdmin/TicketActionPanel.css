@@ -69,6 +69,9 @@
 .btn-action.secondary { background-color: #e2e8f0; color: #475569; }
 .btn-action.secondary:hover:not(:disabled) { background-color: #cbd5e1; }
 
+.btn-action.subtle { background-color: transparent; color: #94a3b8; border: 1px dashed #cbd5e1; }
+.btn-action.subtle:hover:not(:disabled) { background-color: #f8fafc; color: #64748b; border-color: #94a3b8; }
+
 /* ==================
    Inputs & Forms
    ================== */
