@@ -105,7 +105,7 @@ export const sendTicketStatusEmail = async (toEmail, ticketData) => {
     // 4. ส่งอีเมลออกไปแบบมีโครงสร้างดักข้อผิดพลาด
     try {
         await transporter.sendMail({
-            from: `TTS Notification`,
+            from: `"TTS Notification" <${process.env.EMAIL_USER}>`,
             to: toEmail,
             subject: subject,
             html: htmlContent
