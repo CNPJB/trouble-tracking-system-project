@@ -4,9 +4,12 @@ import dns from 'dns';
 // บังคับให้ Node.js ใช้ IPv4 เป็นหลักเพื่อแก้ปัญหาเครือข่าย ENETUNREACH (IPv6)
 dns.setDefaultResultOrder('ipv4first');
 
-// สร้าง Transporter สำหรับเชื่อมต่อกับ Server ของ Gmail
+// สร้าง Transporter สำหรับเชื่อมต่อกับ Server ของ Gmail ผ่าน Port 587
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false, // บังคับเป็น false สำหรับ port 587 (ใช้ STARTTLS แทน)
+    requireTLS: true,
     auth: {
         user: process.env.EMAIL_USER, // อีเมล Gmail ของคุณ
         pass: process.env.EMAIL_PASS  // App Password 16 หลักจาก Google
