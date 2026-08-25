@@ -143,9 +143,9 @@ const UserManagement = () => {
                             <option value="user">ผู้ใช้ทั่วไป</option>
                         </select>
                     </form>
-                    <div className="btn">
+                    <div className="btn-user">
                         <button className="btn-confirm" onClick={handleConfirmUpdateRole}>บันทึก</button>
-                        <button className="btn-cancel">ลบ</button>
+                        {/* <button className="btn-cancel">ลบ</button> */}
                     </div>
                     <ConfirmButton
                         isOpen={confirmSubmit.isOpen}

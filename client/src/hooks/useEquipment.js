@@ -40,12 +40,12 @@ export const useEquipment = () => {
         }
     }, [fetchEquipment]);
 
-    const deleteEquipment = useCallback(async (id) => {
+    const softDeleteEquipment = useCallback(async (id) => {
         try {
-            const response = await axios.delete(`/api/manage/deleteEquipment/${id}`);
+            const response = await axios.put(`/api/manage/softDeleteEquipment/${id}`);
             fetchEquipment();
         } catch (error) {
-            console.error('Error delete equipment:', error);
+            console.error('Error soft deleting equipment:', error);
         }
     }, [fetchEquipment]);
     useEffect(() => {
@@ -57,6 +57,6 @@ export const useEquipment = () => {
         filterLocation, setFilterLocation,
         filterCategory, setFilterCategory, 
         searchQuery, setSearchQuery,
-        refetch: fetchEquipment, updateEquipment, deleteEquipment, addEquipment
+        refetch: fetchEquipment, updateEquipment, softDeleteEquipment, addEquipment
     };
 };

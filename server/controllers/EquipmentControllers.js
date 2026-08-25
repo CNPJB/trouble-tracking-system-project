@@ -37,7 +37,7 @@ export const getEquipment = async (req, res) => {
         const { categoryId, locationId, search } = req.query;
 
         // ใช้กล่อง AND เป็นตัวรวมเงื่อนไขทั้งหมด เพื่อไม่ให้เงื่อนไข OR ตีกัน
-        const whereConditions = [];
+        const whereConditions = [{ is_delete: false }];
 
         if (categoryId) {
             whereConditions.push({ equipmentCtgId: Number(categoryId) });
@@ -366,5 +366,32 @@ export const updateMultipleEquipments = async (req, res) => {
     catch (error) {
         console.error('Error updating equipment:', error);
         res.status(500).json({ error: 'Failed to update equipment' });
+    }
+}
+export const softDeleteEquipment = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        if (!id) {
+            return res.status(400).json({ error: 'ไม่พบ ID ของครุภัณฑ์ที่ต้องการลบ' });
+        }
+
+        const updatedEquipment = await prisma.equipment.update({
+            where: {
+                equipmentId: Number(id)
+            },
+            data: {
+                is_delete: true
+            }
+        });
+
+        res.status(200).json({
+            success: true,
+            message: 'ลบข้อมูลครุภัณฑ์เรียบร้อยแล้ว',
+            data: updatedEquipment
+        });
+    } catch (error) {
+        console.error('Error soft deleting equipment:', error);
+        res.status(500).json({ error: 'Failed to soft delete equipment' });
     }
 }

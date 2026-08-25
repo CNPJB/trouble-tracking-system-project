@@ -22,5 +22,15 @@ export const IssueCategoryService = {
             throw error;
         }
 
+    },
+    
+    deleteIssueCategoryApi: async (id) => {
+        try {
+            const response = await axios.delete(`/api/manage/deleteTicketCategory/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error("Error in deleteIssueCategoryApi:", error);
+            throw error;
+        }
     }
-}
+};

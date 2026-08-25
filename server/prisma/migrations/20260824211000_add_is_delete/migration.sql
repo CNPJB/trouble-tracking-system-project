@@ -1,0 +1,11 @@
+ALTER TABLE "equipments" ADD COLUMN "is_delete" BOOLEAN NOT NULL DEFAULT false;
+
+ALTER TABLE "users" ADD COLUMN "is_delete" BOOLEAN NOT NULL DEFAULT false;
+
+ALTER TABLE "locations" ADD COLUMN "is_delete" BOOLEAN NOT NULL DEFAULT false;
+
+ALTER TABLE "rooms" ADD COLUMN "is_delete" BOOLEAN NOT NULL DEFAULT false;
+
+ALTER TABLE "floors" ADD COLUMN "is_delete" BOOLEAN NOT NULL DEFAULT false;
+
+ALTER TABLE "ticket_categories" ADD COLUMN "is_delete" BOOLEAN NOT NULL DEFAULT false;

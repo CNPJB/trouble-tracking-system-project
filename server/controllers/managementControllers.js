@@ -40,13 +40,42 @@ export const updateTicketCategories = async (req, res) => {
 
 export const getTicketCategories = async (req, res) => {
     try {
-        const categories = await prisma.ticketCategory.findMany();
+        const categories = await prisma.ticketCategory.findMany({
+            where: { is_delete: false }
+        });
         res.status(200).json(categories);
     } catch (error) {
         console.error('Error fetching ticket categories:', error);
         res.status(500).json({ error: 'Failed to fetch ticket categories' });
     }
 };
+
+export const deleteTicketCategory = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!id) {
+            return res.status(400).json({ error: 'กรุณาส่ง id เพื่อระบุประเภทปัญหาที่ต้องการลบ' });
+        }
+        const deletedCategory = await prisma.ticketCategory.update({
+            where: {
+                ticketCtgId: Number(id),
+            },
+            data: { is_delete: true }
+
+        });
+        res.status(200).json({
+            message: 'ลบประเภทปัญหาสำเร็จ',
+            deletedCategory
+        });
+    } catch (error) {
+        console.error('Error deleting category:', error);
+        if (error.code === 'P2025') {
+            return res.status(404).json({ error: 'ไม่พบประเภทปัญหานี้ในระบบ' });
+        }
+        res.status(500).json({ error: 'Failed to delete category' });
+    }
+};
+
 
 /* Location Management */
 export const addLocation = async (req, res) => {
@@ -65,6 +94,7 @@ export const addLocation = async (req, res) => {
         const findLocation = await prisma.location.findFirst({
             where: {
                 locationName: cleanLocationName
+
             }
         });
 
@@ -87,7 +117,9 @@ export const addLocation = async (req, res) => {
 
 export const getLocations = async (req, res) => {
     try {
-        const locations = await prisma.location.findMany();
+        const locations = await prisma.location.findMany({
+            where: { is_delete: false }
+        });
         res.status(200).json(locations);
     } catch (error) {
         console.error('Error fetching locations:', error);
@@ -101,10 +133,12 @@ export const deleteLocation = async (req, res) => {
         if (!id) {
             return res.status(400).json({ error: 'กรุณาส่ง locationId เพื่อระบุสถานที่ที่ต้องการลบ' });
         }
-        const deletedLocation = await prisma.location.delete({
+        const deletedLocation = await prisma.location.update({
             where: {
                 locationId: Number(id),
-            }
+            },
+            data: { is_delete: true }
+
         });
         res.status(200).json({
             message: 'ลบสถานที่สำเร็จ',
@@ -127,6 +161,20 @@ export const addFloor = async (req, res) => {
             locationId,
             floorStatus,
         } = req.body;
+        
+        const cleanFloorLevel = floorLevel.trim();
+
+        const existingFloor = await prisma.floor.findFirst({
+            where: {
+                locationId: Number(locationId),
+                floorLevel: cleanFloorLevel,
+                is_delete: false // เช็คเฉพาะชั้นที่ยังใช้งานอยู่
+            }
+        });
+
+        if (existingFloor) {
+            return res.status(400).json({ error: `สถานที่นี้มี "ชั้น ${cleanFloorLevel}" อยู่แล้วครับ ไม่สามารถสร้างซ้ำได้` });
+        }
 
         const floor = await prisma.floor.create({
             data: {
@@ -146,6 +194,7 @@ export const addFloor = async (req, res) => {
 export const getFloors = async (req, res) => {
     try {
         const floors = await prisma.floor.findMany({
+            where: { is_delete: false },
             include: { location: true } // include location details in the response in case it's needed on the frontend
         });
         res.status(200).json(floors);
@@ -161,10 +210,11 @@ export const deleteFloor = async (req, res) => {
         if (!id) {
             return res.status(400).json({ error: 'กรุณาส่ง floorId เพื่อระบุชั้นที่ต้องการลบ' });
         }
-        const deletedFloor = await prisma.floor.delete({
+        const deletedFloor = await prisma.floor.update({
             where: {
                 floorId: Number(id),
-            }
+            },
+            data: { is_delete: true }
         });
         res.status(200).json({
             message: 'ลบชั้นสำเร็จ',
@@ -187,6 +237,18 @@ export const addRoom = async (req, res) => {
             roomStatus,
         } = req.body;
 
+        const existingRoom = await prisma.room.findFirst({
+            where: {
+                floorId: Number(floorId),
+                roomName: roomName.trim(),
+                is_delete: false // เช็คเฉพาะห้องที่ยังใช้งานอยู่
+            }
+        });
+
+        if (existingRoom) {
+            return res.status(400).json({ error: 'ห้องนี้มีอยู่แล้วในระบบ' });
+        }
+
         const room = await prisma.room.create({
             data: {
                 roomName,
@@ -205,6 +267,7 @@ export const addRoom = async (req, res) => {
 export const getRooms = async (req, res) => {
     try {
         const rooms = await prisma.room.findMany({
+            where: { is_delete: false },
             include: { floor: true }
         });
         res.status(200).json(rooms);
@@ -222,10 +285,11 @@ export const deleteRoom = async (req, res) => {
         if (!id) {
             return res.status(400).json({ error: 'กรุณาส่ง roomId เพื่อระบุห้องที่ต้องการลบ' });
         }
-        const deletedRoom = await prisma.room.delete({
+        const deletedRoom = await prisma.room.update({
             where: {
                 roomId: Number(id),
-            }
+            },
+            data: { is_delete: true }
         });
         res.status(200).json({
             message: 'ลบห้องสำเร็จ',
