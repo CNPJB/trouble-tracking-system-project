@@ -37,6 +37,7 @@ const AuditIssues = () => {
     const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedLocation, setSelectedLocation] = useState('');
     const [confirmMergeModal, setConfirmMergeModal] = useState({ isOpen: false });
+    const [confirmUrgentModal, setConfirmUrgentModal] = useState({ isOpen: false });
     const [activePanelTab, setActivePanelTab] = useState('merge');
     const { ticketGroups, isLoadingGroups, refetchGroups } = useTicketGroups();
     const [confirmUnmergeModal, setConfirmUnmergeModal] = useState({
@@ -59,6 +60,11 @@ const AuditIssues = () => {
     });
 
     const handleSelectTicket = (ticket) => {
+        if (activePanelTab === 'urgent' && ticket.isUrgent) {
+            setError("ตั๋วนี้ถูกตั้งเป็นตั๋วด่วนอยู่แล้ว ไม่จำเป็นต้องเลือกซ้ำ", "warning");
+            return;
+        }
+
         setSelectedMergeTickets(prevSelected => {
             // เช็คว่าตั๋วใบนี้ถูกเลือกไว้แล้วหรือยัง?
             const isAlreadySelected = prevSelected.some(t => t.ticketId === ticket.ticketId);
@@ -98,6 +104,19 @@ const AuditIssues = () => {
     const handleConfirmMerge = () => {
         if (selectedMergeTickets.length < 2) return;
         setConfirmMergeModal({ isOpen: true });
+    };
+
+    const handleTabChange = (tab) => {
+        if (activePanelTab !== tab) {
+            setActivePanelTab(tab);
+            setSelectedMergeTickets([]); // ล้างรายการที่เลือกเมื่อสลับแท็บ
+            reset(); // ล้างข้อความแจ้งเตือน
+        }
+    };
+
+    const handleConfirmUrgent = () => {
+        if (selectedMergeTickets.length === 0) return;
+        setConfirmUrgentModal({ isOpen: true });
     };
 
     const submitMerge = async () => {
@@ -173,6 +192,27 @@ const AuditIssues = () => {
         }
     };
 
+    const submitUrgentTickets = async () => {
+        if (selectedMergeTickets.length === 0) return;
+        startLoading();
+
+        try {
+            const ticketIds = selectedMergeTickets.map(t => t.ticketId);
+            const result = await ticketService.markUrgentTickets(ticketIds);
+            
+            if (result.success) {
+                setSuccess(`ตั้งค่าตั๋วด่วนสำเร็จ!`);
+                setSelectedMergeTickets([]);
+                setConfirmUrgentModal({ isOpen: false });
+                refetch();
+            }
+        } catch (error) {
+            console.error("Error setting urgent tickets:", error);
+            setError(error.response?.data?.message || "เกิดข้อผิดพลาดในการตั้งค่าตั๋วด่วน", "error");
+            setConfirmUrgentModal({ isOpen: false });
+        }
+    };
+
     // ==========================================
     // โซนฟังก์ชันจัดการ UI & Filters
     // ==========================================
@@ -239,7 +279,7 @@ const AuditIssues = () => {
                             >
                                 <CardPendingProblem
                                     data={ticket}
-                                    isMergeMode={activePanelTab === 'merge'}
+                                    isMergeMode={activePanelTab === 'merge' || activePanelTab === 'urgent'}
                                     isSelected={isSelected}
                                     onSelect={() => handleSelectTicket(ticket)}
                                     showSubTicketBadge={true}
@@ -278,14 +318,14 @@ const AuditIssues = () => {
 
                         <MergeManagementPanel
                             activeTab={activePanelTab}
-                            onTabChange={setActivePanelTab}
+                            onTabChange={handleTabChange}
                             allTickets={tickets}
                             selectedTickets={selectedMergeTickets}
                             groupedTicketsFromApi={ticketGroups}
                             isLoadingGroups={isLoadingGroups}
                             onUnmergeAction={handleUnmergeAction}
                             onReset={handleResetSelection}
-                            onConfirm={handleConfirmMerge}
+                            onConfirm={activePanelTab === 'urgent' ? handleConfirmUrgent : handleConfirmMerge}
                             onRemoveTicket={handleRemoveSelectedTicket}
                             isLoading={false}
                         />
@@ -336,6 +376,25 @@ const AuditIssues = () => {
                 cancelText="ปิด"
                 isLoading={loading.isLoading}
             />
+
+            {/* ตัวแปรช่วยคำนวณจำนวนตั๋วลูกเพื่อแสดงใน Modal */}
+            {(() => {
+                const totalSubTickets = selectedMergeTickets.reduce((sum, t) => sum + (t._count?.subTickets || 0), 0);
+                const subTicketMessage = totalSubTickets > 0 ? ` (และตั๋วลูกที่เกี่ยวข้องกันอีก ${totalSubTickets} รายการ)` : '';
+
+                return (
+                    <ConfirmButton
+                        isOpen={confirmUrgentModal.isOpen}
+                        title="ยืนยันการตั้งเป็นตั๋วด่วน"
+                        message={`คุณแน่ใจหรือไม่ว่าต้องการตั้งค่าตั๋วจำนวน ${selectedMergeTickets.length} รายการ${subTicketMessage} ให้เป็นตั๋วด่วนพิเศษ?`}
+                        onConfirm={submitUrgentTickets}
+                        onCancel={() => setConfirmUrgentModal({ isOpen: false })}
+                        confirmText={loading.isLoading ? "กำลังประมวลผล..." : "ยืนยัน"}
+                        cancelText="ปิด"
+                        isLoading={loading.isLoading}
+                    />
+                );
+            })()}
         </div>
     )
 }

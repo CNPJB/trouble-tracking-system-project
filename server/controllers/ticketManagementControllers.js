@@ -297,7 +297,8 @@ export const getUrgentTickets = async (req, res) => {
         const scoredTickets = pendingTickets.map(ticket => {
             const subCount = ticket._count?.subTickets || 0;
             const voteCount = ticket.upvotes?.length || 0;
-            const score = (subCount * 5) + voteCount;
+            // ให้บวกคะแนนเพิ่ม 1000 ถ้าแอดมินเซ็ตตั๋วนี้เป็นตั๋วด่วน (Manual Urgent)
+            const score = (subCount * 5) + voteCount + (ticket.isUrgent ? 999 : 0);
 
             // ลบ upvotes ทิ้งเพื่อไม่ให้ payload บวมเกินความจำเป็น
             const { upvotes, ...ticketData } = ticket;
@@ -316,6 +317,43 @@ export const getUrgentTickets = async (req, res) => {
     } catch (error) {
         console.error('Error fetching urgent tickets:', error);
         res.status(500).json({ success: false, message: 'Failed to fetch urgent tickets' });
+    }
+};
+
+export const markUrgentTickets = async (req, res) => {
+    try {
+        const { ticketIds } = req.body;
+
+        if (!ticketIds || !Array.isArray(ticketIds) || ticketIds.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "กรุณาระบุรหัสตั๋วที่ต้องการตั้งเป็นตั๋วด่วน"
+            });
+        }
+
+        // อัปเดตตั๋วที่อยู่ในลิสต์ให้เป็นตั๋วด่วน (isUrgent = true) รวมถึงตั๋วลูก (sub-tickets) ทั้งหมดที่ถูกรวมอยู่ด้วย
+        const updated = await prisma.ticket.updateMany({
+            where: {
+                OR: [
+                    { ticketId: { in: ticketIds } },
+                    { parentTicketId: { in: ticketIds } }
+                ],
+                isUrgent: false // กรองอัปเดตเฉพาะตั๋วที่ยังไม่ด่วน เพื่อลดภาระ DB
+            },
+            data: { isUrgent: true, updatedAt: new Date() }
+        });
+
+        res.status(200).json({
+            success: true,
+            message: `ตั้งค่าตั๋วด่วนสำเร็จจำนวน ${updated.count} รายการ`
+        });
+    } catch (error) {
+        console.error('Error marking urgent tickets:', error);
+        res.status(500).json({
+            success: false,
+            message: 'เกิดข้อผิดพลาดในการตั้งตั๋วด่วน',
+            error: error.message
+        });
     }
 };
 
@@ -349,11 +387,11 @@ export const updateTicketStatusAdmin = async (req, res) => {
         const currentStatus = ticket.ticketStatus;
 
         // 2. State Machine Validation
-        if (currentStatus === 'pending' && !['in_progress', 'rejected'].includes(ticketStatus)) {
-            return res.status(400).json({ success: false, message: "สถานะ 'รอรับเรื่อง' สามารถเปลี่ยนเป็น 'กำลังดำเนินการ' หรือ 'ปฏิเสธ' ได้เท่านั้น" });
+        if (currentStatus === 'pending' && !['in_progress', 'rejected', 'canceled'].includes(ticketStatus)) {
+            return res.status(400).json({ success: false, message: "สถานะ 'รอรับเรื่อง' สามารถเปลี่ยนเป็น 'กำลังดำเนินการ', 'ปฏิเสธ' หรือ 'ยกเลิก' ได้เท่านั้น" });
         }
-        if (currentStatus === 'in_progress' && !['resolved', 'rejected'].includes(ticketStatus)) {
-            return res.status(400).json({ success: false, message: "สถานะ 'กำลังดำเนินการ' สามารถเปลี่ยนเป็น 'เสร็จสิ้น' หรือ 'ปฏิเสธ' ได้เท่านั้น" });
+        if (currentStatus === 'in_progress' && !['resolved', 'rejected', 'canceled'].includes(ticketStatus)) {
+            return res.status(400).json({ success: false, message: "สถานะ 'กำลังดำเนินการ' สามารถเปลี่ยนเป็น 'เสร็จสิ้น', 'ปฏิเสธ' หรือ 'ยกเลิก' ได้เท่านั้น" });
         }
         if (['resolved', 'rejected', 'duplicate', 'canceled'].includes(currentStatus)) {
             return res.status(400).json({ success: false, message: "รายการนี้ถูกปิดไปแล้ว ไม่สามารถเปลี่ยนสถานะได้อีก" });
@@ -364,9 +402,9 @@ export const updateTicketStatusAdmin = async (req, res) => {
             return res.status(400).json({ success: false, message: "กรุณาระบุเหตุผลการปฏิเสธ" });
         }
 
-        // 4. จัดการอัปโหลดรูปภาพ (เฉพาะกรณี Resolved)
+        // 4. จัดการอัปโหลดรูปภาพ (ทั้งกรณี Resolved และ Rejected)
         const uploadedImagesData = [];
-        if (ticketStatus === 'resolved') {
+        if (ticketStatus === 'resolved' || ticketStatus === 'rejected') {
             if (files && files.length > 0) {
                 // ใช้เทคนิค Promise.all เหมือนใน addTicket
                 const uploadPromises = files.map((file) => uploadToCloudinary(file.buffer, 'TTS-img'));
@@ -375,16 +413,16 @@ export const updateTicketStatusAdmin = async (req, res) => {
                 cloudinaryResults.forEach((result) => {
                     uploadedImagesData.push({
                         imageUrl: result.secure_url,
-                        imageType: "after", // กำหนดว่าเป็นรูป "หลังซ่อม"
+                        imageType: "after", // กำหนดว่าเป็นรูป "หลังซ่อม" หรือ "ผลการปฏิบัติงาน"
                         imagePublicId: result.public_id,
                     });
                     // เก็บ Public ID ไว้เผื่อ Database พัง จะได้ตามไปลบทิ้งได้
                     uploadedImagesForRollback.push(result.public_id);
                 });
             } else {
-                // ถ้าแอดมินไม่ได้อัปโหลดรูป ให้ใช้รูป default อัตโนมัติ
+                // ถ้าแอดมินไม่ได้อัปโหลดรูป ให้ใช้รูป default อัตโนมัติ (แยกตามสถานะ)
                 uploadedImagesData.push({
-                    imageUrl: '/default-noimage-admin-1.jpg',
+                    imageUrl: ticketStatus === 'rejected' ? '/default-noimage-admin-reject.jpg' : '/default-noimage-admin-1.jpg',
                     imageType: "after",
                     imagePublicId: 'default-noimage'
                 });
@@ -475,6 +513,8 @@ export const updateTicketStatusAdmin = async (req, res) => {
                     newEqStatus = 'active'; // ซ่อมเสร็จ -> กลับมาพร้อมใช้งาน
                 } else if (ticketStatus === 'rejected') {
                     newEqStatus = 'broken'; // ปฏิเสธการซ่อม -> คืนค่ากลับไป broken
+                } else if (ticketStatus === 'canceled') {
+                    newEqStatus = 'active'; // ยกเลิกปัญหาก่อกวน -> สมมติว่าของไม่ได้พังจริง ให้คืนเป็น active
                 }
 
                 if (newEqStatus) {

@@ -156,4 +156,16 @@ export const ticketService = {
         }
     },
 
+    markUrgentTickets: async (ticketIds) => {
+        try {
+            const response = await axios.patch('/api/ticketManagement/markUrgentTickets', { ticketIds }, {
+                withCredentials: true
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Error marking urgent tickets:", error);
+            throw error;
+        }
+    },
+
 };

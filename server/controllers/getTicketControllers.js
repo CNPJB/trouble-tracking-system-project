@@ -129,6 +129,7 @@ export const getAllTickets = async (req, res) => {
                     adminNote: true,
                     rating: true,
                     comment: true,
+                    isUrgent: true,
                     createdAt: true,
                     updatedAt: true,
                     images: { select: { imageUrl: true, imageType: true } },

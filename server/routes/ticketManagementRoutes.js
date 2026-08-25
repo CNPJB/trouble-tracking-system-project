@@ -1,7 +1,7 @@
 import express from 'express';
 
 // Controllers
-import { getTicketGroups, mergeTickets, unmergeTickets, getUrgentTickets, updateTicketStatusAdmin } from '../controllers/ticketManagementControllers.js';
+import { getTicketGroups, mergeTickets, unmergeTickets, getUrgentTickets, updateTicketStatusAdmin, markUrgentTickets } from '../controllers/ticketManagementControllers.js';
 
 // Middleware
 import { verifyToken, requireAdmin } from '../middleware/authMiddleware.js';
@@ -33,6 +33,12 @@ router.get('/urgentTickets',
     verifyToken,
     requireAdmin,
     getUrgentTickets
+);
+
+router.patch('/markUrgentTickets',
+    verifyToken,
+    requireAdmin,
+    markUrgentTickets
 );
 
 router.patch('/updateTicketStatusAdmin/:id',

@@ -70,6 +70,15 @@ export const TicketActionPanel = ({ ticket, onUpdateStatus, isLoading }) => {
         });
     };
 
+    // 4. ยกเลิกปัญหา (Pending / In Progress -> Canceled) - สำหรับปัญหาก่อกวน ไม่ส่งอีเมล
+    const handleCancel = () => {
+        setErrorMsg('');
+        onUpdateStatus({
+            ticketStatus: 'canceled',
+            adminNote: adminNote.trim() ? adminNote : 'ถูกยกเลิกโดยผู้ดูแลระบบ'
+        });
+    };
+
     return (
         <div className="action-panel-container">
 
@@ -115,6 +124,14 @@ export const TicketActionPanel = ({ ticket, onUpdateStatus, isLoading }) => {
                                 disabled={isLoading}
                             >
                                 <FaTimes /> ปฏิเสธรายการนี้ (Reject)
+                            </button>
+                            <button
+                                className="btn-action subtle"
+                                onClick={handleCancel}
+                                disabled={isLoading}
+                                title="ยกเลิกตั๋วกรณีที่เป็นสแปมหรือก่อกวน (จะไม่ส่งอีเมลแจ้งเตือน)"
+                            >
+                                ยกเลิกปัญหา (Spam/ก่อกวน)
                             </button>
                         </div>
                     ) : (
@@ -191,6 +208,14 @@ export const TicketActionPanel = ({ ticket, onUpdateStatus, isLoading }) => {
                             disabled={isLoading}
                         >
                             <FaTimes /> ยกเลิก/ปฏิเสธงานซ่อม (Reject)
+                        </button>
+                        <button
+                            className="btn-action subtle"
+                            onClick={handleCancel}
+                            disabled={isLoading}
+                            title="ยกเลิกตั๋วกรณีที่เป็นสแปมหรือก่อกวน (จะไม่ส่งอีเมลแจ้งเตือน)"
+                        >
+                            ยกเลิกปัญหา (Spam/ก่อกวน)
                         </button>
                     </div>
                 </div>
