@@ -24,6 +24,7 @@ import { TicketLocationFilter } from '../../components/TicketLocationFilter.jsx'
 import { TicketStatusFilter } from '../../components/TIcketStatusFilter.jsx';
 import { ToggleSwitch } from '../../components/componentsAdmin/ToggleSwitch.jsx';
 import { AdvancedFilterPanel } from '../../components/AdvancedFilterPanel.jsx';
+import { TicketDateFilter } from '../../components/TicketDateFilter.jsx';
 
 const IssueManagement = () => {
     const navigate = useNavigate();
@@ -33,6 +34,8 @@ const IssueManagement = () => {
     const [selectedLocation, setSelectedLocation] = useState('');
     const [searchKeyword, setSearchKeyword] = useState('');
     const [isMyTasksOnly, setIsMyTasksOnly] = useState(false);
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
 
     const { tickets: normalTickets, isLoading, pagination, changePage, updateFilters
     } = useTickets({
@@ -49,7 +52,7 @@ const IssueManagement = () => {
         (selectedStatus !== 'pending,in_progress' ? 1 : 0);
 
     const hasActiveFilter = Boolean(
-        searchKeyword || selectedCategory || selectedLocation || isMyTasksOnly
+        searchKeyword || selectedCategory || selectedLocation || isMyTasksOnly || startDate || endDate
     );
 
     // ==========================================
@@ -81,6 +84,16 @@ const IssueManagement = () => {
     const handleStatusFilter = (status) => {
         setSelectedStatus(status || '');
         updateFilters({ status: status || undefined });
+    };
+
+    const handleStartDateChange = (date) => {
+        setStartDate(date);
+        updateFilters({ startDate: date || undefined });
+    };
+
+    const handleEndDateChange = (date) => {
+        setEndDate(date);
+        updateFilters({ endDate: date || undefined });
     };
 
     const handleClearAllFilters = () => {
@@ -140,10 +153,19 @@ const IssueManagement = () => {
     return (
         <div className="issue-management-container">
             <div className="top-toolbar-modern">
-                    <div className="searchbar">
-                        <SearchBar onSearch={handleSearch} />
-                    </div>
-                <div className="filter-panel-responsive">
+                <div className="searchbar">
+                    <SearchBar onSearch={handleSearch} />
+                </div>
+                <div className='filter-date-responsive-admin'>
+                    <TicketDateFilter
+                        startDate={startDate}
+                        endDate={endDate}
+                        onStartDateChange={handleStartDateChange}
+                        onEndDateChange={handleEndDateChange}
+                        disabled={isLoading}
+                    />
+                </div>
+                <div className="filter-panel-responsive" style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
                     <AdvancedFilterPanel
                         onClearAll={handleClearAllFilters}
                         activeFilterCount={activeDropdownFiltersCount}

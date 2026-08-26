@@ -15,6 +15,7 @@ import { LoadingSpinner, ToastAlert } from '../../components/LoadingSpinner.jsx'
 import { TicketCategoryFilter } from '../../components/TicketCategoryFilter.jsx';
 import { TicketLocationFilter } from '../../components/TicketLocationFilter.jsx';
 import { AdvancedFilterPanel } from '../../components/AdvancedFilterPanel.jsx';
+import { TicketDateFilter } from '../../components/TicketDateFilter.jsx';
 
 // hooks 
 import { useTickets } from '../../hooks/useTickets.js'
@@ -51,6 +52,8 @@ const AuditIssues = () => {
         (selectedCategory ? 1 : 0) +
         (selectedLocation ? 1 : 0);
 
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
 
     const lastTicketElementRef = useInfiniteScroll({
         isLoading: isLoading,
@@ -142,10 +145,10 @@ const AuditIssues = () => {
                 setSuccess(`รวมกลุ่มปัญหาสำเร็จ! ข้อมูลถูกโอนย้ายไปยังตั๋วหลัก ${primaryTicketId} เรียบร้อยแล้ว`);
                 setConfirmMergeModal({ isOpen: false });
                 setSelectedMergeTickets([]);
-                
+
                 // ใช้ Optimistic Update ทำงานแบบ Real-time โดยไม่ต้องรีเฟรช
                 updateTicketAfterMerge(primaryTicketId, duplicateTicketIds);
-                
+
                 // ดึงข้อมูลแค่กลุ่มด้านขวาใหม่ให้เป็นปัจจุบัน
                 await refetchGroups();
             }
@@ -168,7 +171,7 @@ const AuditIssues = () => {
         try {
             // ดึงข้อมูลออกมาจาก payload
             const { subTicketId, mainTicketId } = confirmUnmergeModal.payload;
-            
+
             // เตรียม payload ส่งให้ API (ส่งตัวใดตัวหนึ่งเท่านั้น)
             const apiPayload = confirmUnmergeModal.type === 'single' ? { subTicketId } : { mainTicketId };
 
@@ -199,7 +202,7 @@ const AuditIssues = () => {
         try {
             const ticketIds = selectedMergeTickets.map(t => t.ticketId);
             const result = await ticketService.markUrgentTickets(ticketIds);
-            
+
             if (result.success) {
                 setSuccess(`ตั้งค่าตั๋วด่วนสำเร็จ!`);
                 setSelectedMergeTickets([]);
@@ -233,6 +236,17 @@ const AuditIssues = () => {
         if (selectedMergeTickets.length > 0) handleResetSelection();
     };
 
+    const handleStartDateChange = (date) => {
+        setStartDate(date);
+        updateFilters({ startDate: date || undefined });
+    };
+
+    const handleEndDateChange = (date) => {
+        setEndDate(date);
+        updateFilters({ endDate: date || undefined });
+        if (selectedMergeTickets.length > 0) handleResetSelection();
+    };
+
     const handleClearAllFilters = () => {
         setSelectedCategory('');
         setSelectedLocation('');
@@ -253,7 +267,15 @@ const AuditIssues = () => {
                 <div className="searchbar">
                     <SearchBar onSearch={handleSearch} />
                 </div>
-
+                <div className='filter-date-responsive-audit'>
+                    <TicketDateFilter
+                        startDate={startDate}
+                        endDate={endDate}
+                        onStartDateChange={handleStartDateChange}
+                        onEndDateChange={handleEndDateChange}
+                        disabled={loading.isLoading}
+                    />
+                </div>
                 <div className="filter-panel-responsive-audit">
                     <AdvancedFilterPanel
                         onClearAll={handleClearAllFilters}
