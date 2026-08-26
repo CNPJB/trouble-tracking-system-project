@@ -13,7 +13,6 @@
     display: flex;
     flex-wrap: wrap;
     gap: 16px;
-    width: 100%;
     align-items: center;
 }
 
@@ -263,16 +262,12 @@
     }
 
     .top-toolbar-modern {
-        flex-direction: column;
+        margin-left: 50px;
     }
 
     .searchbar-container {
         width: 100%;
         min-width: 100%;
-    }
-
-    .filter-panel-responsive {
-        margin-left: 30%;
     }
 
     .issue-grid {
@@ -316,6 +311,12 @@
         font-size: 11px;
         padding: 4px 10px;
     }
+
+    .filter-wrapper-date-responsive-admin {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
 }
 
 
@@ -329,9 +330,10 @@
     .top-toolbar-modern {
         margin: 2.75rem 0 0.5rem 0;
         gap: 10px;
+        justify-content: center;
     }
     .filter-panel-responsive {
-        margin-left: auto;
+        margin-left: 80px;
     }
 
     .normal-section,

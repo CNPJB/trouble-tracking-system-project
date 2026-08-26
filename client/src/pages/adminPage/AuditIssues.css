@@ -10,6 +10,7 @@
   margin-bottom: 2rem;
   flex-wrap: wrap;
   gap: 16px;
+  align-items: center;
 }
 
 .filter-panel-responsive-audit {
@@ -204,10 +205,6 @@
   .audit-issues-filter-container {
     justify-content: center;
     margin-left: 50px;
-  }
-
-  .filter-panel-responsive-audit {
-    margin-left: auto;
   }
 }
 

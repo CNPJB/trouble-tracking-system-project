@@ -1,23 +1,5 @@
-import nodemailer from 'nodemailer';
-import dns from 'dns';
-
-// บังคับให้ Node.js ใช้ IPv4 เป็นหลักเพื่อแก้ปัญหาเครือข่าย ENETUNREACH (IPv6)
-dns.setDefaultResultOrder('ipv4first');
-
-// สร้าง Transporter สำหรับเชื่อมต่อกับ Server ของ Gmail ผ่าน Port 587
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false, // บังคับเป็น false สำหรับ port 587 (ใช้ STARTTLS แทน)
-    requireTLS: true,
-    auth: {
-        user: process.env.EMAIL_USER, // อีเมล Gmail ของคุณ
-        pass: process.env.EMAIL_PASS  // App Password 16 หลักจาก Google
-    }
-});
-
 /**
- * ฟังก์ชันสำหรับส่งอีเมลแจ้งเตือนสถานะตั๋วปัญหา
+ * ฟังก์ชันสำหรับส่งอีเมลแจ้งเตือนสถานะตั๋วปัญหาผ่าน Brevo REST API (HTTPS / Port 443)
  * @param {string} toEmail - อีเมลของผู้รับ (User ผู้แจ้ง หรือคนในตั๋วลูก/คนโหวต)
  * @param {Object} ticketData - ข้อมูลตั๋วปัญหา (ticketId, title, status, adminNote, ฯลฯ)
  */
@@ -26,6 +8,15 @@ export const sendTicketStatusEmail = async (toEmail, ticketData) => {
         console.warn(`[EmailService] Skip sending: No recipient email provided for Ticket ${ticketData.ticketId}`);
         return;
     }
+
+    const apiKey = process.env.BREVO_API_KEY;
+    if (!apiKey) {
+        console.error('[EmailService] Missing BREVO_API_KEY in environment variables.');
+        return;
+    }
+
+    const senderEmail = process.env.SENDER_EMAIL || process.env.BREVO_SENDER_EMAIL || process.env.EMAIL_USER || 'troubletrackingsystem@gmail.com';
+    const senderName = process.env.SENDER_NAME || 'TTS Notification';
 
     // 1. แปลงสถานะเป็นภาษาไทยให้ User อ่านง่าย
     const statusText = {
@@ -105,17 +96,38 @@ export const sendTicketStatusEmail = async (toEmail, ticketData) => {
         </div>
     `;
 
-    // 4. ส่งอีเมลออกไปแบบมีโครงสร้างดักข้อผิดพลาด
+    // 4. ส่งอีเมลผ่าน Brevo Transactional Email REST API (HTTPS / Port 443)
     try {
-        await transporter.sendMail({
-            from: `"TTS Notification" <${process.env.EMAIL_USER}>`,
-            to: toEmail,
-            subject: subject,
-            html: htmlContent
+        const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'api-key': apiKey,
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+                sender: {
+                    name: senderName,
+                    email: senderEmail
+                },
+                to: [
+                    {
+                        email: toEmail
+                    }
+                ],
+                subject: subject,
+                htmlContent: htmlContent
+            })
         });
-        console.log(`[EmailService] Email successfully sent for Ticket ${ticketData.ticketId} with status "${ticketData.ticketStatus}"`);
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || `HTTP ${response.status} ${response.statusText}`);
+        }
+
+        const result = await response.json().catch(() => ({}));
+        console.log(`[EmailService] Email successfully sent via Brevo for Ticket ${ticketData.ticketId} with status "${ticketData.ticketStatus}" (Message ID: ${result.messageId || '-'})`);
     } catch (error) {
-        // บันทึก Log เอาไว้เพื่อให้ระบบตรวจสอบได้ แต่จะไม่โยน Error ออกไปเพื่อหยุด Flow ของระบบหลัก
-        console.error(`[EmailService] Failed to send email for Ticket ${ticketData.ticketId}:`, error);
+        console.error(`[EmailService] Failed to send email via Brevo for Ticket ${ticketData.ticketId}:`, error.message || error);
     }
 };
