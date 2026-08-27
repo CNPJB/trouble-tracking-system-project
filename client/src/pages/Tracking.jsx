@@ -21,6 +21,7 @@ import { TicketCategoryFilter } from '../components/TicketCategoryFilter.jsx';
 import { TicketLocationFilter } from '../components/TicketLocationFilter.jsx';
 import { TicketStatusFilter } from '../components/TIcketStatusFilter.jsx';
 import { AdvancedFilterPanel } from '../components/AdvancedFilterPanel.jsx';
+import { TicketDateFilter } from '../components/TicketDateFilter.jsx';
 
 
 // Services
@@ -38,6 +39,8 @@ const Tracking = () => {
     const [selectedStatus, setSelectedStatus] = useState('pending,in_progress,duplicate,resolved,rejected');
     const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedLocation, setSelectedLocation] = useState('');
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
     const {
         tickets, isLoading, isFetchingNextPage, pagination,
         changePage, updateFilters, refetch, removeTicket, updateTicketStatus
@@ -115,6 +118,16 @@ const Tracking = () => {
     const handleStatusFilter = (status) => {
         setSelectedStatus(status || '');
         updateFilters({ status: status || undefined });
+    };
+
+    const handleStartDateChange = (date) => {
+        setStartDate(date);
+        updateFilters({ startDate: date || undefined });
+    };
+
+    const handleEndDateChange = (date) => {
+        setEndDate(date);
+        updateFilters({ endDate: date || undefined });
     };
 
     const handleClearAllFilters = () => {
@@ -262,7 +275,16 @@ const Tracking = () => {
                     <div className="searchbar">
                         <SearchBar onSearch={handleSearch} />
                     </div>
-                    <div className="filter-panel-responsive-tracking">
+                    <div className='filter-date-responsive-tracking'>
+                        <TicketDateFilter
+                            startDate={startDate}
+                            endDate={endDate}
+                            onStartDateChange={handleStartDateChange}
+                            onEndDateChange={handleEndDateChange}
+                            disabled={loading.isLoading}
+                        />
+                    </div>
+                    <div className="filter-panel-responsive-tracking" style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
                         <AdvancedFilterPanel
                             onClearAll={handleClearAllFilters}
                             activeFilterCount={activeDropdownFiltersCount}

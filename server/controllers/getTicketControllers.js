@@ -105,6 +105,23 @@ export const getAllTickets = async (req, res) => {
             whereClause.rating = { gt: 0 };
         }
 
+        // กรองตามช่วงวันที่ (Date Range) จาก createdAt
+        if (req.query.startDate || req.query.endDate) {
+            whereClause.createdAt = {};
+            if (req.query.startDate) {
+                // เริ่มต้นที่เวลา 00:00:00 ของวันนั้น
+                const start = new Date(req.query.startDate);
+                start.setHours(0, 0, 0, 0);
+                whereClause.createdAt.gte = start;
+            }
+            if (req.query.endDate) {
+                // สิ้นสุดที่เวลา 23:59:59 ของวันนั้น
+                const end = new Date(req.query.endDate);
+                end.setHours(23, 59, 59, 999);
+                whereClause.createdAt.lte = end;
+            }
+        }
+
         const [tickets, totalTickets] = await prisma.$transaction([
             prisma.ticket.findMany({
                 where: whereClause,
