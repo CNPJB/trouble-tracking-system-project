@@ -450,8 +450,11 @@ export const updateTicketStatusAdmin = async (req, res) => {
             // ประทับตราเวลา (Timestamps)
             if (ticketStatus === 'in_progress') {
                 updateData.timestampInprogress = new Date();
-            } else if (['resolved', 'rejected'].includes(ticketStatus)) {
+            } else if (ticketStatus === 'resolved') {
                 updateData.timestampFinished = new Date();
+            } else if (ticketStatus === 'rejected') {
+                updateData.timestampFinished = new Date(); // เก็บไว้เผื่อเช็คการปิดตั๋ว
+                updateData.timestampRejected = new Date();
             }
 
             // สั่งอัปเดตตั๋ว
@@ -540,8 +543,11 @@ export const updateTicketStatusAdmin = async (req, res) => {
 
             if (ticketStatus === 'in_progress') {
                 subTicketUpdateData.timestampInprogress = new Date();
-            } else if (['resolved', 'rejected'].includes(ticketStatus)) {
+            } else if (ticketStatus === 'resolved') {
                 subTicketUpdateData.timestampFinished = new Date();
+            } else if (ticketStatus === 'rejected') {
+                subTicketUpdateData.timestampFinished = new Date();
+                subTicketUpdateData.timestampRejected = new Date();
             }
 
             await tx.ticket.updateMany({
