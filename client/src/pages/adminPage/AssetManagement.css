@@ -53,9 +53,10 @@
 }
 
 .btn-toggle-all:hover {
-  background-color: var(--tbs-green-active);
+  background-color: green;
   /* สีเข้มขึ้นตอนชี้เมาส์ */
 }
+
 
 .layout-table {
   background-color: #ffffff;

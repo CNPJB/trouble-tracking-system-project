@@ -100,7 +100,7 @@ export const ImportEquipments = () => {
                 />
             )}
 
-            {errorList.length > 0 && (
+            {/* {errorList.length > 0 && (
                 <div className="custom-modal-overlay">
                     <div className="custom-modal-content">
                         
@@ -128,7 +128,7 @@ export const ImportEquipments = () => {
                         
                     </div>
                 </div>
-            )}
+            )} */}
         </div>
     );
 };
