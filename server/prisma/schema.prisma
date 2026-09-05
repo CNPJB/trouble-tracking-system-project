@@ -150,6 +150,7 @@ model Ticket {
   updatedAt           DateTime       @updatedAt @map("updated_at") @db.Timestamp(6)
   timestampInprogress DateTime?      @map("timestamp_inprogress") @db.Timestamp(6)
   timestampFinished   DateTime?      @map("timestamp_finished") @db.Timestamp(6)
+  timestampRejected   DateTime?      @map("timestamp_rejected") @db.Timestamp(6)
   isUrgent            Boolean        @default(false) @map("is_urgent")
   images              TicketImage[]
   admin               User?          @relation("AdminTickets", fields: [adminId], references: [userId])
