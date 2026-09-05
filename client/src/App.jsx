@@ -7,6 +7,7 @@ import './index.css';
 // Components
 import Navbar from "./components/Navbar.jsx";
 import { AdminLayout } from "./components/componentsAdmin/AdminLayout.jsx";
+import { AdminPageSkeleton } from "./components/componentsAdmin/AdminPageSkeleton.jsx";
 
 // Pages
 import Login from "./pages/Login.jsx";
@@ -63,28 +64,28 @@ function App() {
                 }>
                   {/* หน้าลูกๆ ไม่ต้องเขียน Layout ซ้ำแล้ว */}
                   <Route path="Management" element={
-                    <Suspense fallback={<div>Loading...</div>}></Suspense>
+                    <Suspense fallback={<AdminPageSkeleton />}></Suspense>
                   } />
                   <Route path="AuditIssues" element={
-                    <Suspense fallback={<div>Loading...</div>}><AuditIssues /></Suspense>
+                    <Suspense fallback={<AdminPageSkeleton />}><AuditIssues /></Suspense>
                   } />
                   <Route path="IssueManagement" element={
-                    <Suspense fallback={<div>Loading...</div>}><IssueManagement /></Suspense>
+                    <Suspense fallback={<AdminPageSkeleton />}><IssueManagement /></Suspense>
                   } />
                   <Route path="IssueManagement/:ticketId" element={
-                    <Suspense fallback={<div>Loading...</div>}><IssueManagementDetail /></Suspense>
+                    <Suspense fallback={<AdminPageSkeleton />}><IssueManagementDetail /></Suspense>
                   } />
                   <Route path="AssetManagement" element={
-                    <Suspense fallback={<div>Loading...</div>}><AssetManagement /></Suspense>
+                    <Suspense fallback={<AdminPageSkeleton />}><AssetManagement /></Suspense>
                   } />
                   <Route path="UserManagement" element={
-                    <Suspense fallback={<div>Loading...</div>}><UserManagement /></Suspense>
+                    <Suspense fallback={<AdminPageSkeleton />}><UserManagement /></Suspense>
                   } />
                   <Route path="LocationManagement" element={
-                    <Suspense fallback={<div>Loading...</div>}><LocationManagement /></Suspense>
+                    <Suspense fallback={<AdminPageSkeleton />}><LocationManagement /></Suspense>
                   } />
                   <Route path="Categories" element={
-                    <Suspense fallback={<div>Loading...</div>}><Categories /></Suspense>
+                    <Suspense fallback={<AdminPageSkeleton />}><Categories /></Suspense>
                   } />
                 </Route>
               </Routes>
