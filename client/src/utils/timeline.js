@@ -11,8 +11,8 @@ export const getTimelineData = (ticket,  formatdate) => {
         duration: "รอแอดมินตรวจสอบ"
     });
 
-    // 3. ขั้นตอนที่ 2: กำลังดำเนินการ (แสดงเมื่อสถานะไม่ใช่ pending)
-    if (ticket?.ticketStatus !== "pending") {
+    // 3. ขั้นตอนที่ 2: กำลังดำเนินการ (แสดงเมื่อมีข้อมูลเวลาเริ่มดำเนินการ หรือสถานะเป็น in_progress/resolved)
+    if (ticket?.timestampInprogress || ticket?.ticketStatus === "in_progress" || ticket?.ticketStatus === "resolved") {
         timeline.push({
             status: "กำลังดำเนินการ",
             date: formatDate(ticket?.timestampInprogress),
@@ -30,6 +30,17 @@ export const getTimelineData = (ticket,  formatdate) => {
             time: ticket?.timestampFinished ? new Date(ticket.timestampFinished).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + " น." : "-",
             color: "green",
             duration: "ดำเนินการเสร็จสิ้น"
+        });
+    }
+
+    // 5. ขั้นตอนพิเศษ: ปฏิเสธรายการ (แสดงเมื่อสถานะเป็น rejected)
+    if (ticket?.ticketStatus === "rejected") {
+        timeline.push({
+            status: "ปฏิเสธรายการซ่อม",
+            date: formatDate(ticket?.timestampRejected),
+            time: ticket?.timestampRejected ? new Date(ticket.timestampRejected).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) + " น." : "-",
+            color: "rejected",
+            duration: "รายการถูกปฏิเสธโดยผู้ดูแลระบบ"
         });
     }
 

@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import 'react-loading-skeleton/dist/skeleton.css'
 
 // Custom Hooks
 import { useLoadingState } from '../hooks/useLoadingState.js';
@@ -10,7 +11,7 @@ import { useInfiniteScroll } from '../hooks/useInfiniteScroll.js';
 // Components
 import { LoadingSpinner, ToastAlert } from '../components/LoadingSpinner.jsx';
 import { SearchBar } from '../components/SearchBar.jsx';
-import { CardPendingProblem } from '../components/CardPendingProblem.jsx';
+import { CardPendingProblem, CardPendingSkeleton } from '../components/CardPendingProblem.jsx';
 import { TrackingSidebar } from '../components/TrackingSidebar.jsx';
 import { ConfirmButton } from '../components/ConfirmButton.jsx';
 import { StarRating } from '../components/StarRating.jsx';
@@ -299,6 +300,12 @@ const Tracking = () => {
 
                 {/* พื้นที่แสดงการ์ด */}
                 <div className="ticket-grid">
+                    {/* Loading Skeleton */}
+                    {isLoading && tickets.length === 0 && (
+                        Array.from({ length: 15 }).map((_, index) => (
+                            <CardPendingSkeleton key={`skeleton-${index}`} />
+                        ))
+                    )}
                     {tickets.map((ticket, index) => (
                         <div ref={tickets.length === index + 1 ? lastTicketElementRef : null} key={ticket.ticketId}>
                             <CardPendingProblem

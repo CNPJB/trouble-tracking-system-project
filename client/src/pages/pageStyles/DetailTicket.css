@@ -334,15 +334,19 @@
 
 /* สีของจุด */
 .dot.red {
-    background-color: #ff4d4d;
+    background-color: var(--status-pending-bg);
 }
 
 .dot.yellow {
-    background-color: #ffcc00;
+    background-color: var(--status-in-progress-bg);
 }
 
 .dot.green {
-    background-color: #4caf50;
+    background-color: var(--status-resolved-bg);
+}
+
+.dot.rejected {
+    background-color: var(--status-reject-bg);
 }
 
 /* เส้นเชื่อมแนวตั้ง */
@@ -352,7 +356,7 @@
     position: absolute;
     top: 20px;
     /* เริ่มลากจากใต้จุดแรก */
-    bottom: -10px;
+    bottom: -90px;
     /* ลากยาวลงไปหาจุดถัดไป */
     left: 50%;
     transform: translateX(-50%);

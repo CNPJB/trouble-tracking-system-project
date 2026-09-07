@@ -27,7 +27,7 @@ const AssetManagement = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [isUpdateConfirmOpen, setIsUpdateConfirmOpen] = useState({ isOpen: false });
-  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState( false );
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const { loading, startLoading, setError, setSuccess, reset, clearError } = useLoadingState();
   const { equipment, filterCategory, setFilterCategory, filterLocation, setFilterLocation, searchQuery, setSearchQuery, softDeleteEquipment, refetch, EquipmentCtgs } = useEquipment();
   const [selectedDetails, setSelectedDetails] = useState([]);
@@ -117,11 +117,13 @@ const AssetManagement = () => {
 
     if (isAllSelected) {
       setSelectedEquipments([]);
+      setSelectedId(null);
       // console.log("ค่าที่เลือก",[])
     } else {
       const allIds = equipment.map(item => String(item.equipmentId));
       setSelectedEquipments(allIds);
       // console.log("ค่าที่เลือก",allIds)
+      setSelectedId(null); // ล้าง selectedId เพราะตอนนี้เราเลือกหลายรายการ
     }
 
 
@@ -253,7 +255,7 @@ const AssetManagement = () => {
     if (targetIds.length === 0) {
       setIsDeleteConfirmOpen(false);
       // แนะนำให้ใช้ setError แทน alert เพื่อให้ UI เป็นไปในทางเดียวกันครับ
-      setError("กรุณาเลือกครุภัณฑ์ที่ต้องการลบ", "warning"); 
+      setError("กรุณาเลือกครุภัณฑ์ที่ต้องการลบ", "warning");
       return;
     }
 
@@ -266,9 +268,9 @@ const AssetManagement = () => {
     try {
       // วนลูปส่งคำสั่ง Soft Delete ไปที่ API ตามจำนวน ID ที่เลือก
       for (const id of targetIds) {
-        await softDeleteEquipment(id); 
+        await softDeleteEquipment(id);
       }
-      
+
       setSuccess(`ลบข้อมูลสำเร็จจำนวน ${targetIds.length} รายการ`);
       await refetch(); // รีเฟรชตาราง ข้อมูลที่ลบจะหายไปทันที
 
@@ -316,13 +318,14 @@ const AssetManagement = () => {
                 <th style={{ width: '50px', textAlign: 'center' }}>
                   <button
                     type="button"
-                    className="btn-toggle-all" // เพิ่มคลาสเผื่อแต่ง CSS ให้สวยๆ
+                    className="btn-toggle-all"
                     onClick={handleSelectAll}
+                    // 🌟 เพิ่มบรรทัดนี้: เช็คเงื่อนไขเดียวกับข้อความเป๊ะๆ
+                    style={{
+                      backgroundColor: selectedEquipments.length === equipment.length && equipment.length > 0 ? '#dc3545' : '#28a745'
+                    }}
                   >
-                    {/* ถ้าเลือกครบโชว์คำว่า "ยกเลิก" ถ้ายังเลือกไม่ครบโชว์คำว่า "เลือกทั้งหมด" */}
-                    {selectedEquipments.length === equipment.length && equipment.length > 0
-                      ? 'ยกเลิกทั้งหมด'
-                      : 'เลือกทั้งหมด'}
+                    {selectedEquipments.length === equipment.length && equipment.length > 0 ? 'ยกเลิกทั้งหมด' : 'เลือกทั้งหมด'}
                   </button>
                 </th>
                 <th>ชื่อครุภัณฑ์</th>
@@ -525,8 +528,8 @@ const AssetManagement = () => {
 
             {/* ลิงก์ดาวน์โหลดไฟล์ตัวอย่าง */}
             <a
-              href="/template-equipment.csv"
-              download="template-equipment.csv"
+              href="/template-equipment.xlsx"
+              download="template-equipment.xlsx"
               style={{
                 color: '#6c757d', /* สีเทาเข้ม หรือเปลี่ยนเป็นสีฟ้า #2196f3 ก็ได้ */
                 fontSize: '14px',
