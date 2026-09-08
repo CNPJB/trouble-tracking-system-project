@@ -119,7 +119,7 @@
 
 @media (max-width: 1200px) {
   .audit-issues-container {
-    padding: 10px;
+    padding: 10px 0px 0px 10px;
   }
 
   .audit-issues-content {
@@ -220,11 +220,6 @@
     gap: 10px;
     max-width: 100vw;
   }
-
-  .filter-panel-responsive-audit {
-    padding-right: 15px;
-  }
-
   .audit-right-panel {
     max-width: 300px;
   }
