@@ -73,6 +73,16 @@
     max-width: 95px;
 }
 
+/* ทำให้ wrapper ของ datepicker กว้างพอดีกับ input ข้างใน */
+.react-datepicker-wrapper {
+    width: auto;
+    display: inline-block;
+}
+
+.custom-date-input::placeholder {
+    color: #94a3b8;
+}
+
 .date-input:disabled {
     cursor: not-allowed;
 }
@@ -140,3 +150,8 @@
     .date-filter-group {
     }
 } 
+
+/* ป้องกันปฏิทินถูกบังจาก Component อื่นๆ (แก้ปัญหา Layer) */
+.react-datepicker-popper {
+    z-index: 9999 !important;
+}

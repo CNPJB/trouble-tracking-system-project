@@ -10,6 +10,8 @@ import { ConfirmButton } from '../../components/ConfirmButton.jsx';
 import { TicketActionPanel } from '../../components/componentsAdmin/TicketActionPanel.jsx';
 import { LoadingSpinner, ToastAlert } from '../../components/LoadingSpinner.jsx';
 import { FaArrowLeft, FaMapMarkerAlt, FaUser, FaClock, FaBox, FaLayerGroup } from 'react-icons/fa';
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 
 // Styles
 import './IssueManagementDetail.css';
@@ -90,9 +92,9 @@ const IssueManagementDetail = () => {
     const beforeImages = ticket?.images?.filter(img => img.imageType === 'before') || [];
     const afterImages = ticket?.images?.filter(img => img.imageType === 'after') || [];
 
-    // if (isFetching) {
-    //     return <LoadingSpinner isLoading={true} message="กำลังโหลดรายละเอียดปัญหา..." />;
-    // }
+    if (isFetching) {
+        return <IssueManagementDetailSkeleton />;
+    }
 
     // จัดการ State กรณีหาตั๋วไม่เจอ หรือ Error
     if (fetchError || !ticket) {
@@ -329,6 +331,65 @@ const IssueManagementDetail = () => {
                 isLoading={loading.isLoading}
             />
         </div>
+    );
+};
+
+export const IssueManagementDetailSkeleton = () => {
+    return (
+        <SkeletonTheme baseColor="#ebebeb" highlightColor="#ccc7c7" duration={2}>
+            <div className="issue-detail-container">
+                <div className="detail-header">
+                    <Skeleton width={100} height={36} borderRadius={8} />
+                    <div className="title-area" style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+                        <Skeleton width={200} height={32} />
+                        <Skeleton width={120} height={28} borderRadius={16} />
+                    </div>
+                </div>
+
+                <div className="detail-layout">
+                    <div className="detail-left-panel">
+                        <div className="info-card-detail">
+                            <Skeleton width="80%" height={32} style={{ marginBottom: '15px' }} />
+                            <Skeleton width="100%" height={20} count={2} style={{ marginBottom: '20px' }} />
+
+                            <div className="ticket-img-admin-zone" style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
+                                <div className="before-img-admin" style={{ flex: 1 }}>
+                                    <Skeleton width="100%" height={200} borderRadius={8} />
+                                </div>
+                                <div className="after-img-admin" style={{ flex: 1 }}>
+                                    <Skeleton width="100%" height={200} borderRadius={8} />
+                                </div>
+                            </div>
+
+                            <hr className="divider" style={{ margin: '20px 0' }} />
+
+                            <div className="meta-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                                {Array.from({ length: 4 }).map((_, i) => (
+                                    <div key={i} className="meta-item" style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+                                        <Skeleton circle={true} width={40} height={40} />
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                                            <Skeleton width={100} height={16} />
+                                            <Skeleton width={150} height={20} />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="detail-right-panel">
+                        <div className="action-card">
+                            <Skeleton width="60%" height={24} style={{ marginBottom: '20px' }} />
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                                <Skeleton width="100%" height={40} borderRadius={8} />
+                                <Skeleton width="100%" height={40} borderRadius={8} />
+                                <Skeleton width="100%" height={40} borderRadius={8} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </SkeletonTheme>
     );
 };
 
