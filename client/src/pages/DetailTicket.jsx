@@ -8,6 +8,8 @@ import { getTimelineData } from '../utils/timeline.js';
 import { useTicketDetail } from '../hooks/useTicketDetail.js';
 // Components
 import { StarRating } from '../components/StarRating.jsx';
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 // Styles
 import './pageStyles/DetailTicket.css';
 
@@ -26,7 +28,7 @@ const DetailTicket = () => {
         'canceled': 'ยกเลิก',
         'duplicate': 'ถูกรวม'
     };
-    if (isLoading) return <div>กำลังโหลด...</div>;
+    if (isLoading) return <DetailTicketSkeleton />;
     if (error) return <div>❌ {error}</div>;
     if (!ticket) return <div>ไม่พบข้อมูล</div>;
 
@@ -240,5 +242,82 @@ const DetailTicket = () => {
 
     )
 }
+
+export const DetailTicketSkeleton = () => {
+    return (
+        <SkeletonTheme baseColor="#ebebeb" highlightColor="#ccc7c7" duration={2}>
+            <div className="container-detail">
+                <div className="detail-ticket">
+                    <div className="header-ticket">
+                        <div className="type-status-ticket">
+                            <Skeleton width={100} height={36} borderRadius={15} style={{ marginLeft: 'auto', display: 'block' }} />
+                        </div>
+                        <div className="header-ticket-title">
+                            <Skeleton width="80%" height={32} />
+                        </div>
+                        <div className="starRating-container-wrapper">
+                            <div className="starRating">
+                                <div className="star-wrapper-main">
+                                    <div className="star">
+                                        <Skeleton width={120} height={20} />
+                                    </div>
+                                </div>
+                                <Skeleton width={100} height={20} style={{ marginLeft: 'auto' }} />
+                            </div>
+                        </div>
+                        <div className="location" style={{ marginTop: '20px' }}>
+                            <div className="building">
+                                <Skeleton width="60%" height={20} />
+                            </div>
+                            <div className="floor">
+                                <Skeleton width="40%" height={20} />
+                            </div>
+                            <div className="ticket-description">
+                                <Skeleton width="100%" height={20} count={3} />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="ticket-img">
+                        <div className="before-img-ticket">
+                            <div className="img-group">
+                                <Skeleton width="100%" height={300} borderRadius={8} />
+                            </div>
+                        </div>
+                        <div className="after-img-ticket">
+                            <div className="img-group">
+                                <Skeleton width="100%" height={300} borderRadius={8} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="roadmap-working">
+                <div className="main-comment">
+                    <div className="comment">
+                        <Skeleton width="80%" height={20} count={2} />
+                    </div>
+                </div>
+                <div className="timeline-container">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                        <div key={i} className="timeline-item">
+                            <div className="timeline-content-left">
+                                <Skeleton width={80} height={20} />
+                                <Skeleton width={100} height={16} />
+                            </div>
+                            <div className="timeline-middle">
+                                <Skeleton circle={true} width={20} height={20} />
+                                {i !== 2 && <div className="line"></div>}
+                            </div>
+                            <div className="timeline-content-right">
+                                <Skeleton width={60} height={20} />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </SkeletonTheme>
+    );
+};
 
 export default DetailTicket

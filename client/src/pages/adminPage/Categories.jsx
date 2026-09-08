@@ -45,7 +45,7 @@ const Categories = () => {
     const handleConfirmSaveCategory = (e) => {
         if (e) e.preventDefault();
         if (!formData.ticketCtgName || !formData.ticketCtgStatus) {
-            setError('กรุณากรอกข้อมูลให้ครบถ้วน');
+            setError('กรุณากรอกข้อมูลให้ครบถ้วน', 'warning');
             return;
         }
         setConfirmSubmit({ isOpen: true, });
@@ -77,7 +77,8 @@ const Categories = () => {
             setConfirmSubmit({ isOpen: false, message: '' });
         } catch (error) {
             console.error("บันทึกข้อมูลไม่สำเร็จ:", error);
-            setError('เพิ่มข้อมูลไม่สำเร็จ', 'error');
+            setError('เพิ่มข้อมูลไม่สำเร็จหรือเกิดข้อผิดพลาด', 'error');
+            setConfirmSubmit({ isOpen: false, message: '' });
         }
     };
     const handleCOnfirmDeleteCategory = (e) => {
@@ -86,7 +87,8 @@ const Categories = () => {
     };
     const handleDeleteCategory = async () => {
         if (!selectedId) {
-            setError('กรุณาเลือกประเภทปัญหาที่ต้องการลบ');
+            setError('กรุณาเลือกประเภทปัญหาที่ต้องการลบ', 'warning');
+            setConfirmDelete({ isOpen: false, id: null });
             return;
         }
         try {
@@ -96,7 +98,7 @@ const Categories = () => {
             setSelectedId(null);
         } catch (error) {
             console.error("ลบข้อมูลไม่สำเร็จ:", error);
-            setError('ลบข้อมูลไม่สำเร็จ', 'error');
+            setError('ลบข้อมูลไม่สำเร็จหรือเกิดข้อผิดพลาด', 'error');
         }
         setConfirmDelete({ isOpen: false, id: null });
         setFormData({
@@ -114,8 +116,16 @@ const Categories = () => {
         });
         setSelectedId(null);
     };
+    const clearFormData = () => {
+        setFormData({
+            ticketCtgId: '',
+            ticketCtgName: '',
+            ticketCtgStatus: ''
+        });
+        setSelectedId(null);
+    }
     return (
-        <div className="Categories-management">
+        <div className="Categories-management" >
             <LoadingSpinner
                 isLoading={loading.isLoading}
                 message="กำลังประมวลผล..."
@@ -164,28 +174,8 @@ const Categories = () => {
                                 value={formData.ticketCtgName || ''}
                                 onChange={handleInputChange}
                             />
-                            {formData.ticketCtgName && (
-                                <button
-                                    type="button"
-                                    onClick={handleClearField}
-                                    style={{
-                                        position: 'absolute',
-                                        right: '10px',
-                                        top: '38px', // ปรับตำแหน่งความสูงตามดีไซน์ของคุณ
-                                        background: 'transparent',
-                                        border: 'none',
-                                        cursor: 'pointer',
-                                        fontSize: '16px',
-                                        color: '#888',
-                                        fontWeight: 'bold'
-                                    }}
-                                    title="เคลียร์ข้อความ"
-                                >
-                                    ✕
-                                </button>
-                            )}
                         </div>
-                        <select
+                        <select 
                             value={formData.ticketCtgStatus || ''}
 
                             onChange={(e) => setFormData({ ...formData, ticketCtgStatus: e.target.value })}
@@ -197,12 +187,15 @@ const Categories = () => {
                             <option value="disable">ปิดใช้งาน</option>
                         </select>
                     </form>
-                    <div className="btn">
-                        <button className="btn-confirm" onClick={handleConfirmSaveCategory}>
+                    <div className="btn-Categories">
+                        <button className="btn-confirm-Categories" onClick={handleConfirmSaveCategory}>
                             บันทึก
                         </button>
-                        <button className="btn-cancel" onClick={handleCOnfirmDeleteCategory}>
+                        <button className="btn-cancel-Categories" onClick={handleCOnfirmDeleteCategory}>
                             ลบ
+                        </button>
+                        <button className="btn-clear-Categories" onClick={clearFormData}>
+                            เคลียร์
                         </button>
                     </div>
                     <ConfirmButton

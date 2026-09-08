@@ -13,6 +13,8 @@ import { useEquipmentValidation } from '../hooks/useEquipmentValidation.js';
 import ImageUploader from '../components/ImageUploader.jsx';
 import { ConfirmButton } from '../components/ConfirmButton.jsx';
 import { LoadingSpinner, ToastAlert } from '../components/LoadingSpinner.jsx';
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 
 // Services
 import { ticketService } from '../services/ticketService.js';
@@ -322,7 +324,7 @@ function EditIssue() {
     const isEquipmentInvalid = isEquipmentCategory && hasEquipmentInput && equipmentValidation.status !== 'success';
 
     if (isTicketLoading) {
-        return <div className="edit-loading-box">กำลังโหลดรายละเอียดข้อมูลปัญหา...</div>;
+        return <EditIssueSkeleton />;
     }
 
     // หน้าจอเมื่อเกิดข้อผิดพลาดในการดึงข้อมูลเก่า
@@ -510,5 +512,62 @@ function EditIssue() {
         </div >
     );
 }
+
+export const EditIssueSkeleton = () => {
+    return (
+        <SkeletonTheme baseColor="#ebebeb" highlightColor="#ccc7c7" duration={2}>
+            <div className="edit-issue-container">
+                <div className="edit-header">
+                    <Skeleton width={40} height={40} borderRadius={8} />
+                    <Skeleton width={300} height={32} style={{ marginLeft: '15px' }} />
+                </div>
+                <div className="edit-form-section" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <div className="half-top-panel" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                        <div className="form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                            <div className="form-group">
+                                <Skeleton width={100} height={20} style={{ marginBottom: '8px' }} />
+                                <Skeleton height={42} borderRadius={8} />
+                            </div>
+                            <div className="form-group">
+                                <Skeleton width={100} height={20} style={{ marginBottom: '8px' }} />
+                                <Skeleton height={42} borderRadius={8} />
+                            </div>
+                        </div>
+                        <div className="form-row">
+                            <div className="form-group">
+                                <Skeleton width={100} height={20} style={{ marginBottom: '8px' }} />
+                                <Skeleton height={42} borderRadius={8} />
+                            </div>
+                        </div>
+                        <div className="form-row form-row-responsive" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                            <div className="form-group">
+                                <Skeleton width={80} height={20} style={{ marginBottom: '8px' }} />
+                                <Skeleton height={42} borderRadius={8} />
+                            </div>
+                            <div className="form-group">
+                                <Skeleton width={80} height={20} style={{ marginBottom: '8px' }} />
+                                <Skeleton height={42} borderRadius={8} />
+                            </div>
+                        </div>
+                        <div className="form-group">
+                            <Skeleton width={150} height={20} style={{ marginBottom: '8px' }} />
+                            <Skeleton height={80} borderRadius={8} />
+                        </div>
+                    </div>
+                    <div className="half-bottom-panel">
+                        <Skeleton width={120} height={20} style={{ marginBottom: '10px' }} />
+                        <div style={{ display: 'flex', gap: '15px' }}>
+                            <Skeleton width={100} height={100} borderRadius={8} />
+                            <Skeleton width={100} height={100} borderRadius={8} />
+                        </div>
+                    </div>
+                    <div className="form-actions-compact" style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end' }}>
+                        <Skeleton width={150} height={42} borderRadius={8} />
+                    </div>
+                </div>
+            </div>
+        </SkeletonTheme>
+    );
+};
 
 export default EditIssue;
