@@ -16,6 +16,7 @@ export const getMostCategoriesOfProblems = async (req, res) => {
                     _count: "desc"
                 }
             },
+            take: 5
         });
 
         const formattedCategories = MostCategories.map(category => ({
@@ -34,6 +35,9 @@ export const getMostCategoriesOfProblems = async (req, res) => {
 export const MostUpvotedTickets = async (req, res) => {
     try {
         const mostUpvotedTickets = await prisma.Ticket.findMany({
+            where: {
+                ticketStatus: 'pending'
+            },
             orderBy: {
                 upvotes: {
                     _count: "desc"
