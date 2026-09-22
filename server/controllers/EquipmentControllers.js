@@ -124,11 +124,11 @@ export const uploadEquipments = async (req, res) => {
             .toLowerCase();
     };
     const existingEquipments = await prisma.equipment.findMany({
-        select: { equipmentCode: true }
+        select: { equipmentId: true, equipmentCode: true, is_delete: true }
     });
 
-    const existingSet = new Set(
-        existingEquipments.map(e => e.equipmentCode?.trim())
+    const existingMap = new Map(
+        existingEquipments.map(e => [e.equipmentCode?.trim(), e])
     );
 
     const seenInFile = new Set();
@@ -182,6 +182,7 @@ export const uploadEquipments = async (req, res) => {
         }
 
         const validDataToInsert = [];
+        const validDataToUpdate = [];
         const allCategories = await prisma.equipmentCategory.findMany();
 
         const allRooms = await prisma.room.findMany();
@@ -239,8 +240,26 @@ export const uploadEquipments = async (req, res) => {
                 continue;
             }
 
-            if (existingSet.has(code)) {
-                errors.push(`แถวที่ ${item.rowNumber}: รหัส "${code}" มีอยู่แล้วในระบบ`);
+            if (existingMap.has(code)) {
+                const existing = existingMap.get(code);
+                if (existing.is_delete) {
+                    const floorId = matchedRoom.floorId || matchedRoom.floor_id || null;
+                    const locationId = floorId ? floorMap.get(floorId) : null;
+                    
+                    validDataToUpdate.push({
+                        equipmentId: existing.equipmentId,
+                        equipmentCode: code,
+                        equipmentName: item.equipmentName,
+                        equipmentCtgId: categoryId,
+                        roomId: matchedRoom.roomId || matchedRoom.room_id,
+                        floorId: floorId,       
+                        locationId: locationId,
+                        is_delete: false
+                    });
+                    seenInFile.add(code);
+                } else {
+                    errors.push(`แถวที่ ${item.rowNumber}: รหัส "${code}" มีอยู่แล้วในระบบ`);
+                }
                 continue;
             }
             seenInFile.add(code);
@@ -265,18 +284,38 @@ export const uploadEquipments = async (req, res) => {
             });
         }
 
+        if (validDataToUpdate.length > 0) {
+            await prisma.$transaction(
+                validDataToUpdate.map((data) =>
+                    prisma.equipment.update({
+                        where: { equipmentId: data.equipmentId },
+                        data: {
+                            is_delete: data.is_delete,
+                            equipmentName: data.equipmentName,
+                            equipmentCtgId: data.equipmentCtgId,
+                            roomId: data.roomId,
+                            floorId: data.floorId,
+                            locationId: data.locationId
+                        }
+                    })
+                )
+            );
+        }
+
+        const totalProcessed = validDataToInsert.length + validDataToUpdate.length;
+
         if (errors.length > 0) {
             // ส่ง status 400 หรือ 422 เพื่อให้ Frontend รู้ว่าเป็น Error พร้อมแนบ Data ที่ผ่านไปแล้ว (ถ้ามี)
             return res.status(400).json({
                 success: false,
-                message: `อัปโหลดสำเร็จ ${validDataToInsert.length} รายการ แต่พบข้อผิดพลาดบางส่วน`,
+                message: `อัปโหลดสำเร็จ ${totalProcessed} รายการ แต่พบข้อผิดพลาดบางส่วน`,
                 errors: errors
             });
         }
 
         return res.status(200).json({
             status: "success",
-            message: `อัปโหลดสำเร็จครบถ้วน ${validDataToInsert.length} รายการ`,
+            message: `อัปโหลดสำเร็จครบถ้วน ${totalProcessed} รายการ`,
             errors: []
         });
     } catch (error) {
