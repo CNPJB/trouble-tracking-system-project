@@ -32,32 +32,32 @@ export const AdminSidebar = () => {
           
           <nav className="sidebar-nav">
             <NavLink to="/adminPage/AuditIssues" className="nav-item" onClick={toggleMobile}>
-              <span>Audit Issues</span>
+              <span>ตรวจสอบปัญหา</span>
               <FaRegFileAlt className="nav-icon-admin-mb" />
             </NavLink>
 
             <NavLink to="/adminPage/IssueManagement" className="nav-item" end onClick={toggleMobile}>
-              <span>Issue Management</span>
+              <span>จัดการปัญหา</span>
               <FaTools className="nav-icon-admin-mb" />
             </NavLink>
 
             <NavLink to="/adminPage/AssetManagement" className="nav-item" onClick={toggleMobile}>
-              <span>Asset Management</span>
+              <span>จัดการครุภัณฑ์</span>
               <FaDesktop className="nav-icon-admin-mb" />
             </NavLink>
 
             <NavLink to="/adminPage/UserManagement" className="nav-item" onClick={toggleMobile}>
-              <span>User Management</span>
+              <span>จัดการผู้ใช้</span>
               <FaUserCog className="nav-icon-admin-mb" />
             </NavLink>
 
             <NavLink to="/adminPage/LocationManagement" className="nav-item" onClick={toggleMobile}>
-              <span>Location Management</span>
+              <span>จัดการสถานที่</span>
               <FaMapMarkedAlt className="nav-icon-admin-mb" />
             </NavLink>
 
             <NavLink to="/adminPage/Categories" className="nav-item" onClick={toggleMobile}>
-              <span>Issue Categories</span>
+              <span>จัดการประเภทปัญหา</span>
               <FaTags className="nav-icon-admin-mb" />
             </NavLink>
           </nav>
@@ -72,32 +72,32 @@ export const AdminSidebar = () => {
         <nav className="sidebar-nav">
           <NavLink to="/adminPage/AuditIssues" className="nav-item">
             <FaRegFileAlt className="nav-icon-admin" />
-            <span>Audit Issues</span>
+            <span>ตรวจสอบปัญหา</span>
           </NavLink>
 
           <NavLink to="/adminPage/IssueManagement" className="nav-item" end>
             <FaTools className="nav-icon-admin" />
-            <span>Issue Management</span>
+            <span>จัดการปัญหา</span>
           </NavLink>
 
           <NavLink to="/adminPage/AssetManagement" className="nav-item">
             <FaDesktop className="nav-icon-admin" />
-            <span>Asset Management</span>
+            <span>จัดการครุภัณฑ์</span>
           </NavLink>
 
           <NavLink to="/adminPage/UserManagement" className="nav-item">
             <FaUserCog className="nav-icon-admin" />
-            <span>User Management</span>
+            <span>จัดการผู้ใช้</span>
           </NavLink>
 
           <NavLink to="/adminPage/LocationManagement" className="nav-item">
             <FaMapMarkedAlt className="nav-icon-admin" />
-            <span>Location Management</span>
+            <span>จัดการสถานที่</span>
           </NavLink>
 
           <NavLink to="/adminPage/Categories" className="nav-item">
             <FaTags className="nav-icon-admin" />
-            <span>Issue Categories</span>
+            <span>จัดการประเภทปัญหา</span>
           </NavLink>
         </nav>
       </aside>
