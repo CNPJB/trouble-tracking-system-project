@@ -8,13 +8,45 @@ export const addTicketCategory = async (req, res) => {
             ticketCtgStatus,
         } = req.body;
 
+        // ป้องกันแอปพังกรณีไม่ได้ส่งชื่อมา
+        if (!ticketCtgName || typeof ticketCtgName !== 'string') {
+            return res.status(400).json({ error: 'กรุณาระบุชื่อหมวดหมู่ให้ถูกต้อง' });
+        }
+
+        const cleanName = ticketCtgName.trim();
+
+        // ค้นหาชื่อหมวดหมู่ในระบบ
+        const existingCategory = await prisma.ticketCategory.findFirst({
+            where: { ticketCtgName: cleanName }
+        });
+
+        if (existingCategory) {
+            // ถ้ามีอยู่แล้ว และ is_delete เป็น false (f) แปลว่าใช้งานอยู่
+            if (!existingCategory.is_delete) {
+                return res.status(400).json({ error: 'หมวดหมู่นี้มีอยู่แล้วในระบบ' });
+            }
+
+            // ถ้ามีอยู่แล้วแต่ถูกลบไป (is_delete เป็น t) ให้อัปเดตนำกลับมาใช้
+            // *** จุดที่แก้ไข: เปลี่ยนจาก id เป็น ticketCtgId ให้ตรงกับ DB ***
+            const restoredCategory = await prisma.ticketCategory.update({
+                where: { ticketCtgId: existingCategory.ticketCtgId }, 
+                data: {
+                    is_delete: false,
+                    ticketCtgStatus: ticketCtgStatus || 'enable' // อิงตาม Data เดิมที่คุณใช้ enable
+                }
+            });
+            return res.status(200).json(restoredCategory);
+        }
+
+        // กรณีไม่เคยมีชื่อนี้เลย ให้สร้างใหม่
         const ticketCategory = await prisma.ticketCategory.create({
             data: {
-                ticketCtgName,
-                ticketCtgStatus,
+                ticketCtgName: cleanName,
+                ticketCtgStatus: ticketCtgStatus || 'enable',
             }
         });
         res.status(201).json(ticketCategory);
+        
     } catch (error) {
         console.error('Error creating ticket category:', error);
         res.status(500).json({ error: 'Failed to create ticket category' });
@@ -85,27 +117,39 @@ export const addLocation = async (req, res) => {
             locationStatus,
         } = req.body;
 
-        if (!locationName || locationName.trim() === '') {
-            return res.status(400).json({ error: 'กรุณาระบุชื่อสถานที่' });
+        // ดัก Error ป้องกันแอปพัง
+        if (!locationName || typeof locationName !== 'string') {
+            return res.status(400).json({ error: 'กรุณาระบุชื่อสถานที่ให้ถูกต้อง' });
         }
 
         const cleanLocationName = locationName.trim();
 
-        const findLocation = await prisma.location.findFirst({
-            where: {
-                locationName: cleanLocationName
-
-            }
+        const existingLocation = await prisma.location.findFirst({
+            where: { locationName: cleanLocationName }
         });
 
-        if (findLocation) {
-            return res.status(400).json({ error: 'สถานที่นี้มีอยู่แล้วในระบบ' });
+        if (existingLocation) {
+            // ถ้ามีอยู่แล้วและยังใช้งานอยู่
+            if (!existingLocation.is_delete) {
+                return res.status(400).json({ error: 'สถานที่นี้มีอยู่แล้วในระบบ' });
+            }
+
+            // ถ้าระบบเคยลบไปแล้ว ให้นำกลับมาใช้งาน (เช็คชื่อ Primary Key ให้ตรงกับ schema.prisma)
+            const restoredLocation = await prisma.location.update({
+                where: { locationId: existingLocation.locationId }, // *เปลี่ยนเป็น id ได้ถ้า PK ของคุณชื่อ id
+                data: {
+                    is_delete: false,
+                    locationStatus: locationStatus || 'active' 
+                }
+            });
+            return res.status(200).json(restoredLocation);
         }
 
+        // สร้างใหม่
         const location = await prisma.location.create({
             data: {
                 locationName: cleanLocationName,
-                locationStatus,
+                locationStatus: locationStatus || 'active',
             }
         });
         res.status(201).json(location);
@@ -133,23 +177,59 @@ export const deleteLocation = async (req, res) => {
         if (!id) {
             return res.status(400).json({ error: 'กรุณาส่ง locationId เพื่อระบุสถานที่ที่ต้องการลบ' });
         }
-        const deletedLocation = await prisma.location.update({
-            where: {
-                locationId: Number(id),
-            },
-            data: { is_delete: true }
 
+        const locationIdNum = Number(id);
+
+        // 1. ค้นหา "ชั้น" ทั้งหมดที่อยู่ใน "สถานที่" นี้ก่อน
+        // หมายเหตุ: ตรง select: { floorId: true } ถ้า Primary Key ของชั้นชื่อ floor_id ให้แก้เป็น floor_id: true นะครับ
+        const floors = await prisma.floor.findMany({
+            where: { locationId: locationIdNum },
+            select: { floorId: true } 
         });
+
+        // ดึงเฉพาะ ID ของชั้นออกมาเป็น Array เช่น [1, 2, 3]
+        const floorIds = floors.map(floor => floor.floorId);
+
+        // 2. ใช้ Transaction เพื่อ Soft Delete ทุกอย่างพร้อมกัน
+        const [deletedLocation, deletedFloors, deletedRooms] = await prisma.$transaction([
+            // 2.1 Soft delete สถานที่ (Location)
+            prisma.location.update({
+                where: { locationId: locationIdNum },
+                data: { is_delete: true }
+            }),
+
+            // 2.2 Soft delete ชั้น (Floor) ทั้งหมดที่อยู่ในสถานที่นี้
+            prisma.floor.updateMany({
+                where: { locationId: locationIdNum },
+                data: { is_delete: true }
+            }),
+
+            // 2.3 Soft delete ห้อง (Room) ทั้งหมดที่อยู่ในชั้นเหล่านั้น
+            prisma.room.updateMany({
+                where: {
+                    floorId: {
+                        in: floorIds.length > 0 ? floorIds : [-1] // ถ้าไม่มีชั้นเลย ให้ใส่ [-1] กัน Error
+                    }
+                },
+                data: { is_delete: true }
+            })
+        ]);
+
         res.status(200).json({
-            message: 'ลบสถานที่สำเร็จ',
-            deletedLocation
+            message: 'ลบสถานที่ รวมถึงชั้นและห้องที่เกี่ยวข้องสำเร็จ',
+            deletedLocation,
+            summary: {
+                floorsDeleted: deletedFloors.count,
+                roomsDeleted: deletedRooms.count
+            }
         });
+
     } catch (error) {
         console.error('Error deleting location:', error);
         if (error.code === 'P2025') {
             return res.status(404).json({ error: 'ไม่พบสถานที่นี้ในระบบ' });
         }
-        res.status(500).json({ error: 'Failed to delete location' });
+        res.status(500).json({ error: 'Failed to delete location and related data' });
     }
 };
 
@@ -162,25 +242,40 @@ export const addFloor = async (req, res) => {
             floorStatus,
         } = req.body;
         
+        if (!floorLevel || typeof floorLevel !== 'string') {
+            return res.status(400).json({ error: 'กรุณาระบุชั้นให้ถูกต้อง' });
+        }
+
         const cleanFloorLevel = floorLevel.trim();
 
         const existingFloor = await prisma.floor.findFirst({
             where: {
                 locationId: Number(locationId),
                 floorLevel: cleanFloorLevel,
-                is_delete: false // เช็คเฉพาะชั้นที่ยังใช้งานอยู่
             }
         });
 
         if (existingFloor) {
-            return res.status(400).json({ error: `สถานที่นี้มี "ชั้น ${cleanFloorLevel}" อยู่แล้วครับ ไม่สามารถสร้างซ้ำได้` });
+            if (!existingFloor.is_delete) {
+                return res.status(400).json({ error: `สถานที่นี้มี "ชั้น ${cleanFloorLevel}" อยู่แล้วครับ ไม่สามารถสร้างซ้ำได้` });
+            }
+            
+            // นำชั้นที่ถูกลบไปแล้วกลับมาใช้
+            const restoredFloor = await prisma.floor.update({
+                where: { floorId: existingFloor.floorId }, // *เปลี่ยนเป็น id ได้ถ้า PK ของคุณชื่อ id
+                data: {
+                    is_delete: false,
+                    floorStatus: floorStatus || 'active'
+                }
+            });
+            return res.status(200).json(restoredFloor);
         }
 
         const floor = await prisma.floor.create({
             data: {
-                floorLevel,
+                floorLevel: cleanFloorLevel,
                 locationId: Number(locationId),
-                floorStatus,
+                floorStatus: floorStatus || 'active',
             }
         });
         res.status(201).json(floor);
@@ -210,22 +305,38 @@ export const deleteFloor = async (req, res) => {
         if (!id) {
             return res.status(400).json({ error: 'กรุณาส่ง floorId เพื่อระบุชั้นที่ต้องการลบ' });
         }
-        const deletedFloor = await prisma.floor.update({
-            where: {
-                floorId: Number(id),
-            },
-            data: { is_delete: true }
-        });
+
+        const floorIdNum = Number(id);
+
+        // ใช้ Transaction เพื่อ Soft Delete ชั้นและห้องที่อยู่ในชั้นนี้พร้อมกัน
+        const [deletedFloor, deletedRooms] = await prisma.$transaction([
+            // 1. Soft delete ชั้น (Floor)
+            prisma.floor.update({
+                where: { floorId: floorIdNum },
+                data: { is_delete: true }
+            }),
+
+            // 2. Soft delete ห้อง (Room) ทั้งหมดที่มี floorId ตรงกับชั้นที่ถูกลบ
+            prisma.room.updateMany({
+                where: { floorId: floorIdNum },
+                data: { is_delete: true }
+            })
+        ]);
+
         res.status(200).json({
-            message: 'ลบชั้นสำเร็จ',
-            deletedFloor
+            message: 'ลบชั้น รวมถึงห้องที่อยู่ในชั้นนี้สำเร็จ',
+            deletedFloor,
+            summary: {
+                roomsDeleted: deletedRooms.count // แจ้งว่ามีกี่ห้องที่ถูกลบไปด้วย
+            }
         });
+
     } catch (error) {
         console.error('Error deleting floor:', error);
         if (error.code === 'P2025') {
             return res.status(404).json({ error: 'ไม่พบชั้นนี้ในระบบ' });
         }
-        res.status(500).json({ error: 'Failed to delete floor' });
+        res.status(500).json({ error: 'Failed to delete floor and related rooms' });
     }
 };
 /* Room Management */
@@ -237,21 +348,38 @@ export const addRoom = async (req, res) => {
             roomStatus,
         } = req.body;
 
+        if (!roomName || typeof roomName !== 'string') {
+            return res.status(400).json({ error: 'กรุณาระบุชื่อห้องให้ถูกต้อง' });
+        }
+
+        const cleanRoomName = roomName.trim();
+
         const existingRoom = await prisma.room.findFirst({
             where: {
                 floorId: Number(floorId),
-                roomName: roomName.trim(),
-                is_delete: false // เช็คเฉพาะห้องที่ยังใช้งานอยู่
+                roomName: cleanRoomName,
             }
         });
 
         if (existingRoom) {
-            return res.status(400).json({ error: 'ห้องนี้มีอยู่แล้วในระบบ' });
+            if (!existingRoom.is_delete) {
+                return res.status(400).json({ error: 'ห้องนี้มีอยู่แล้วในระบบ' });
+            }
+
+            // นำห้องที่ถูกลบไปแล้วกลับมาใช้
+            const restoredRoom = await prisma.room.update({
+                where: { roomId: existingRoom.roomId }, // *เปลี่ยนเป็น id ได้ถ้า PK ของคุณชื่อ id
+                data: {
+                    is_delete: false,
+                    roomStatus: roomStatus || 'active'
+                }
+            });
+            return res.status(200).json(restoredRoom);
         }
 
         const room = await prisma.room.create({
             data: {
-                roomName,
+                roomName: cleanRoomName,
                 floorId: Number(floorId),
                 roomStatus: roomStatus || 'active'
             }
@@ -263,7 +391,6 @@ export const addRoom = async (req, res) => {
         res.status(500).json({ error: 'Failed to create room' });
     }
 }
-
 export const getRooms = async (req, res) => {
     try {
         const rooms = await prisma.room.findMany({
