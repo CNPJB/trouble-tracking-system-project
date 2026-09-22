@@ -387,7 +387,7 @@ function EditIssue() {
                             </div>
 
                             <div className='form-group'>
-                                <label>รหัสครุภัณฑ์ <span className='secondary-label'> (ไม่บังคับ - ใช้ค้นหาข้อมูลอัตโนมัติ)</span></label>
+                                <label>รหัสครุภัณฑ์ <span className='secondary-label'> (ไม่บังคับ)</span></label>
                                 <input
                                     type="text"
                                     list={`equipment-codes-${formData.roomId || 'none'}`}
